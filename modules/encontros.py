@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo dos 40 Encontros do Catecumenato com Arte Sacra Católica
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -71,16 +71,44 @@ def render():
     # Painel do Encontro com Obra de Arte Sacra
     col_banner_img, col_banner_txt = st.columns([1, 1.6])
     with col_banner_img:
+        import os
+        num_enc = encontro.get("numero", 1)
+        legenda = encontro.get("imagem_legenda", "")
         img_ref = encontro.get("imagem_url")
-        if img_ref:
-            import os
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            full_path = os.path.join(base_dir, img_ref) if not os.path.isabs(img_ref) else img_ref
-            legenda = encontro.get("imagem_legenda", "")
-            if os.path.exists(full_path):
-                st.image(full_path, caption=legenda, use_container_width=True)
-            else:
+        
+        # Diretório base do repositório
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Candidatos prioritários de arquivos locais
+        candidatos = [
+            os.path.join(base_dir, "assets", "images", f"encontro_{num_enc:02d}.jpg"),
+            os.path.join("assets", "images", f"encontro_{num_enc:02d}.jpg"),
+            os.path.abspath(os.path.join("assets", "images", f"encontro_{num_enc:02d}.jpg"))
+        ]
+        
+        # Adicionar o img_ref se fornecido e for caminho de arquivo
+        if img_ref and not img_ref.startswith("http://") and not img_ref.startswith("https://"):
+            candidatos.insert(0, os.path.join(base_dir, img_ref) if not os.path.isabs(img_ref) else img_ref)
+            candidatos.insert(1, img_ref)
+        
+        caminho_final = None
+        for cand in candidatos:
+            if cand and os.path.exists(cand) and os.path.isfile(cand):
+                caminho_final = cand
+                break
+        
+        if caminho_final:
+            try:
+                st.image(caminho_final, caption=legenda, use_container_width=True)
+            except Exception as e:
+                st.info(f"🎨 {legenda}")
+        elif img_ref and (img_ref.startswith("http://") or img_ref.startswith("https://")):
+            try:
                 st.image(img_ref, caption=legenda, use_container_width=True)
+            except Exception:
+                st.info(f"🎨 {legenda}")
+        else:
+            st.info(f"🎨 {legenda}")
     with col_banner_txt:
         st.markdown(f"""
         <div class="pergaminho-card-bordo" style="height: 100%;">

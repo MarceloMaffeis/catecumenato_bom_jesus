@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo de Formação Litúrgica: A Santa Missa Passo a Passo
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -19,17 +19,27 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="pergaminho-card-bordo">
-        <p style="font-size: 1.15rem; line-height: 1.6; margin: 0; color: #2D1B13;">
-            "A Santa Missa é o ato mais sublime e sagrado que pode acontecer sobre a terra: nela se renova o Sacrifício da Cruz 
-            e o próprio Deus se faz presente em Corpo, Sangue, Alma e Divindade para nos alimentar e salvar."
-        </p>
-        <div style="text-align: right; font-family: 'Cinzel', serif; color: #781826; font-weight: bold; margin-top: 0.4rem;">
-            — Sagrado Magistério da Igreja
+    col_img, col_txt = st.columns([1, 1.8])
+    with col_img:
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        caminho_missa = os.path.join(base_dir, "assets", "images", "encontro_27.jpg")
+        if not os.path.exists(caminho_missa):
+            caminho_missa = os.path.join("assets", "images", "encontro_27.jpg")
+        if os.path.exists(caminho_missa):
+            st.image(caminho_missa, caption="A Instituição da Santíssima Eucaristia — Philippe de Champaigne", use_container_width=True)
+    with col_txt:
+        st.markdown("""
+        <div class="pergaminho-card-bordo" style="height: 100%;">
+            <p style="font-size: 1.15rem; line-height: 1.6; margin: 0; color: #2D1B13;">
+                "A Santa Missa é o ato mais sublime e sagrado que pode acontecer sobre a terra: nela se renova o Sacrifício da Cruz 
+                e o próprio Deus se faz presente em Corpo, Sangue, Alma e Divindade para nos alimentar e salvar."
+            </p>
+            <div style="text-align: right; font-family: 'Cinzel', serif; color: #781826; font-weight: bold; margin-top: 0.4rem;">
+                — Sagrado Magistério da Igreja
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     tab_ritos, tab_alfaias, tab_vestes, tab_cores, tab_espaco = st.tabs([
         "📜 A Missa Parte por Parte",

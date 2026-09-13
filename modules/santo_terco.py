@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo do Santo Terço e da Devoção Mariana
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -90,22 +90,32 @@ def render():
     dia_semana_nome = DIAS_SEMANA_NOMES[dia_semana_num]
     misterio_hoje = get_misterio_do_dia(dia_semana_num)
 
-    st.markdown(f"""
-    <div class="pergaminho-card-bordo">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <span style="font-family: 'Cinzel', serif; color: #781826; font-weight: bold; font-size: 1.15rem;">
-                📅 Hoje é {dia_semana_nome}
-            </span>
-            <span style="background: #781826; color: white; padding: 3px 12px; border-radius: 12px; font-family: 'Cinzel', serif; font-size: 0.9rem;">
-                MISTÉRIO DO DIA: {misterio_hoje.upper()}
-            </span>
+    col_img_terco, col_txt_terco = st.columns([1, 1.8])
+    with col_img_terco:
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        caminho_maria = os.path.join(base_dir, "assets", "images", "encontro_40.jpg")
+        if not os.path.exists(caminho_maria):
+            caminho_maria = os.path.join("assets", "images", "encontro_40.jpg")
+        if os.path.exists(caminho_maria):
+            st.image(caminho_maria, caption="Nossa Senhora, Rainha do Santo Rosário — Murillo", use_container_width=True)
+    with col_txt_terco:
+        st.markdown(f"""
+        <div class="pergaminho-card-bordo" style="height: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <span style="font-family: 'Cinzel', serif; color: #781826; font-weight: bold; font-size: 1.15rem;">
+                    📅 Hoje é {dia_semana_nome}
+                </span>
+                <span style="background: #781826; color: white; padding: 3px 12px; border-radius: 12px; font-family: 'Cinzel', serif; font-size: 0.9rem;">
+                    MISTÉRIO DO DIA: {misterio_hoje.upper()}
+                </span>
+            </div>
+            <p style="font-size: 1.05rem; margin-top: 0.6rem; color: #3A2315;">
+                {MISTERIOS_DATA[misterio_hoje]['tema']}. 
+                A oração diária do Terço é a arma espiritual mais poderosa legada por Nossa Senhora para a paz na família e no mundo.
+            </p>
         </div>
-        <p style="font-size: 1.05rem; margin-top: 0.6rem; color: #3A2315;">
-            {MISTERIOS_DATA[misterio_hoje]['tema']}. 
-            A oração diária do Terço é a arma espiritual mais poderosa legada por Nossa Senhora para a paz na família e no mundo.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     tab_passos, tab_misterios, tab_promessas = st.tabs([
         "📖 Como Rezar o Terço (Esquema das Contas)",

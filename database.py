@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Atualização do Banco de Dados SQLite com Imagens Sacras, Novas Orações e Autenticação
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -127,51 +127,52 @@ def init_db():
 def atualizar_imagens_sacras(conn):
     cur = conn.cursor()
     
-    IMAGENS_ENCONTROS = {
-        1: ("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Saint_Jerome_Writing-Caravaggio_%281605-6%29.jpg/800px-Saint_Jerome_Writing-Caravaggio_%281605-6%29.jpg", "São Jerônimo no Estudo da Palavra Sagrada — Caravaggio (1605)"),
-        2: ("https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Delivery_of_the_Keys_to_Saint_Peter_by_Pietro_Perugino.jpg/800px-Delivery_of_the_Keys_to_Saint_Peter_by_Pietro_Perugino.jpg", "Cristo entrega as Chaves do Reino a São Pedro — Pietro Perugino (Capela Sistina)"),
-        3: ("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/800px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg", "A Criação de Adão — Michelangelo Buonarroti (Capela Sistina, Vaticano)"),
-        4: ("https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Rembrandt_Harmensz_van_Rijn_-_Return_of_the_Prodigal_Son_-_Google_Art_Project.jpg/800px-Rembrandt_Harmensz_van_Rijn_-_Return_of_the_Prodigal_Son_-_Google_Art_Project.jpg", "O Retorno do Filho Pródigo ao Pai Misericordioso — Rembrandt van Rijn (1669)"),
-        5: ("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Guido_Reni_-_Saint_Michael.jpg/600px-Guido_Reni_-_Saint_Michael.jpg", "São Miguel Arcanjo derrota o Maligno — Guido Reni (Igreja Santa Maria della Concezione, Roma)"),
-        6: ("https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Separation_of_Light_from_Darkness.jpg/800px-Separation_of_Light_from_Darkness.jpg", "A Separação da Luz e das Trevas no Gênesis — Michelangelo (Capela Sistina)"),
-        7: ("https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Michelangelo_Creation_of_Eve.jpg/800px-Michelangelo_Creation_of_Eve.jpg", "A Criação da Mulher a partir do Homem — Michelangelo (Capela Sistina)"),
-        8: ("https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/The_Fall_and_Expulsion_from_Garden_of_Eden.jpg/800px-The_Fall_and_Expulsion_from_Garden_of_Eden.jpg", "A Queda Original e a Expulsão do Paraíso — Michelangelo Buonarroti"),
-        9: ("https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Sacrifice_of_Isaac-Caravaggio_%28Uffizi%29.jpg/800px-Sacrifice_of_Isaac-Caravaggio_%28Uffizi%29.jpg", "A Fé Inabalável de Abraão e o Sacrifício de Isaac — Caravaggio (Galleria degli Uffizi)"),
-        10: ("https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Rembrandt_-_Moses_with_the_Ten_Commandments_-_Google_Art_Project.jpg/800px-Rembrandt_-_Moses_with_the_Ten_Commandments_-_Google_Art_Project.jpg", "Moisés com as Tábuas da Aliança no Monte Sinai — Rembrandt (1659)"),
-        11: ("https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/John_Martin_-_Joshua_Commanding_the_Sun_to_Stand_Still_upon_Gibeon_-_Google_Art_Project.jpg/800px-John_Martin_-_Joshua_Commanding_the_Sun_to_Stand_Still_upon_Gibeon_-_Google_Art_Project.jpg", "Josué Conduz o Povo de Deus na Terra Prometida — John Martin"),
-        12: ("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Gerard_van_Honthorst_-_King_David_Playing_the_Harp_-_Google_Art_Project.jpg/800px-Gerard_van_Honthorst_-_King_David_Playing_the_Harp_-_Google_Art_Project.jpg", "O Santo Rei Davi Entoando os Salmos ao Senhor — Gerard van Honthorst (1622)"),
-        13: ("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Michelangelo_-_Prophet_Isaiah_%28Sistine_Chapel%29.jpg/600px-Michelangelo_-_Prophet_Isaiah_%28Sistine_Chapel%29.jpg", "O Profeta Isaías Anuncia o Servo de Deus — Michelangelo (Capela Sistina)"),
-        14: ("https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Fra_Angelico_-_The_Annunciation_-_Prado.jpg/800px-Fra_Angelico_-_The_Annunciation_-_Prado.jpg", "A Encarnação do Verbo: A Anunciação do Arcanjo Gabriel — Fra Angelico (Museo del Prado)"),
-        15: ("https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/San_Damiano_cross.jpg/600px-San_Damiano_cross.jpg", "O Santo Crucifixo de São Damião: Cristo Vencedor da Morte na Cruz — Ícone Franciscano"),
-        16: ("https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/El_Greco_-_Pentecost%C3%A9s_%28Museo_del_Prado%2C_1597-1600%29.jpg/600px-El_Greco_-_Pentecost%C3%A9s_%28Museo_del_Prado%2C_1597-1600%29.jpg", "A Efusão do Espírito Santo no Cenáculo em Pentecostes — El Greco (Museo del Prado)"),
-        17: ("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Giotto_-_Scrovegni_-_-40-_-_Pentecost.jpg/800px-Giotto_-_Scrovegni_-_-40-_-_Pentecost.jpg", "Os Dons Celestiais do Espírito Santo sobre os Apóstolos — Giotto di Bondone (Capela Scrovegni)"),
-        18: ("https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Fra_Angelico_023.jpg/800px-Fra_Angelico_023.jpg", "Cristo Glorioso Edifica e Sustenta a Santa Igreja Católica — Fra Angelico"),
-        19: ("https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Masaccio_-_Distribution_of_Alms_and_Death_of_Ananias_-_Google_Art_Project.jpg/800px-Masaccio_-_Distribution_of_Alms_and_Death_of_Ananias_-_Google_Art_Project.jpg", "A Comunhão e Fraternidade na Igreja Primitiva dos Apóstolos — Masaccio (Florença)"),
-        20: ("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/El_Greco_-_Sts_Peter_and_Paul_-_Google_Art_Project.jpg/600px-El_Greco_-_Sts_Peter_and_Paul_-_Google_Art_Project.jpg", "São Pedro e São Paulo: Colunas da Igreja Una, Santa e Apostólica — El Greco"),
-        21: ("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Rogier_van_der_Weyden_-_Seven_Sacraments_Altarpiece_-_Google_Art_Project.jpg/800px-Rogier_van_der_Weyden_-_Seven_Sacraments_Altarpiece_-_Google_Art_Project.jpg", "O Retábulo dos Sete Sacramentos da Igreja — Rogier van der Weyden (1445)"),
-        22: ("https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Piero_della_Francesca_-_The_Baptism_of_Christ_-_National_Gallery.jpg/800px-Piero_della_Francesca_-_The_Baptism_of_Christ_-_National_Gallery.jpg", "O Batismo de Nosso Senhor Jesus Cristo no Rio Jordão — Piero della Francesca"),
-        23: ("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Fra_Angelico_022.jpg/800px-Fra_Angelico_022.jpg", "O Santo Batismo e o Nascimento para a Vida da Graça — Fra Angelico"),
-        24: ("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Rogier_van_der_Weyden_-_Seven_Sacraments_Altarpiece%2C_left_wing_%28detail%29_-_Confirmation.jpg/600px-Rogier_van_der_Weyden_-_Seven_Sacraments_Altarpiece%2C_left_wing_%28detail%29_-_Confirmation.jpg", "A Unção do Santo Crisma e a Confirmação — Rogier van der Weyden (Detalhe)"),
-        25: ("https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Confirmation_Poussin.jpg/800px-Confirmation_Poussin.jpg", "O Sagrado Rito da Crisma e o Selo do Espírito Santo — Nicolas Poussin (1645)"),
-        26: ("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Masolino_-_St_Peter_Preaching_-_Google_Art_Project.jpg/800px-Masolino_-_St_Peter_Preaching_-_Google_Art_Project.jpg", "Os Frutos da Confirmação: O Testemunho Corajoso da Fé no Mundo — Masolino da Panicale"),
-        27: ("https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Philippe_de_Champaigne_-_The_Last_Supper_-_Louvre_INV_1164.jpg/800px-Philippe_de_Champaigne_-_The_Last_Supper_-_Louvre_INV_1164.jpg", "A Instituição da Santíssima Eucaristia na Última Ceia — Philippe de Champaigne (Museu do Louvre)"),
-        28: ("https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Disputa_del_Sacramento_%28Raphael%29.jpg/800px-Disputa_del_Sacramento_%28Raphael%29.jpg", "A Disputa e Adoração do Santíssimo Sacramento — Rafael Sanzio (Palácio Apostólico, Vaticano)"),
-        29: ("https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Luca_Signorelli_-_Communion_of_the_Apostles_-_Google_Art_Project.jpg/800px-Luca_Signorelli_-_Communion_of_the_Apostles_-_Google_Art_Project.jpg", "A Santa Comunhão dos Apóstolos — Luca Signorelli (1512)"),
-        30: ("https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Poussin_Ordination.jpg/800px-Poussin_Ordination.jpg", "O Sacramento da Sagrada Ordem e a Sucessão Apostólica — Nicolas Poussin"),
-        31: ("https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Lo_sposalizio_della_Vergine_di_Raffaello.jpg/600px-Lo_sposalizio_della_Vergine_di_Raffaello.jpg", "O Casamento da Bem-Aventurada Virgem Maria e São José — Rafael Sanzio (1504)"),
-        32: ("https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Christ_and_the_Woman_Taken_in_Adultery_by_Guercino.jpg/800px-Christ_and_the_Woman_Taken_in_Adultery_by_Guercino.jpg", "A Infinita Misericórdia e o Perdão dos Pecados na Reconciliação — Guercino"),
-        33: ("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Eug%C3%A8ne_Delacroix_-_The_Good_Samaritan_-_Google_Art_Project.jpg/800px-Eug%C3%A8ne_Delacroix_-_The_Good_Samaritan_-_Google_Art_Project.jpg", "O Bom Samaritano: Cristo Cuida e Cura as Nossas Chagas — Eugène Delacroix"),
-        34: ("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Jean_Fouquet_-_Livre_d%27heures_d%27Etienne_Chevalier_-_Messe_du_Saint-Esprit.jpg/600px-Jean_Fouquet_-_Livre_d%27heures_d%27Etienne_Chevalier_-_Messe_du_Saint-Esprit.jpg", "A Celebração Solene da Santa Missa no Altar de Deus — Jean Fouquet"),
-        35: ("https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Ghent_Altarpiece_D.jpg/800px-Ghent_Altarpiece_D.jpg", "A Adoração do Cordeiro Místico de Deus no Ano Litúrgico — Jan van Eyck"),
-        36: ("https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Angelsatmamre-trinity-rublev-1410.jpg/600px-Angelsatmamre-trinity-rublev-1410.jpg", "O Sagrado Ícone da Santíssima Trindade — Santo Andrei Rublev (1411)"),
-        37: ("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Fra_Angelico_-_Last_Judgement_%28detail%29_-_WGA00595.jpg/800px-Fra_Angelico_-_Last_Judgement_%28detail%29_-_WGA00595.jpg", "O Juízo Particular e a Esperança da Visão Beatífica — Fra Angelico"),
-        38: ("https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Last_Judgement_%28Michelangelo%29.jpg/600px-Last_Judgement_%28Michelangelo%29.jpg", "O Juízo Universal e a Gloriosa Ressurreição da Carne — Michelangelo (Capela Sistina)"),
-        39: ("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Raffaello_Sanzio_-_Madonna_Sistina_-_Google_Art_Project.jpg/600px-Raffaello_Sanzio_-_Madonna_Sistina_-_Google_Art_Project.jpg", "Santa Maria, Mãe de Deus e Virgem Perpétua — Rafael Sanzio (Madonna Sistina)"),
-        40: ("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Inmaculada_Concepci%C3%B3n_%28Murillo%29.jpg/600px-Inmaculada_Concepci%C3%B3n_%28Murillo%29.jpg", "A Imaculada Conceição e a Assunção de Nossa Senhora — Bartolomé Esteban Murillo")
+    LEGENDAS_ENCONTROS = {
+        1: "São Jerônimo no Estudo da Palavra Sagrada — Caravaggio (1605)",
+        2: "Cristo entrega as Chaves do Reino a São Pedro — Pietro Perugino (Capela Sistina)",
+        3: "A Criação de Adão — Michelangelo Buonarroti (Capela Sistina, Vaticano)",
+        4: "O Retorno do Filho Pródigo ao Pai Misericordioso — Rembrandt van Rijn (1669)",
+        5: "São Miguel Arcanjo derrota o Maligno — Guido Reni (Igreja Santa Maria della Concezione, Roma)",
+        6: "A Separação da Luz e das Trevas no Gênesis — Michelangelo (Capela Sistina)",
+        7: "A Criação da Mulher a partir do Homem — Michelangelo (Capela Sistina)",
+        8: "A Queda Original e a Expulsão do Paraíso — Michelangelo Buonarroti",
+        9: "A Fé Inabalável de Abraão e o Sacrifício de Isaac — Caravaggio (Galleria degli Uffizi)",
+        10: "Moisés com as Tábuas da Aliança no Monte Sinai — Rembrandt (1659)",
+        11: "Josué Conduz o Povo de Deus na Terra Prometida — John Martin",
+        12: "O Santo Rei Davi Entoando os Salmos ao Senhor — Gerard van Honthorst (1622)",
+        13: "O Profeta Isaías Anuncia o Servo de Deus — Michelangelo (Capela Sistina)",
+        14: "A Encarnação do Verbo: A Anunciação do Arcanjo Gabriel — Fra Angelico (Museo del Prado)",
+        15: "O Santo Crucifixo de São Damião: Cristo Vencedor da Morte na Cruz — Ícone Franciscano",
+        16: "A Efusão do Espírito Santo no Cenáculo em Pentecostes — El Greco (Museo del Prado)",
+        17: "Os Dons Celestiais do Espírito Santo sobre os Apóstolos — Giotto di Bondone (Capela Scrovegni)",
+        18: "Cristo Glorioso Edifica e Sustenta a Santa Igreja Católica — Fra Angelico",
+        19: "A Comunhão e Fraternidade na Igreja Primitiva dos Apóstolos — Masaccio (Florença)",
+        20: "São Pedro e São Paulo: Colunas da Igreja Una, Santa e Apostólica — El Greco",
+        21: "O Retábulo dos Sete Sacramentos da Igreja — Rogier van der Weyden (1445)",
+        22: "O Batismo de Nosso Senhor Jesus Cristo no Rio Jordão — Piero della Francesca",
+        23: "O Santo Batismo e o Nascimento para a Vida da Graça — Fra Angelico",
+        24: "A Unção do Santo Crisma e a Confirmação — Rogier van der Weyden (Detalhe)",
+        25: "O Sagrado Rito da Crisma e o Selo do Espírito Santo — Nicolas Poussin (1645)",
+        26: "Os Frutos da Confirmação: O Testemunho Corajoso da Fé no Mundo — Masolino da Panicale",
+        27: "A Instituição da Santíssima Eucaristia na Última Ceia — Philippe de Champaigne (Museu do Louvre)",
+        28: "A Disputa e Adoração do Santíssimo Sacramento — Rafael Sanzio (Palácio Apostólico, Vaticano)",
+        29: "A Santa Comunhão dos Apóstolos — Luca Signorelli (1512)",
+        30: "O Sacramento da Sagrada Ordem e a Sucessão Apostólica — Nicolas Poussin",
+        31: "O Casamento da Bem-Aventurada Virgem Maria e São José — Rafael Sanzio (1504)",
+        32: "A Infinita Misericórdia e o Perdão dos Pecados na Reconciliação — Guercino",
+        33: "O Bom Samaritano: Cristo Cuida e Cura as Nossas Chagas — Eugène Delacroix",
+        34: "A Celebração Solene da Santa Missa no Altar de Deus — Jean Fouquet",
+        35: "A Adoração do Cordeiro Místico de Deus no Ano Litúrgico — Jan van Eyck",
+        36: "O Sagrado Ícone da Santíssima Trindade — Santo Andrei Rublev (1411)",
+        37: "O Juízo Particular e a Esperança da Visão Beatífica — Fra Angelico",
+        38: "O Juízo Universal e a Gloriosa Ressurreição da Carne — Michelangelo (Capela Sistina)",
+        39: "Santa Maria, Mãe de Deus e Virgem Perpétua — Rafael Sanzio (Madonna Sistina)",
+        40: "A Imaculada Conceição e a Assunção de Nossa Senhora — Bartolomé Esteban Murillo"
     }
 
-    for num, (url, leg) in IMAGENS_ENCONTROS.items():
-        cur.execute("UPDATE encontros SET imagem_url = ?, imagem_legenda = ? WHERE numero = ?", (url, leg, num))
+    for num, leg in LEGENDAS_ENCONTROS.items():
+        caminho = f"assets/images/encontro_{num:02d}.jpg"
+        cur.execute("UPDATE encontros SET imagem_url = ?, imagem_legenda = ? WHERE numero = ?", (caminho, leg, num))
     
     conn.commit()
 

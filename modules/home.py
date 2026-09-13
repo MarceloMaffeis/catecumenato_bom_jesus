@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo Principal: Página Inicial e Visão Geral Pastoral
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -89,8 +89,15 @@ def render():
             </ul>
         </div>
         """, unsafe_allow_html=True)
-
     with col_dir:
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        caminho_cruz = os.path.join(base_dir, "assets", "images", "encontro_15.jpg")
+        if not os.path.exists(caminho_cruz):
+            caminho_cruz = os.path.join("assets", "images", "encontro_15.jpg")
+        if os.path.exists(caminho_cruz):
+            st.image(caminho_cruz, caption="O Santo Crucifixo de São Damião: 'Francisco, vai e restaura a Minha Igreja!'", use_container_width=True)
+
         st.markdown("""
         <div class="pilula-franciscana">
             <h4 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">
