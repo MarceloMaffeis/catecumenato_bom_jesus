@@ -1,0 +1,118 @@
+﻿# -*- coding: utf-8 -*-
+import json
+
+ENCONTROS = [
+    # 8. A Pessoa do Espírito Santo (2 Encontros)
+    {
+        "numero": 16,
+        "bloco": "A Pessoa do Espírito Santo",
+        "titulo": "A Pessoa do Espírito Santo",
+        "subtemas": "a) Quem é o Espírito Santo: a Terceira Pessoa da Santíssima Trindade, Senhor que dá a vida (CIC 687-741).\nb) Jesus promete o Consolador e Defensor (Paráclito) (CIC 728-729; Jo 14,16-26).\nc) Pentecostes: o cumprimento da Promessa do Pai e a efusão sobre Maria e os Apóstolos (At 2,1-4).\nd) A Pessoa e a obra do Espírito Santo na alma:\n• Convence-nos do pecado (Jo 16,8).\n• Nos santifica e derrama a graça (2Ts 2,13).\n• Nos faz proclamar Jesus como único Senhor (1Cor 12,3; Jo 15,26).",
+        "resumo": "O Espírito Santo não é uma energia abstrata ou força impessoal, mas a Terceira Pessoa da Trindade, o Amor substancial entre o Pai e o Filho, que habita no cristão batizado como em um templo sagrado.",
+        "referencias_biblicas": "At 2,1-13; Jo 14,15-26; Jo 16,7-15; Rm 8,14-17; 1Cor 6,19 ('Vosso corpo é templo do Espírito Santo'); 1Cor 12,3; 2Ts 2,13.",
+        "referencias_magisterio": "CIC 683-747 (Creio no Espírito Santo; O nome, os títulos e os símbolos do Espírito Santo; Pentecostes; O Espírito e a Igreja).",
+        "fontes_complementares": "São Basílio Magno (Tratado sobre o Espírito Santo); São Tomás de Aquino (Suma Teológica I, qq. 36-38; III, q. 32).",
+        "reflexao_franciscana": "São Francisco chamava o Espírito Santo de 'o verdadeiro Ministro Geral da Ordem', pois é Ele quem governa, santifica e instrui os corações dóceis. Ele insistia com os frades: 'Desejem acima de tudo ter o Espírito do Senhor e a sua santa operação' (Regra Bulada X).",
+        "roteiro_encontro": "1. Acolhida fraterna e canto 'A nós descei, divina Luz'.\n2. Citação do Credo Niceno: 'Creio no Espírito Santo, Senhor que dá a vida...'.\n3. Os símbolos bíblicos do Espírito Santo: Fogo, Água viva, Vento impetuoso, Óleo da unção, Pomba, Selo divino.\n4. Ação do Espírito no coração humano: Aquele que nos liberta das amarras do pecado e gera a caridade fraterna.\n5. Partilha: Como você percebe a ação silenciosa do Espírito Santo nas suas escolhas?\n6. Compromisso: Iniciar cada dia invocando: 'Vinde, Espírito Santo, enchei os corações dos vossos fiéis'.\n7. Oração da Sequência de Pentecostes.",
+        "oracao_final": "Vinde, Espírito Santo, enchei os corações dos vossos fiéis e acendei neles o fogo do vosso amor. Enviai o vosso Espírito e tudo será criado, e renovareis a face da terra. Por Cristo, Nosso Senhor. Amém."
+    },
+    {
+        "numero": 17,
+        "bloco": "A Pessoa do Espírito Santo",
+        "titulo": "Os dons do Espírito Santo (CIC 1830-1831)",
+        "subtemas": "A vida moral dos cristãos é sustentada pelos dons do Espírito Santo. Disposições permanentes que tornam o homem dócil a seguir as moções divinas:\n• Os 7 Dons da Graça (Is 11,1-2): Sabedoria, Entendimento (Inteligência), Conselho, Fortaleza, Ciência, Piedade e Santo Temor de Deus.\n• Os Frutos do Espírito Santo (Gl 5,22-23): caridade, alegria, paz, paciência, benignidade, bondade, fidelidade, mansidão e autodomínio.",
+        "resumo": "Os sete dons divinos como velas de uma embarcação que recebem o sopro do Espírito Santo para conduzir a alma à santidade, gerando os frutos saborosos da vida cristã madura.",
+        "referencias_biblicas": "Is 11,1-3; Gl 5,22-25; 1Cor 12,4-11; Rm 12,6-8; Ef 4,1-7.",
+        "referencias_magisterio": "CIC 1830-1832 (Os dons e os frutos do Espírito Santo); Encíclica Dominum et Vivificantem de São João Paulo II.",
+        "fontes_complementares": "São Boaventura (Os Sete Dons do Espírito Santo); São Tomás de Aquino (Suma Teológica I-II, q. 68).",
+        "reflexao_franciscana": "A 'Saudação às Virtudes' de São Francisco: 'Salve, Rainha Sabedoria, o Senhor te guarde com tua irmã, a pura e santa Simplicidade! Salve, senhora santa Caridade, com tua irmã, a santa Humildade! Salve, senhora santa Obediência, com tua irmã, a santa Paciência!'.",
+        "roteiro_encontro": "1. Acolhida e oração inicial.\n2. Estudo prático de cada um dos 7 Dons do Espírito Santo:\n   - Sabedoria (saborear as coisas de Deus);\n   - Entendimento (compreender as verdades da fé);\n   - Conselho (discernir a melhor decisão evangélica);\n   - Fortaleza (coragem para vencer as tentações e provações);\n   - Ciência (enxergar a criação à luz do Criador);\n   - Piedade (afeto filial para com Deus e fraternidade com o próximo);\n   - Temor de Deus (respeito sagrado e temor de ofender o Amor de Deus).\n3. Diferença entre os Dons do Espírito e as virtudes humanas.\n4. Partilha: De qual desses dons você mais sente necessidade no seu momento atual de vida?\n5. Compromisso: Rezar pela perseverança no caminho da Crisma e da Iniciação Cristã.\n6. Bênção final.",
+        "oracao_final": "Senhor Deus, derramai em nossos corações a abundância dos Vossos sete santos dons. Concedei-nos a sabedoria para saborear a Vossa verdade, a fortaleza para combater o bom combate e a piedade para amar os nossos irmãos como Cristo nos amou. Amém."
+    },
+    # 9. A Igreja de Jesus Cristo (3 Encontros)
+    {
+        "numero": 18,
+        "bloco": "A Igreja de Jesus Cristo",
+        "titulo": "Jesus Cristo quis e fundou a Igreja",
+        "subtemas": "A fundação da Igreja por Nosso Senhor Jesus Cristo (Mt 16,13-19; Ef 5,25-32). A escolha dos Doze Apóstolos, a primazia de Pedro ('Tu és Pedro e sobre esta pedra edificarei a minha Igreja') e o nascimento público da Igreja em Pentecostes (CIC 758-769 / At 2,1-13).",
+        "resumo": "A Igreja Católica não é uma instituição puramente sociológica ou invenção humana, mas o Corpo Místico de Cristo, instituída pessoalmente por Jesus sobre o fundamento dos Apóstolos com Pedro como pastor supremo.",
+        "referencias_biblicas": "Mt 16,13-19; Lc 22,31-32; Jo 21,15-17; Ef 5,25-32; At 2,1-47; 1Cor 12,12-27.",
+        "referencias_magisterio": "CIC 758-780 (Origem, fundação e missão da Igreja; A Igreja é una com Cristo; O Corpo Místico de Cristo); Concílio Vaticano II, Lumen Gentium 1-8; CDC Cân. 204.",
+        "fontes_complementares": "Santo Inácio de Antioquia (Carta aos Esmirnenses 8: 'Onde está Jesus Cristo, aí está a Igreja Católica'); Didaqué cap. 9-10; Suma Teológica III, q. 8.",
+        "reflexao_franciscana": "Diante do Crucifixo de São Damião, Francisco ouviu: 'Francisco, vai e restaura a minha casa que está em ruínas'. Inicialmente reparou pedras materiais, mas logo compreendeu que o Senhor o chamava para restaurar espiritualmente a Santa Mãe Igreja através da santidade e da fidelidade ao Papa.",
+        "roteiro_encontro": "1. Acolhida e oração diante do Crucifixo de São Damião.\n2. Exposição: Por que Jesus fundou uma Igreja? Por que não basta dizer 'eu tenho minha fé em Deus sozinho em casa'?\n3. A sucessão apostólica: A linha ininterrupta de bispos e papas desde São Pedro até o Papa atual.\n4. A Igreja gerada do lado aberto de Cristo na Cruz (como Eva foi formada do lado de Adão).\n5. Partilha: Como tem sido a sua experiência comunitária na Paróquia Bom Jesus dos Aflitos?\n6. Compromisso: Participar com devoção da Santa Missa dominical em comunidade.\n7. Oração final pela Santa Igreja.",
+        "oracao_final": "Senhor Jesus Cristo, que amastes a Vossa Igreja e a Vós mesmo vos entregastes por ela, fazei de nós membros vivos e fiéis do Vosso Corpo Místico. Dai-nos a graça de amá-la com fidelidade incondicional e de edificar a comunidade paroquial na concórdia e na caridade. Amém."
+    },
+    {
+        "numero": 19,
+        "bloco": "A Igreja de Jesus Cristo",
+        "titulo": "A Igreja: comunidade de irmãos e sua missão",
+        "subtemas": "A Igreja como Povo de Deus e Comunidade de Fé, Esperança e Caridade (CIC 751-865; At 2,42-47; At 19,39; Ef 5,25-32). O mandato missionário universal: 'Ide por todo o mundo e fazei discípulos de todas as nações' (Mt 28,18-20; CIC 849-856). O compromisso do batizado no mundo do trabalho, na família e nas pastorais da paróquia.",
+        "resumo": "Todo cristão é chamado a ser discípulo missionário. A vivência eclesial não é passiva, mas engajada: testemunhar o Evangelho no trabalho, na família e na sociedade.",
+        "referencias_biblicas": "Mt 28,18-20; At 2,42-47 ('Eram assíduos à doutrina dos apóstolos, às orações e à fração do pão'); 1Pd 2,9-10; Mc 16,15-16; Rm 12,4-8.",
+        "referencias_magisterio": "CIC 781-810 (O Povo de Deus; As funções sacerdotal, profética e régia de todo batizado); CIC 849-856 (A exigência missionária); Documento de Aparecida (Discípulos e Missionários de Jesus Cristo).",
+        "fontes_complementares": "São João Crisóstomo (Homilias sobre os Atos dos Apóstolos); Didaqué cap. 12-15 (A vida comunitária e a caridade mútua).",
+        "reflexao_franciscana": "Frase célebre atribuída à tradição franciscana: 'Pregai o Evangelho em todo o tempo; se necessário, usai palavras'. O testemunho límpido de integridade, fraternidade e justiça dos leigos no trabalho é a forma mais eficaz de evangelização do mundo secular.",
+        "roteiro_encontro": "1. Acolhida e oração inicial.\n2. Leitura dos Atos dos Apóstolos 2,42-47: As 4 marcas da primeira comunidade cristã (Doutrina, Comunhão Fraterna, Fração do Pão e Orações).\n3. O sacerdócio comum de todos os fiéis batizados.\n4. Apresentação das pastorais e movimentos da Paróquia Bom Jesus dos Aflitos (Pastoral da Criança, Vicentinos, Ministros, Liturgia, Dízimo, etc.).\n5. Partilha: Onde e como Deus te chama a testemunhar o Evangelho no teu trabalho e cotidiano?\n6. Compromisso: Conhecer de perto e se aproximar de uma pastoral da paróquia.\n7. Bênção e encerramento.",
+        "oracao_final": "Deus de infinita bondade, que chamastes todos os homens a formar um só povo sob o pastoreio de Cristo, despertai em nós o ardor missionário para que jamais guardemos a fé como tesouro escondido, mas a espalhemos com coragem e amor fraterno. Por Cristo, Nosso Senhor. Amém."
+    },
+    {
+        "numero": 20,
+        "bloco": "A Igreja de Jesus Cristo",
+        "titulo": "A verdadeira Igreja de Cristo: Una, Santa, Católica e Apostólica",
+        "subtemas": "As quatro notas características da verdadeira Igreja de Cristo segundo o Símbolo da Fé (CIC 811-848):\n• Una: Um só Senhor, uma só fé, um só Batismo, sob um só pastor visível.\n• Santa: Cristo é sua Cabeça santa e o Espírito Santo a vivifica, santificando os pecadores.\n• Católica: Universal, enviada a todos os povos de todos os tempos e portadora da plenitude dos meios de salvação.\n• Apostólica: Fundada sobre os Apóstolos, guardando intacto o depósito da fé através da Sucessão Apostólica.",
+        "resumo": "A profissão de fé solene na Igreja: Compreender por que a Igreja Católica Apostólica Romana possui a plenitude da verdade salvífica transmitida desde os primórdios.",
+        "referencias_biblicas": "Ef 4,3-6 ('Um só corpo e um só Espírito... um só Senhor, uma só fé, um só batismo'); Jo 17,21 ('Que todos sejam um'); Ap 21,14; Mt 16,18-19.",
+        "referencias_magisterio": "CIC 811-870 (A Igreja é Una, Santa, Católica e Apostólica); Concílio de Niceia-Constantinopla; Constituição Dogmática Lumen Gentium.",
+        "fontes_complementares": "Santo Inácio de Antioquia; Santo Agostinho (De Vera Religione); Suma Teológica II-II, q. 1, a. 9.",
+        "reflexao_franciscana": "São Francisco de Assis sempre buscou a bênção e aprovação do Papa para sua Ordem (Papa Inocêncio III e Honório III), declarando na Regra: 'Frei Francisco promete obediência e reverência ao senhor Papa Honório e aos seus sucessores canonicamente eleitos e à Igreja Romana'.",
+        "roteiro_encontro": "1. Acolhida e oração com a recitação pausada do Credo Niceno-Constantinopolitano.\n2. Estudo detalhado dos 4 atributos: Por que Una? Por que Santa (mesmo composta de membros pecadores)? Por que Católica? Por que Apostólica?\n3. O ecumenismo autêntico e a busca pela comunhão plena na caridade e na verdade.\n4. Partilha: Como você compreende hoje a beleza de ser Católico Apostólico Romano?\n5. Compromisso: Rezar pela unidade de todos os cristãos na única Igreja de Cristo.\n6. Oração e bênção.",
+        "oracao_final": "Senhor Jesus Cristo, que na véspera de Vossa paixão rezastes ao Pai pela unidade dos Vossos discípulos para que o mundo creia, preservai a Vossa Santa Igreja no vínculo da caridade e da verdade apostólica, tornando-nos sempre fiéis ao Romano Pontífice e aos nossos legítimos pastores. Amém."
+    },
+    # 10. Os Sacramentos da Igreja (1 Encontro)
+    {
+        "numero": 21,
+        "bloco": "Os Sacramentos da Igreja",
+        "titulo": "Noção de sacramentos e os Sete Sacramentos da Igreja (CIC 1210-1374)",
+        "subtemas": "O que é um sacramento? 'Sinais visíveis e eficazes da graça invisível, instituídos por Jesus Cristo e confiados à Igreja, pelos quais nos é dispensada a vida divina' (CIC 1113-1131).\nA divisão dos Sete Sacramentos da Nova Lei:\n1. Sacramentos da Iniciação Cristã: Batismo, Confirmação (Crisma) e Eucaristia.\n2. Sacramentos da Cura / Restauração: Penitência (Reconciliação) e Unção dos Enfermos.\n3. Sacramentos do Serviço da Comunhão e Missão: Ordem e Matrimônio.",
+        "resumo": "Os sacramentos tocam todas as etapas fundamentais da vida do cristão: nascimento, fortalecimento, alimento, cura dos pecados, cura das enfermidades e consagração da vocação no mundo e no ministério sagrado.",
+        "referencias_biblicas": "Mt 28,19; Jo 20,22-23; Lc 22,19; At 8,14-17; Tg 5,14-15; Mt 19,6; 2Tm 1,6.",
+        "referencias_magisterio": "CIC 1113-1134 (Os sacramentos de Cristo e da Igreja); CIC 1210-1212 (A articulação dos sete sacramentos); Concílio de Trento, Sessão VII; CDC Cân. 840.",
+        "fontes_complementares": "São Tomás de Aquino (Suma Teológica III, qq. 60-65: Da necessidade, essência e eficácia dos sacramentos 'ex opere operato'); Didaqué cap. 7 e 9.",
+        "reflexao_franciscana": "São Francisco escreveu na Primeira Carta aos Clérigos: 'Devem ser límpidos os cálices, os corporais e os panos do altar, e tudo o mais que pertence ao sacrifício... Se o corpo do Senhor for guardado de modo mesquinho, coloquem-no em lugar honroso e bem fechado'. Todo o franciscanismo brota do espanto amoroso diante da humildade sacramental de Deus.",
+        "roteiro_encontro": "1. Acolhida e oração inicial.\n2. O conceito de sacramento: Matéria (gesto, elemento físico: água, óleo, pão, vinho) + Forma (palavras rituais divinas pronunciadas pelo ministro).\n3. O princípio 'ex opere operato': o sacramento age pela própria força redentora de Cristo, e não pela virtude humana do ministro.\n4. Visão panorâmica dos 7 Sacramentos e seu paralelismo com as fases da vida biológica humana.\n5. O compromisso do Catecumenato: não é um mero curso intelectual para 'receber um papel', mas uma verdadeira gestação para o renascimento espiritual nos sacramentos da Páscoa.\n6. Partilha: Como você tem se preparado interiormente para os sacramentos que irá receber?\n7. Oração conclusiva.",
+        "oracao_final": "Senhor Jesus Cristo, fonte inesgotável de graça e santidade, que instituístes na Vossa Santa Igreja os sacramentos salutares para alimentar, curar e fortalecer o Vosso rebanho, concedei-nos a docilidade de coração e a pureza de intenção para recebermos com frutuoso proveito os Vossos divinos mistérios. Vós que viveis e reinais para sempre. Amém."
+    },
+    # 11. Sacramento do Batismo (2 Encontros)
+    {
+        "numero": 22,
+        "bloco": "Sacramento do Batismo",
+        "titulo": "O Sacramento do Batismo: Origem e Sentido",
+        "subtemas": "a) Definição do Batismo e sua necessidade absoluta para a salvação (Mt 28,19; Jo 3,5 / CIC 1213-1216).\nb) O Batismo prefigurado no Antigo Testamento: O sopro sobre as águas na Criação, a arca de Noé, a passagem do Mar Vermelho e a travessia do Rio Jordão (CIC 1217-1222).\nc) O Batismo de penitência de Jesus por João Batista no Jordão (CIC 1223-1225) e a instituição do Batismo cristão na Igreja (CIC 1226-1228).",
+        "resumo": "O Batismo é a porta da vida no Espírito (vitae spiritualis ianua) e o fundamento de toda a existência cristã. Por ele somos libertados do pecado original, regenerados como filhos adotivos de Deus e incorporados a Cristo e à Sua Igreja.",
+        "referencias_biblicas": "Mt 28,19; Jo 3,3-5 ('Quem não renascer da água e do Espírito não pode entrar no Reino de Deus'); Rm 6,3-4; Mc 16,16; 1Pd 3,20-21; Mt 3,13-17.",
+        "referencias_magisterio": "CIC 1213-1228; Concílio de Florença; Concílio de Trento, Decreto sobre o Batismo; CDC Cânones 849, 851, 865, 866 (O Batismo dos Adultos).",
+        "fontes_complementares": "Didaqué cap. 7 (Instruções detalhadas sobre o modo de batizar na Igreja Primitiva); Tertuliano (De Baptismo); Santo Ambrósio (Dos Mistérios); Suma Teológica III, qq. 66-71.",
+        "reflexao_franciscana": "São Francisco valorizava tanto o seu Batismo na pia batismal da Catedral de São Rufino em Assis que, durante toda a vida, beijava com santa emoção o solo de onde renascera para Deus. Para Francisco, a vocação do 'Irmão Menor' nada mais era do que viver o Batismo em sua plenitude evangélica.",
+        "roteiro_encontro": "1. Acolhida fraterna e canto batismal ('Banhados em Cristo...').\n2. Proclamação do diálogo de Jesus com Nicodemos (Jo 3).\n3. A teologia batismal de São Paulo: Mergulhar na água significa morrer com Cristo para o pecado e sair da água significa ressuscitar para uma vida nova e eterna (Rm 6).\n4. O caráter indelével: O Batismo imprime na alma uma marca espiritual que jamais se apaga; por isso é recebido uma única vez.\n5. O Batismo no Código de Direito Canônico para os adultos: A necessária manifestação de fé, arrependimento dos pecados e acompanhamento do catecumenato.\n6. Partilha: O que significa para você ser chamado 'Filho de Deus'?\n7. Compromisso: Descobrir (se já foi batizado) o dia de seu batismo para celebrá-lo anualmente como seu aniversário espiritual.\n8. Bênção final.",
+        "oracao_final": "Deus eterno e todo-poderoso, que nas águas do Jordão manifestastes a santidade do Vosso amado Filho e pelo banho do Batismo nos libertastes das correntes do pecado para nos fazer Vossos filhos bem-amados, concedei-nos a fidelidade incondicional às nossas promessas batismais. Por Cristo, Nosso Senhor. Amém."
+    },
+    {
+        "numero": 23,
+        "bloco": "Sacramento do Batismo",
+        "titulo": "Como é celebrado o Batismo: Rito, Graça e Frutos",
+        "subtemas": "A celebração do sacramento passo a passo segundo a liturgia da Igreja (CIC 1229-1245):\n• O Sinal da Cruz na fronte: o selo de Cristo Salvador.\n• A Liturgia da Palavra e a Oração do Exorcismo / Unção com o Óleo dos Catecúmenos.\n• A Benção da Água Batismal e a Renúncia solene a Satanás e profissão de fé católica.\n• O rito essencial do Batismo: tríplice imersão ou infusão com as palavras: 'Eu te batizo em nome do Pai e do Filho e do Espírito Santo'.\n• Os ritos explicativos: a Unção com o Santo Crisma, a Veste Branca (pureza e ressurreição) e a Vela Acesa no Círio Pascal (a luz de Cristo).\n• Graças e frutos do Batismo (CIC 1262-1274): perdão dos pecados (original e pessoais), graça santificante, filiação divina e pertença à Igreja.",
+        "resumo": "Mergulho profundo na riqueza simbólica e teológica dos ritos do Batismo de Adultos na Vigília Pascal, compreendendo os dons indizíveis da graça santificante e o compromisso ético da nova vida.",
+        "referencias_biblicas": "Mt 28,19; Rm 6,3-11; Gl 3,27 ('Todos vós que fostes batizados em Cristo vos revestistes de Cristo'); Ef 5,8; Tt 3,5.",
+        "referencias_magisterio": "CIC 1229-1274 (A celebração do sacramento; Quem pode receber; Quem pode batizar; A necessidade do Batismo; A graça batismal); Ritual da Iniciação Cristã de Adultos (RICA).",
+        "fontes_complementares": "São Cirilo de Jerusalém (Catequeses Mistagógicas I-II); Didaqué cap. 7; Suma Teológica III, q. 66, aa. 7-12.",
+        "reflexao_franciscana": "A vida de São Francisco de Assis foi a demonstração viva do despojamento batismal: quando ele tirou todas as suas vestes no tribunal episcopal de Assis e as devolveu ao seu pai carnal Pedro de Bernardone, exclamou: 'De agora em diante poderei dizer com toda a liberdade: Pai nosso que estás nos céus!'.",
+        "roteiro_encontro": "1. Acolhida e oração inicial.\n2. Exibição e explicação dos símbolos litúrgicos presentes na mesa: Água benta, Óleo dos Catecúmenos, Santo Crisma, Veste branca e Vela do Círio Pascal.\n3. O rito de Batismo dos Adultos previsto pela tradição da Igreja no Sábado Santo da Vigília Pascal.\n4. O papel dos padrinhos e madrinhas: não é um título social de prestígio, mas uma missão de auxílio espiritual e testemunho católico firme.\n5. O combate espiritual: Por que renunciamos publicamente a Satanás, a todas as suas obras e seduções?\n6. Partilha: O que a veste branca de Cristo pede que você mude nas suas atitudes diárias?\n7. Compromisso: Rezar uma dezena do Terço pelos seus futuros padrinhos e madrinhas.\n8. Oração e bênção.",
+        "oracao_final": "Senhor nosso Deus, que fazeis resplandecer em nós a luz da Vossa verdade e nos vestistes com a veste imaculada da graça batismal, guardai a nossa alma pura de toda mancha e preservai a chama da fé acesa em nossos corações até o dia do encontro definitivo convosco no Reino dos Céus. Amém."
+    }
+]
+
+with open(r"C:\Users\marce\.gemini\antigravity\scratch\catecumenato_bom_jesus\data\encontros_part3.json", "w", encoding="utf-8") as f:
+    json.dump(ENCONTROS, f, ensure_ascii=False, indent=2)
+
+print(f"Part 3 written with {len(ENCONTROS)} encounters")

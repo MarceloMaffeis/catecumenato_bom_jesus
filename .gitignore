@@ -1,0 +1,19 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testes e temporários
+.pytest_cache/
+test_encoding.py
+download_images.py
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Sistema
+Thumbs.db
+ehthumbs.db
+Desktop.ini
