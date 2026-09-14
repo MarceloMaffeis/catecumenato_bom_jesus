@@ -19,7 +19,7 @@ from modules import (
 # Configuração da Página
 st.set_page_config(
     page_title="Catecumenato de Adultos | Bom Jesus dos Aflitos",
-    page_icon="☩",
+    page_icon="assets/favicon.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
