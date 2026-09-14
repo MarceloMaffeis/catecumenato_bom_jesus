@@ -171,7 +171,14 @@ def render():
                     st.write("")
                     if st.button("Atualizar Minha Senha ☩", key="btn_salvar_minha_senha"):
                         if nova_senha_aluno.strip():
-                            database.alterar_senha_catecumeno(cid_usuario, nova_senha_aluno.strip())
+                            if hasattr(database, "alterar_senha_catecumeno"):
+                                database.alterar_senha_catecumeno(cid_usuario, nova_senha_aluno.strip())
+                            else:
+                                conn = database.get_connection()
+                                cur = conn.cursor()
+                                cur.execute("UPDATE catecumenos SET senha = ? WHERE id = ?", (nova_senha_aluno.strip(), cid_usuario))
+                                conn.commit()
+                                conn.close()
                             st.success("Sua senha foi atualizada com sucesso! Guarde-a para os próximos acessos.")
                         else:
                             st.warning("Por favor, digite uma senha válida.")

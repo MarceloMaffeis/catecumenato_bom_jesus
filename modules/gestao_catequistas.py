@@ -91,7 +91,14 @@ def render():
                             nova_senha_input = st.text_input(f"Nova senha para {cat['nome']}:", key=f"senha_input_{cat['id']}")
                             if st.button("Confirmar Nova Senha", key=f"btn_salvar_senha_{cat['id']}"):
                                 if nova_senha_input.strip():
-                                    database.alterar_senha_catecumeno(cat['id'], nova_senha_input.strip())
+                                    if hasattr(database, "alterar_senha_catecumeno"):
+                                        database.alterar_senha_catecumeno(cat['id'], nova_senha_input.strip())
+                                    else:
+                                        conn = database.get_connection()
+                                        cur = conn.cursor()
+                                        cur.execute("UPDATE catecumenos SET senha = ? WHERE id = ?", (nova_senha_input.strip(), cat['id']))
+                                        conn.commit()
+                                        conn.close()
                                     st.success("Senha alterada com sucesso!")
                                     st.rerun()
                                 else:
