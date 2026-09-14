@@ -161,7 +161,7 @@ def atualizar_imagens_sacras(conn):
         31: "O Casamento da Bem-Aventurada Virgem Maria e São José — Rafael Sanzio (1504)",
         32: "A Infinita Misericórdia e o Perdão dos Pecados na Reconciliação — Guercino",
         33: "O Bom Samaritano: Cristo Cuida e Cura as Nossas Chagas — Eugène Delacroix",
-        34: "A Celebração Solene da Santa Missa no Altar de Deus — Jean Fouquet",
+        34: "A Celebração do Santo Sacrifício da Missa (A Missa de Bolsena) — Rafael Sanzio (Palácio Apostólico, Vaticano)",
         35: "A Adoração do Cordeiro Místico de Deus no Ano Litúrgico — Jan van Eyck",
         36: "O Sagrado Ícone da Santíssima Trindade — Santo Andrei Rublev (1411)",
         37: "O Juízo Particular e a Esperança da Visão Beatífica — Fra Angelico",

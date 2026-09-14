@@ -1,4 +1,4 @@
-﻿# ☩ Portal do Catecumenato de Adultos
+# ☩ Portal do Catecumenato de Adultos
 ### Paróquia Bom Jesus dos Aflitos — Sorocaba / SP
 *Ordem dos Frades Menores (Franciscanos) • Paz e Bem!*
 
@@ -53,3 +53,25 @@ streamlit run app.py
 ```
 
 O aplicativo abrirá automaticamente em seu navegador padrão no endereço `http://localhost:8501`.
+
+---
+
+## 📜 Licença, Direitos Autorais & Arte Sacra
+
+### 1. Licença de Software (MIT License)
+Este projeto está licenciado sob os termos da **Licença MIT** (consulte o arquivo [LICENSE](file:///LICENSE)). O código-fonte, a arquitetura de dados e as ferramentas desenvolvidas são livres e abertos para uso pastoral, modificação e distribuição responsável por qualquer comunidade ou paróquia da Santa Igreja.
+
+### 2. Obras de Arte Sacra (Domínio Público)
+Todas as imagens de arte sacra católica integradas nos 40 encontros, na Santa Missa e no Santo Terço são obras-primas históricas da tradição cristã (séculos XIII a XIX), criadas por mestres como **Michelangelo Buonarroti, Rafael Sanzio, Caravaggio, Rembrandt van Rijn, Fra Angelico, Giotto di Bondone, El Greco, Bartolomé Esteban Murillo, Pietro Perugino, Rogier van der Weyden e Nicolas Poussin**.
+- **Status Jurídico**: Todas as obras originais estão no **Domínio Público** (*Public Domain / CC0*) em conformidade com a legislação brasileira (Lei nº 9.610/98, Art. 41: direitos patrimoniais do autor perduram por 70 anos após seu falecimento) e tratados internacionais (Convenção de Berna).
+- **Finalidade**: As reproduções fotográficas são de fins estritamente **culturais, educativos e pastorais**, sem qualquer intuito de comercialização, visando instruir e elevar a oração dos catecúmenos pela via da beleza (*Via Pulchritudinis*).
+- **Proveniência**: Wikimedia Commons / Acervos Públicos de Museus Internacionais (Museus Vaticanos, Museu do Prado, Museu do Louvre, National Gallery de Londres, Galleria degli Uffizi).
+
+### 3. Fontes Teológicas & Sagrado Magistério
+- Os textos bíblicos, orações dos Santos e citações do **Catecismo da Igreja Católica (CIC)** pertencem à Tradição Viva da Santa Sé Apostólica (Libreria Editrice Vaticana) e são citados para fins de estudo catequético e evangelização comunitária.
+- As meditações franciscanas são inspiradas nas Fontes Franciscanas oficiais e no carisma da Ordem dos Frades Menores (OFM).
+
+---
+
+### 🕊️ Paz e Bem!
+*Paróquia Bom Jesus dos Aflitos — Diocese de Sorocaba / Franciscanos*

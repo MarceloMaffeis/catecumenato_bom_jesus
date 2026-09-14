@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo Biblioteca Sacra e Fontes da Fé Católica Ampliada
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -19,10 +19,11 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-    tab_fundamentais, tab_concilio, tab_enciclicas = st.tabs([
+    tab_fundamentais, tab_concilio, tab_enciclicas, tab_licenca = st.tabs([
         "🏛️ Fontes Primordiais da Fé",
         "⛪ Documentos do Concílio Vaticano II",
-        "📜 Grandes Encíclicas & Escritos dos Santos"
+        "📜 Grandes Encíclicas & Escritos dos Santos",
+        "⚖️ Licença, Direitos Autorais & Arte Sacra"
     ])
 
     # 1. Fontes Primordiais
@@ -281,3 +282,73 @@ def render():
             </div>
             """, unsafe_allow_html=True)
             st.link_button("🔗 Acessar Laudato Si'", "https://www.vatican.va/content/francesco/pt/encyclicals/documents/papa-francesco_20150524_enciclica-laudato-si.html")
+
+    # 4. Licença, Direitos Autorais & Arte Sacra
+    with tab_licenca:
+        st.markdown("""
+        <div class="pergaminho-card-bordo">
+            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+                ⚖️ Licença de Software, Direitos Autorais & Arte Sacra
+            </h4>
+            <p style="font-size: 1.05rem; line-height: 1.7; color: #2D1B13; text-align: justify;">
+                Este portal foi concebido com zelo apostólico e fidelidade à Santa Sé para apoiar a evangelização 
+                e o catecumenato de adultos na <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong> 
+                (Frades Menores Franciscanos). Todos os direitos de propriedade intelectual, licenças e obras sacras 
+                seguem rigorosamente os parâmetros éticos e legais vigentes:
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        col_l1, col_l2 = st.columns(2)
+        with col_l1:
+            st.markdown("""
+            <div class="pergaminho-card">
+                <h5 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">💻 1. Licença MIT (Software Livre)</h5>
+                <p style="font-size: 0.98rem; line-height: 1.6;">
+                    O código-fonte do sistema está registrado no GitHub sob a <strong>Licença MIT</strong> (Copyright &copy; 2026 Marcelo Maffeis).
+                </p>
+                <ul style="font-size: 0.95rem; line-height: 1.6; padding-left: 1.2rem;">
+                    <li><strong>Livre uso e modificação:</strong> Qualquer paróquia, diocese ou catequista tem permissão para utilizar, adaptar e executar a ferramenta.</li>
+                    <li><strong>Sem fins comerciais:</strong> O projeto visa a caridade e o serviço ao Reino de Deus sem cobrança de taxas ou mensalidades.</li>
+                    <li><strong>Transparência:</strong> O código completo está disponível publicamente para auditoria e melhorias contínuas da comunidade.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div class="pergaminho-card" style="margin-top: 1rem;">
+                <h5 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">🏛️ 3. Magistério e Textos Bíblicos</h5>
+                <p style="font-size: 0.98rem; line-height: 1.6;">
+                    As citações bíblicas, orações tradicionais e parágrafos do <em>Catecismo da Igreja Católica (CIC)</em> 
+                    pertencem ao patrimônio espiritual da Sé Apostólica e são utilizados sob o <strong>Direito de Citação</strong> 
+                    (Lei nº 9.610/98, Art. 46, VIII), com indicação expressa dos livros e cânones canônicos para fins exclusivamente catequéticos.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_l2:
+            st.markdown("""
+            <div class="pergaminho-card">
+                <h5 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">🎨 2. Obras de Arte Sacra (Domínio Público)</h5>
+                <p style="font-size: 0.98rem; line-height: 1.6;">
+                    Todas as pinturas e afrescos sacros exibidos nos 40 encontros, na Santa Missa e no Santo Terço são obras-primas históricas 
+                    produzidas entre os séculos XIII e XIX por gênios da cristandade (Michelangelo, Rafael, Caravaggio, Rembrandt, Fra Angelico, Giotto, Murillo, Perugino, etc.).
+                </p>
+                <ul style="font-size: 0.95rem; line-height: 1.6; padding-left: 1.2rem;">
+                    <li><strong>Domínio Público Pleno:</strong> Obras criadas há séculos cujos direitos patrimoniais expiraram (Lei 9.610/98, Art. 41 e Convenção de Berna).</li>
+                    <li><strong>Via Pulchritudinis:</strong> A beleza sacra como caminho pedagógico para elevar o coração a Deus.</li>
+                    <li><strong>Proveniência:</strong> Wikimedia Commons / Museus Internacionais com identificação de título e autor.</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("""
+            <div class="pilula-franciscana" style="margin-top: 1rem;">
+                <h5 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">🕊️ 4. Carisma Franciscano & Paróquia</h5>
+                <p style="font-size: 0.98rem; line-height: 1.6;">
+                    Desenvolvido para a <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong>, confiada aos cuidados da 
+                    Ordem dos Frades Menores (OFM). Todas as referências às Fontes Franciscanas visam difundir o ideal de 
+                    paz, fraternidade, amor aos pobres e cuidado com toda a criação. <em>Paz e Bem!</em>
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
