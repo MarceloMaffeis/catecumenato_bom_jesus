@@ -72,8 +72,7 @@ if not st.session_state.autenticado:
                     Seja bem-vindo, catecúmeno!
                 </h4>
                 <p style="font-size: 1rem; line-height: 1.5; color: #3A2315;">
-                    Selecione seu nome na lista da turma paroquial para acessar os 40 encontros, 
-                    a Santa Missa, o Santo Terço e registrar suas anotações no diário espiritual.
+                    Selecione seu nome na lista da turma e insira sua senha de acesso para entrar na sua formação.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -85,12 +84,26 @@ if not st.session_state.autenticado:
             aluno_escolhido_label = st.selectbox("Identifique seu nome:", list(opcoes_alunos.keys()))
             aluno_obj = opcoes_alunos[aluno_escolhido_label]
 
-            if st.button("Entrar como Catequisando ☩", type="primary", use_container_width=True):
-                st.session_state.autenticado = True
-                st.session_state.perfil_usuario = "catequisando"
-                st.session_state.nome_usuario = aluno_obj["nome"]
-                st.session_state.catecumeno_id = aluno_obj["id"]
-                st.rerun()
+            with st.form("form_login_catequisando"):
+                senha_aluno = st.text_input(
+                    "Sua Senha de Acesso:",
+                    type="password",
+                    placeholder="Digite sua senha (padrão inicial: pazebem)",
+                    help="Senha inicial padrão: pazebem. Você pode alterá-la no painel após entrar."
+                )
+                st.caption("🔒 *Dica:* A senha inicial de todos os catecúmenos é **`pazebem`**.")
+
+                btn_entrar_aluno = st.form_submit_button("Entrar como Catequisando ☩", type="primary", use_container_width=True)
+
+                if btn_entrar_aluno:
+                    if database.verificar_senha_catecumeno(aluno_obj["id"], senha_aluno):
+                        st.session_state.autenticado = True
+                        st.session_state.perfil_usuario = "catequisando"
+                        st.session_state.nome_usuario = aluno_obj["nome"]
+                        st.session_state.catecumeno_id = aluno_obj["id"]
+                        st.rerun()
+                    else:
+                        st.error("Senha incorreta! A senha inicial padrão é 'pazebem'. Se você alterou e esqueceu, solicite ao catequista para redefini-la.")
 
         # 2. Acesso do Catequista (Admin)
         with tab_catequista:

@@ -218,6 +218,41 @@ def test_estrutura_navegacao_e_grupos():
     assert len(pilares) == 4, "Esperado 4 pilares temáticos de navegação"
     print(f"[OK] Teste de Navegação Hierárquica ({len(pilares)} pilares e 12/12 módulos validados): APROVADO")
 
+def test_autenticacao_catecumenos():
+    # 1. Testar Ouvinte Convidado (id=0)
+    assert database.verificar_senha_catecumeno(0, "pazebem") is True
+    assert database.verificar_senha_catecumeno(0, "") is True
+
+    # 2. Criar catecúmeno com senha padrão
+    cid = database.add_catecumeno(
+        nome="Catecumeno Autenticacao",
+        email="auth@teste.com",
+        telefone="15988880000",
+        data_nasc="1992-02-02",
+        estado_civil="Solteiro",
+        batizado=1,
+        eucaristia=1,
+        crismado=0,
+        padrinhos="Padrinho Teste",
+        obs="Teste Auth",
+        senha="minha_senha_secreta"
+    )
+    assert cid > 0, "Falha ao criar catecumeno com senha"
+
+    # 3. Testar verificação de senha
+    assert database.verificar_senha_catecumeno(cid, "minha_senha_secreta") is True
+    assert database.verificar_senha_catecumeno(cid, "MINHA_SENHA_SECRETA") is True  # Case-insensitive
+    assert database.verificar_senha_catecumeno(cid, "senha_errada") is False
+
+    # 4. Testar alteração de senha
+    database.alterar_senha_catecumeno(cid, "nova_senha_2026")
+    assert database.verificar_senha_catecumeno(cid, "nova_senha_2026") is True
+    assert database.verificar_senha_catecumeno(cid, "minha_senha_secreta") is False
+
+    # 5. Cleanup
+    database.delete_catecumeno(cid)
+    print("[OK] Teste de Autenticação, Proteção por Senha e Redefinição de Catecúmenos: APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -232,4 +267,5 @@ if __name__ == "__main__":
     test_progresso_e_quizzes()
     test_materiais_e_novos_modulos()
     test_estrutura_navegacao_e_grupos()
+    test_autenticacao_catecumenos()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")

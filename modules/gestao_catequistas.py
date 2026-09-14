@@ -64,13 +64,14 @@ def render():
                         st.write(f"**Padrinhos/Madrinhas:** {cat['padrinho_madrinha'] or 'A definir'}")
                     with col_info3:
                         st.write(f"**Cadastrado em:** {cat['data_cadastro']}")
+                        st.write(f"🔑 **Senha de Acesso:** `{cat.get('senha') or 'pazebem'}`")
                         st.write(f"**Observações:** {cat['observacoes'] or 'Sem observações'}")
 
-                    # Ações rápidas de edição ou exclusão
-                    col_btn1, col_btn2 = st.columns(2)
+                    # Ações rápidas de edição, troca de senha ou exclusão
+                    col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1.2])
                     with col_btn1:
                         novo_status = 0 if cat["ativo"] == 1 else 1
-                        label_status = "Desativar da Turma" if cat["ativo"] == 1 else "Reativar na Turma"
+                        label_status = "Desativar" if cat["ativo"] == 1 else "Reativar"
                         if st.button(label_status, key=f"btn_toggle_{cat['id']}"):
                             database.update_catecumeno(
                                 cat['id'], cat['nome'], cat['email'], cat['telefone'],
@@ -81,10 +82,20 @@ def render():
                             st.success(f"Situação de {cat['nome']} atualizada!")
                             st.rerun()
                     with col_btn2:
-                        if st.button("🗑️ Excluir Registro", key=f"btn_del_{cat['id']}"):
+                        if st.button("🗑️ Excluir", key=f"btn_del_{cat['id']}"):
                             database.delete_catecumeno(cat['id'])
                             st.warning(f"Registro de {cat['nome']} excluído permanentemente.")
                             st.rerun()
+                    with col_btn3:
+                        with st.popover("🔑 Redefinir Senha"):
+                            nova_senha_input = st.text_input(f"Nova senha para {cat['nome']}:", key=f"senha_input_{cat['id']}")
+                            if st.button("Confirmar Nova Senha", key=f"btn_salvar_senha_{cat['id']}"):
+                                if nova_senha_input.strip():
+                                    database.alterar_senha_catecumeno(cat['id'], nova_senha_input.strip())
+                                    st.success("Senha alterada com sucesso!")
+                                    st.rerun()
+                                else:
+                                    st.warning("Digite uma senha válida.")
 
     # 2. Registro de Chamada
     with tab_chamada:
@@ -263,6 +274,7 @@ def render():
                 email_novo = st.text_input("E-mail para contato:")
                 telefone_novo = st.text_input("Telefone / WhatsApp (com DDD):")
                 data_nasc_novo = st.text_input("Data de Nascimento (AAAA-MM-DD):", placeholder="Ex: 1990-08-15")
+                senha_novo = st.text_input("Senha Inicial de Acesso (padrão: pazebem):", value="pazebem", help="Senha que o catecúmeno usará para acessar o portal.")
             with col_f2:
                 estado_civil_novo = st.selectbox("Estado Civil:", [
                     "Solteiro(a)", "Casado(a) na Igreja Católica", "Casado(a) apenas no Civil",
@@ -292,7 +304,8 @@ def render():
                         eucaristia=1 if eucaristia_novo else 0,
                         crismado=1 if crisma_novo else 0,
                         padrinhos=padrinhos_novo.strip(),
-                        obs=obs_novo.strip()
+                        obs=obs_novo.strip(),
+                        senha=senha_novo.strip() if senha_novo.strip() else "pazebem"
                     )
                     st.success(f"Catecúmeno(a) {nome_novo} cadastrado(a) com louvor no Catecumenato!")
                     st.rerun()

@@ -74,9 +74,17 @@ def init_db():
         padrinho_madrinha TEXT,
         observacoes TEXT,
         ativo INTEGER DEFAULT 1,
-        data_cadastro TEXT
+        data_cadastro TEXT,
+        senha TEXT DEFAULT 'pazebem'
     )
     """)
+
+    # Verificar se coluna senha existe em catecumenos
+    cur.execute("PRAGMA table_info(catecumenos)")
+    colunas_cat = [r[1] for r in cur.fetchall()]
+    if "senha" not in colunas_cat:
+        cur.execute("ALTER TABLE catecumenos ADD COLUMN senha TEXT DEFAULT 'pazebem'")
+    cur.execute("UPDATE catecumenos SET senha = 'pazebem' WHERE senha IS NULL OR senha = ''")
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS presencas (
@@ -486,32 +494,62 @@ def get_catecumeno(cid):
     conn.close()
     return dict(row) if row else None
 
-def add_catecumeno(nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs):
+def add_catecumeno(nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, senha="pazebem"):
     conn = get_connection()
     cur = conn.cursor()
+    senha_final = senha.strip() if senha and senha.strip() else "pazebem"
     cur.execute("""
     INSERT INTO catecumenos (nome, email, telefone, data_nascimento, estado_civil,
                              batizado, primeira_eucaristia, crismado, padrinho_madrinha,
-                             observacoes, ativo, data_cadastro)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-    """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, datetime.now().strftime("%Y-%m-%d")))
+                             observacoes, ativo, data_cadastro, senha)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+    """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, datetime.now().strftime("%Y-%m-%d"), senha_final))
     conn.commit()
     new_id = cur.lastrowid
     conn.close()
     return new_id
 
-def update_catecumeno(cid, nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo):
+def update_catecumeno(cid, nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, senha=None):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("""
-    UPDATE catecumenos
-    SET nome=?, email=?, telefone=?, data_nascimento=?, estado_civil=?,
-        batizado=?, primeira_eucaristia=?, crismado=?, padrinho_madrinha=?,
-        observacoes=?, ativo=?
-    WHERE id=?
-    """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, cid))
+    if senha and senha.strip():
+        cur.execute("""
+        UPDATE catecumenos
+        SET nome=?, email=?, telefone=?, data_nascimento=?, estado_civil=?,
+            batizado=?, primeira_eucaristia=?, crismado=?, padrinho_madrinha=?,
+            observacoes=?, ativo=?, senha=?
+        WHERE id=?
+        """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, senha.strip(), cid))
+    else:
+        cur.execute("""
+        UPDATE catecumenos
+        SET nome=?, email=?, telefone=?, data_nascimento=?, estado_civil=?,
+            batizado=?, primeira_eucaristia=?, crismado=?, padrinho_madrinha=?,
+            observacoes=?, ativo=?
+        WHERE id=?
+        """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, cid))
     conn.commit()
     conn.close()
+
+def verificar_senha_catecumeno(cid, senha_digitada):
+    if cid == 0:
+        # Ouvinte / Convidado: aceita 'pazebem' ou em branco
+        return senha_digitada.strip().lower() in ["pazebem", ""]
+    cat = get_catecumeno(cid)
+    if not cat:
+        return False
+    senha_gravada = cat.get("senha") or "pazebem"
+    return senha_digitada.strip().lower() == senha_gravada.strip().lower()
+
+def alterar_senha_catecumeno(cid, nova_senha):
+    if not nova_senha or not nova_senha.strip():
+        return False
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE catecumenos SET senha = ? WHERE id = ?", (nova_senha.strip(), cid))
+    conn.commit()
+    conn.close()
+    return True
 
 def delete_catecumeno(cid):
     conn = get_connection()

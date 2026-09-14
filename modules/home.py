@@ -154,6 +154,28 @@ def render():
             else:
                 st.info("Você ainda não registrou reflexões no diário. Ao estudar os encontros e responder aos quizzes, registre suas orações na aba 'Diário & Partilha'!")
 
+        # Alteração de Senha do Catequisando
+        if cid_usuario > 0:
+            with st.expander("🔑 Alterar Minha Senha de Acesso ao Portal", expanded=False):
+                st.markdown("Se desejar substituir a senha inicial padrão (*pazebem*) por uma senha pessoal, digite-a abaixo:")
+                col_s1, col_s2 = st.columns([2, 1])
+                with col_s1:
+                    nova_senha_aluno = st.text_input(
+                        "Nova Senha Pessoal:", 
+                        type="password", 
+                        key="input_nova_senha_aluno",
+                        placeholder="Digite sua nova senha"
+                    )
+                with col_s2:
+                    st.write("")
+                    st.write("")
+                    if st.button("Atualizar Minha Senha ☩", key="btn_salvar_minha_senha"):
+                        if nova_senha_aluno.strip():
+                            database.alterar_senha_catecumeno(cid_usuario, nova_senha_aluno.strip())
+                            st.success("Sua senha foi atualizada com sucesso! Guarde-a para os próximos acessos.")
+                        else:
+                            st.warning("Por favor, digite uma senha válida.")
+
     else:
         # Modo Catequista Administrador
         st.markdown("""
