@@ -160,38 +160,87 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-    # Montagem do Menu condicionado ao Perfil
+    # Definição das Dimensões / Pilares de Formação
     if perfil == "catequista":
-        menu_opcoes = [
-            "🏠 Início & Visão Pastoral",
-            "📖 Os 40 Encontros",
-            "👥 Gestão da Turma & Chamada",
-            "🕊️ Confissão & Exame de Consciência",
-            "🌿 Tesouro Franciscano",
-            "📜 Vida Moral & Virtudes",
-            "🕯️ Vigília Pascal & Padrinhos",
-            "⛪ A Santa Missa Passo a Passo",
-            "📿 O Santo Terço",
-            "🏛️ Tratados Teológicos",
-            "📜 Biblioteca Sacra & Fontes",
-            "🕊️ Oratório & Devocionário"
-        ]
+        estrutura_menu = {
+            "🎓 Curso & Formação": [
+                "🏠 Início & Visão Pastoral",
+                "📖 Os 40 Encontros",
+                "👥 Gestão da Turma & Chamada",
+                "🕯️ Vigília Pascal & Padrinhos"
+            ],
+            "🏛️ Teologia & Doutrina": [
+                "🏛️ Tratados Teológicos",
+                "📜 Vida Moral & Virtudes",
+                "🕊️ Confissão & Exame de Consciência"
+            ],
+            "⛪ Liturgia & Oração": [
+                "⛪ A Santa Missa Passo a Passo",
+                "📿 O Santo Terço",
+                "🌿 Tesouro Franciscano",
+                "🕊️ Oratório & Devocionário"
+            ],
+            "🔍 Pesquisa & Fontes": [
+                "📜 Biblioteca Sacra & Fontes"
+            ]
+        }
     else:
-        menu_opcoes = [
-            "🏠 Início & Minha Jornada",
-            "📖 Os 40 Encontros",
-            "🕊️ Confissão & Exame de Consciência",
-            "🌿 Tesouro Franciscano",
-            "📜 Vida Moral & Virtudes",
-            "🕯️ Vigília Pascal & Padrinhos",
-            "⛪ A Santa Missa Passo a Passo",
-            "📿 O Santo Terço",
-            "🏛️ Tratados Teológicos",
-            "📜 Biblioteca Sacra & Fontes",
-            "🕊️ Oratório & Devocionário"
-        ]
+        estrutura_menu = {
+            "🎓 Curso & Formação": [
+                "🏠 Início & Minha Jornada",
+                "📖 Os 40 Encontros",
+                "🕯️ Vigília Pascal & Padrinhos"
+            ],
+            "🏛️ Teologia & Doutrina": [
+                "🏛️ Tratados Teológicos",
+                "📜 Vida Moral & Virtudes",
+                "🕊️ Confissão & Exame de Consciência"
+            ],
+            "⛪ Liturgia & Oração": [
+                "⛪ A Santa Missa Passo a Passo",
+                "📿 O Santo Terço",
+                "🌿 Tesouro Franciscano",
+                "🕊️ Oratório & Devocionário"
+            ],
+            "🔍 Pesquisa & Fontes": [
+                "📜 Biblioteca Sacra & Fontes"
+            ]
+        }
 
-    menu = st.radio("Navegação do Portal:", menu_opcoes, index=0)
+    st.markdown("""
+    <div style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: bold; color: #781826; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem;">
+        ☩ Dimensão / Pilar:
+    </div>
+    """, unsafe_allow_html=True)
+
+    lista_grupos = list(estrutura_menu.keys())
+
+    if "pilar_ativo" not in st.session_state or st.session_state.pilar_ativo not in lista_grupos:
+        st.session_state.pilar_ativo = lista_grupos[0]
+
+    idx_grupo = lista_grupos.index(st.session_state.pilar_ativo)
+    grupo_selecionado = st.selectbox(
+        "Selecione o Pilar:",
+        options=lista_grupos,
+        index=idx_grupo,
+        label_visibility="collapsed",
+        key="select_pilar"
+    )
+    st.session_state.pilar_ativo = grupo_selecionado
+
+    st.markdown("""
+    <div style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: bold; color: #5A3825; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.7rem; margin-bottom: 0.3rem;">
+        📄 Conteúdos & Módulos:
+    </div>
+    """, unsafe_allow_html=True)
+
+    opcoes_paginas = estrutura_menu[grupo_selecionado]
+    pagina = st.radio(
+        "Selecione o Conteúdo:",
+        options=opcoes_paginas,
+        label_visibility="collapsed",
+        key=f"radio_pag_{grupo_selecionado}"
+    )
 
     st.markdown("---")
 
@@ -221,31 +270,55 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+# Cabeçalho Litúrgico de Navegação (Breadcrumb)
+st.markdown(f"""
+<div style="background: linear-gradient(90deg, #FDFBF7 0%, #F6EFE6 100%); 
+            border: 1px solid #E2D5C3; 
+            border-left: 4px solid #781826; 
+            border-radius: 6px; 
+            padding: 0.45rem 0.9rem; 
+            margin-bottom: 1.2rem; 
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            align-items: center; 
+            justify-content: space-between;">
+    <div style="font-size: 0.88rem; color: #5A3825;">
+        <span style="color: #781826; font-family: 'Cinzel', serif; font-weight: bold;">☩ {grupo_selecionado}</span> 
+        <span style="color: #C5A059; margin: 0 0.4rem;">›</span> 
+        <strong style="color: #2B1810;">{pagina}</strong>
+    </div>
+    <div style="font-size: 0.78rem; color: #8C7355; font-family: 'Cinzel', serif;">
+        Paróquia Bom Jesus dos Aflitos • Sorocaba / SP
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 # Roteamento dos Módulos
-if "🏠 Início" in menu:
+if "🏠 Início" in pagina:
     home.render()
-elif "📖 Os 40 Encontros" in menu:
+elif "📖 Os 40 Encontros" in pagina:
     encontros.render()
-elif "👥 Gestão da Turma" in menu:
+elif "👥 Gestão da Turma" in pagina:
     if perfil == "catequista":
         gestao_catequistas.render()
     else:
         st.warning("Acesso restrito ao catequista administrador.")
-elif "🕊️ Confissão" in menu:
+elif "🕊️ Confissão" in pagina:
     confissao_e_reconciliacao.render()
-elif "🌿 Tesouro Franciscano" in menu:
+elif "🌿 Tesouro Franciscano" in pagina:
     tesouro_franciscano.render()
-elif "📜 Vida Moral" in menu:
+elif "📜 Vida Moral" in pagina:
     vida_moral.render()
-elif "🕯️ Vigília Pascal" in menu:
+elif "🕯️ Vigília Pascal" in pagina:
     vigilia_pascal.render()
-elif "⛪ A Santa Missa" in menu:
+elif "⛪ A Santa Missa" in pagina:
     santa_missa.render()
-elif "📿 O Santo Terço" in menu:
+elif "📿 O Santo Terço" in pagina:
     santo_terco.render()
-elif "🏛️ Tratados Teológicos" in menu:
+elif "🏛️ Tratados Teológicos" in pagina:
     tratados_teologicos.render()
-elif "📜 Biblioteca Sacra" in menu:
+elif "📜 Biblioteca Sacra" in pagina:
     biblioteca_sacra.render()
-elif "🕊️ Oratório" in menu:
+elif "🕊️ Oratório" in pagina:
     oracoes_e_liturgia.render()

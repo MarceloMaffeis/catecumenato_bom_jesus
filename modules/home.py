@@ -260,14 +260,14 @@ def render():
         st.markdown("""
         <div class="pergaminho-card">
             <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                ⚡ Atalhos Rápidos
+                ⚡ Pilares da Formação
             </h4>
-            <p style="font-size: 0.98rem; margin-bottom: 0.8rem;">Acesse diretamente as seções do portal:</p>
-            <ul style="font-size: 1rem; line-height: 1.8; list-style-type: none; padding-left: 0;">
-                <li>📖 <strong>40 Encontros:</strong> Consulta integral do currículo</li>
-                <li>👥 <strong>Chamada e Catecúmenos:</strong> Gestão da turma e frequência</li>
-                <li>📜 <strong>Biblioteca Sacra:</strong> CIC, Bíblia e Magistério</li>
-                <li>🕊️ <strong>Oratório:</strong> Orações católicas e franciscanas</li>
+            <p style="font-size: 0.98rem; margin-bottom: 0.8rem;">Dimensões organizadas no menu lateral:</p>
+            <ul style="font-size: 0.96rem; line-height: 1.8; list-style-type: none; padding-left: 0;">
+                <li>🎓 <strong>Curso & Formação:</strong> Encontros, Chamada e Vigília</li>
+                <li>🏛️ <strong>Teologia & Doutrina:</strong> Tratados, Moral e Confissão</li>
+                <li>⛪ <strong>Liturgia & Oração:</strong> Santa Missa, Terço e Tesouro Franciscano</li>
+                <li>🔍 <strong>Pesquisa & Fontes:</strong> Biblioteca Sacra, CIC e Bíblia</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)

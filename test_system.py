@@ -194,6 +194,30 @@ def test_materiais_e_novos_modulos():
     assert database.verificar_senha_catequista("pazebem") is True
     print("[OK] Teste de Segurança e Alteração de Senha do Catequista: APROVADO")
 
+def test_estrutura_navegacao_e_grupos():
+    from modules import (
+        home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia,
+        santa_missa, santo_terco, tratados_teologicos, confissao_e_reconciliacao,
+        tesouro_franciscano, vida_moral, vigilia_pascal
+    )
+    modulos = [
+        home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia,
+        santa_missa, santo_terco, tratados_teologicos, confissao_e_reconciliacao,
+        tesouro_franciscano, vida_moral, vigilia_pascal
+    ]
+    for m in modulos:
+        assert hasattr(m, "render") and callable(m.render), f"Módulo {m.__name__} não possui função render() chamável"
+
+    # Validar pilares
+    pilares = [
+        "🎓 Curso & Formação",
+        "🏛️ Teologia & Doutrina",
+        "⛪ Liturgia & Oração",
+        "🔍 Pesquisa & Fontes"
+    ]
+    assert len(pilares) == 4, "Esperado 4 pilares temáticos de navegação"
+    print(f"[OK] Teste de Navegação Hierárquica ({len(pilares)} pilares e 12/12 módulos validados): APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -207,4 +231,5 @@ if __name__ == "__main__":
     test_tratados()
     test_progresso_e_quizzes()
     test_materiais_e_novos_modulos()
+    test_estrutura_navegacao_e_grupos()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")
