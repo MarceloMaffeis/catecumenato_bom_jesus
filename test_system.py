@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Testes Automatizados Completos do Sistema do Catecumenato
 """
@@ -80,6 +80,26 @@ def test_terco_e_missa():
     assert len(MISTERIOS_DATA) == 4, "Esperado 4 grupos de mistérios do Rosário"
     print("[OK] Teste dos Módulos da Santa Missa e Santo Terço: APROVADO")
 
+def test_quizzes():
+    from data.quizzes_encontros import get_quiz_for_encontro
+    for num in range(1, 41):
+        q = get_quiz_for_encontro(num)
+        assert "perguntas" in q, f"Falta chave perguntas no encontro {num}"
+        assert len(q["perguntas"]) >= 1, f"Nenhuma pergunta no encontro {num}"
+        for p in q["perguntas"]:
+            assert "enunciado" in p and len(p["enunciado"]) > 5
+            assert "opcoes" in p and len(p["opcoes"]) == 4
+            assert 0 <= p["correta"] <= 3
+            assert "explicacao_acerto" in p and len(p["explicacao_acerto"]) > 10
+            assert "explicacao_erro" in p and len(p["explicacao_erro"]) > 10
+        assert "reflexao" in q and len(q["reflexao"]) > 10
+    print("[OK] Teste de Quizzes e Reflexões (40/40 com perguntas doutrinais e feedbacks): APROVADO")
+
+def test_tratados():
+    import modules.tratados_teologicos as tt
+    assert hasattr(tt, "render"), "Módulo tratados_teologicos sem função render"
+    print("[OK] Teste de Tratados Teológicos (Mariologia, Cristologia, Angelologia, etc.): APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -89,4 +109,6 @@ if __name__ == "__main__":
     test_oracoes()
     test_autenticacao()
     test_terco_e_missa()
+    test_quizzes()
+    test_tratados()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")

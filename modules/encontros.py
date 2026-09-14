@@ -130,13 +130,14 @@ def render():
         """, unsafe_allow_html=True)
 
     # Abas com conteúdo aprofundado
-    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao = st.tabs([
+    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao, tab_quiz = st.tabs([
         "📋 Roteiro da Aula",
         "📖 Sagrada Escritura",
         "🏛️ Sagrado Magistério & CIC",
         "🕊️ Pílula Franciscana",
         "✍️ Diário & Partilha",
-        "🖨️ Ficha de Impressão"
+        "🖨️ Ficha de Impressão",
+        "🎯 Quiz da Fé & Reflexão"
     ])
 
     # 1. Roteiro do Catequista
@@ -388,3 +389,108 @@ ORAÇÃO FINAL DO ENCONTRO:
 Paz e Bem!"""
 
         st.text_area("Texto formatado para cópia/impressão:", value=resumo_texto, height=350)
+
+    # 7. Quiz da Fé & Reflexão Pessoal
+    with tab_quiz:
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 1.2rem;">
+            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
+                🎯 Exercício de Fixação da Fé & Meditação Pessoal
+            </h4>
+            <p style="font-size: 1.05rem; color: #5A3825; font-style: italic;">
+                Teste sua compreensão da sã doutrina católica com feedback imediato e reflita sobre sua caminhada cristã
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        from data.quizzes_encontros import get_quiz_for_encontro
+        dados_quiz = get_quiz_for_encontro(encontro['numero'])
+        perguntas = dados_quiz.get("perguntas", [])
+        reflexao_tema = dados_quiz.get("reflexao", "")
+
+        # Seção 1: Questões de Escolha Única
+        if perguntas:
+            st.markdown("##### 📝 Questões de Escolha Única:")
+            for idx_p, p in enumerate(perguntas):
+                chave_pergunta = f"quiz_{encontro['numero']}_{idx_p}"
+                chave_respondido = f"resp_{encontro['numero']}_{idx_p}"
+
+                st.markdown(f"""
+                <div class="pergaminho-card" style="margin-bottom: 0.6rem; border-left: 4px solid #781826;">
+                    <strong style="color: #781826; font-size: 1.05rem;">
+                        Questão {idx_p + 1}:
+                    </strong>
+                    <span style="font-size: 1.05rem; font-weight: 600; color: #2D1B13;">
+                        {p['enunciado']}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
+
+                escolha = st.radio(
+                    f"Selecione a alternativa para a questão {idx_p + 1}:",
+                    p['opcoes'],
+                    key=f"radio_{chave_pergunta}",
+                    index=None,
+                    label_visibility="collapsed"
+                )
+
+                col_btn, col_espaco = st.columns([1.2, 2])
+                with col_btn:
+                    btn_verificar = st.button(
+                        f"Confirmar Resposta {idx_p + 1} ☩",
+                        key=f"btn_{chave_pergunta}",
+                        type="primary"
+                    )
+
+                if btn_verificar:
+                    if escolha is None:
+                        st.warning("Selecione uma das alternativas acima antes de confirmar.")
+                    else:
+                        idx_escolhido = p['opcoes'].index(escolha)
+                        if idx_escolhido == p['correta']:
+                            st.session_state[chave_respondido] = (True, p['explicacao_acerto'])
+                        else:
+                            st.session_state[chave_respondido] = (False, p['explicacao_erro'])
+
+                if chave_respondido in st.session_state:
+                    acertou, explicacao = st.session_state[chave_respondido]
+                    if acertou:
+                        st.success(f"✅ **RESPOSTA CORRETA!**\n\n{explicacao}")
+                    else:
+                        st.error(f"❌ **RESPOSTA INCORRETA**\n\n{explicacao}")
+
+                st.markdown("<hr style='border: 0; border-top: 1px dashed #D8C8B4; margin: 1rem 0 1.5rem 0;'>", unsafe_allow_html=True)
+
+        # Seção 2: Meditação Espiritual & Partilha
+        if reflexao_tema:
+            st.markdown("##### 🕊️ Meditação Espiritual & Exame do Coração:")
+            st.markdown(f"""
+            <div class="pilula-franciscana">
+                <h5 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">
+                    🌿 Pergunta para Meditação Pessoal:
+                </h5>
+                <p style="font-size: 1.1rem; line-height: 1.6; color: #2E1B10; font-style: italic; margin-bottom: 0;">
+                    "{reflexao_tema}"
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            with st.form(f"form_reflexao_quiz_{encontro['numero']}"):
+                texto_refl = st.text_area(
+                    "Sua oração ou compromisso de vida diante desta meditação:",
+                    placeholder="Escreva sua oração sincera a Deus ou como você pretende viver este ensinamento em sua vida prática...",
+                    key=f"txt_refl_{encontro['numero']}"
+                )
+                btn_salvar_refl = st.form_submit_button("Gravar no Meu Diário Espiritual ☩")
+                if btn_salvar_refl:
+                    if texto_refl.strip():
+                        database.add_anotacao(
+                            st.session_state.get("catecumeno_id", 0),
+                            encontro['numero'],
+                            st.session_state.get("nome_usuario", "Catequisando"),
+                            f"[Reflexão do Quiz] {texto_refl.strip()}"
+                        )
+                        st.success("Sua reflexão foi gravada com sucesso no diário espiritual!")
+                        st.rerun()
+                    else:
+                        st.warning("Por favor, digite sua meditação antes de gravar.")

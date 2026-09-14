@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Portal do Catecumenato de Adultos
 Paróquia Bom Jesus dos Aflitos — Sorocaba / SP
@@ -8,7 +8,7 @@ Ordem dos Frades Menores (Franciscanos)
 import streamlit as st
 import database
 import style
-from modules import home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia, santa_missa, santo_terco
+from modules import home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia, santa_missa, santo_terco, tratados_teologicos
 
 # Configuração da Página
 st.set_page_config(
@@ -164,6 +164,7 @@ with st.sidebar:
             "👥 Gestão da Turma & Chamada",
             "⛪ A Santa Missa Passo a Passo",
             "📿 O Santo Terço",
+            "🏛️ Tratados Teológicos",
             "📜 Biblioteca Sacra & Fontes",
             "🕊️ Oratório & Devocionário"
         ]
@@ -173,6 +174,7 @@ with st.sidebar:
             "📖 Os 40 Encontros",
             "⛪ A Santa Missa Passo a Passo",
             "📿 O Santo Terço",
+            "🏛️ Tratados Teológicos",
             "📜 Biblioteca Sacra & Fontes",
             "🕊️ Oratório & Devocionário"
         ]
@@ -221,6 +223,8 @@ elif "⛪ A Santa Missa" in menu:
     santa_missa.render()
 elif "📿 O Santo Terço" in menu:
     santo_terco.render()
+elif "🏛️ Tratados Teológicos" in menu:
+    tratados_teologicos.render()
 elif "📜 Biblioteca Sacra" in menu:
     biblioteca_sacra.render()
 elif "🕊️ Oratório" in menu:
