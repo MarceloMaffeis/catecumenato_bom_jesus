@@ -115,6 +115,45 @@ def render():
             </div>
             """, unsafe_allow_html=True)
 
+        # Certificado Solene de Conclusão (quando atingir 40 encontros ou botão pastoral)
+        if prog["total_concluidos"] >= 40:
+            st.markdown("---")
+            st.success("🎉 **Parabéns em Cristo! Você completou com louvor todos os 40 encontros do Catecumenato!**")
+            from modules.certificado import render_certificado_html
+            cert_html = render_certificado_html(nome_usuario)
+            col_cert1, col_cert2 = st.columns([2.5, 1.5])
+            with col_cert1:
+                st.markdown("Seu **Certificado Solene de Formação Catequética** está emitido e pronto para ser impresso ou salvo em PDF.")
+            with col_cert2:
+                st.download_button(
+                    label="🎓 Baixar / Imprimir Certificado",
+                    data=cert_html.encode("utf-8"),
+                    file_name=f"certificado_catecumenato_{nome_usuario.replace(' ', '_')}.html",
+                    mime="text/html",
+                    use_container_width=True
+                )
+
+        # Linha do Tempo Unificada do Diário Espiritual do Aluno
+        st.markdown("---")
+        with st.expander("📜 Meu Diário de Bordo Espiritual (Todas as Minhas Reflexões)", expanded=False):
+            todas_anotacoes = database.get_todas_anotacoes_catecumeno(cid_usuario)
+            if todas_anotacoes:
+                st.markdown(f"**Total de reflexões e partilhas registradas ao longo do ano:** {len(todas_anotacoes)}")
+                for a in todas_anotacoes:
+                    st.markdown(f"""
+                    <div style="background: #FAF8F5; border: 1px solid #D8C8B4; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: #781826; font-weight: bold;">
+                            <span>📖 Encontro {a['encontro_numero']:02d}: {a.get('titulo_encontro', 'Encontro')}</span>
+                            <span>📅 {a['data_registro']}</span>
+                        </div>
+                        <p style="font-size: 1.02rem; margin: 0.5rem 0 0 0; color: #2B1810; line-height: 1.5;">
+                            {a['texto']}
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.info("Você ainda não registrou reflexões no diário. Ao estudar os encontros e responder aos quizzes, registre suas orações na aba 'Diário & Partilha'!")
+
     else:
         # Modo Catequista Administrador
         st.markdown("""

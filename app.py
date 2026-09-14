@@ -8,7 +8,11 @@ Ordem dos Frades Menores (Franciscanos)
 import streamlit as st
 import database
 import style
-from modules import home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia, santa_missa, santo_terco, tratados_teologicos
+from modules import (
+    home, encontros, gestao_catequistas, biblioteca_sacra, oracoes_e_liturgia,
+    santa_missa, santo_terco, tratados_teologicos, confissao_e_reconciliacao,
+    tesouro_franciscano, vida_moral, vigilia_pascal
+)
 
 # Configuração da Página
 st.set_page_config(
@@ -162,6 +166,10 @@ with st.sidebar:
             "🏠 Início & Visão Pastoral",
             "📖 Os 40 Encontros",
             "👥 Gestão da Turma & Chamada",
+            "🕊️ Confissão & Exame de Consciência",
+            "🌿 Tesouro Franciscano",
+            "📜 Vida Moral & Virtudes",
+            "🕯️ Vigília Pascal & Padrinhos",
             "⛪ A Santa Missa Passo a Passo",
             "📿 O Santo Terço",
             "🏛️ Tratados Teológicos",
@@ -170,8 +178,12 @@ with st.sidebar:
         ]
     else:
         menu_opcoes = [
-            "🏠 Início & Visão Geral",
+            "🏠 Início & Minha Jornada",
             "📖 Os 40 Encontros",
+            "🕊️ Confissão & Exame de Consciência",
+            "🌿 Tesouro Franciscano",
+            "📜 Vida Moral & Virtudes",
+            "🕯️ Vigília Pascal & Padrinhos",
             "⛪ A Santa Missa Passo a Passo",
             "📿 O Santo Terço",
             "🏛️ Tratados Teológicos",
@@ -219,6 +231,14 @@ elif "👥 Gestão da Turma" in menu:
         gestao_catequistas.render()
     else:
         st.warning("Acesso restrito ao catequista administrador.")
+elif "🕊️ Confissão" in menu:
+    confissao_e_reconciliacao.render()
+elif "🌿 Tesouro Franciscano" in menu:
+    tesouro_franciscano.render()
+elif "📜 Vida Moral" in menu:
+    vida_moral.render()
+elif "🕯️ Vigília Pascal" in menu:
+    vigilia_pascal.render()
 elif "⛪ A Santa Missa" in menu:
     santa_missa.render()
 elif "📿 O Santo Terço" in menu:

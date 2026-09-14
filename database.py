@@ -133,6 +133,19 @@ def init_db():
     """)
 
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS materiais_encontros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        encontro_numero INTEGER NOT NULL,
+        nome_arquivo TEXT NOT NULL,
+        caminho_arquivo TEXT NOT NULL,
+        descricao TEXT,
+        tamanho_bytes INTEGER,
+        data_upload TEXT NOT NULL,
+        FOREIGN KEY(encontro_numero) REFERENCES encontros(numero)
+    )
+    """)
+
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS oracoes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         titulo TEXT NOT NULL,
@@ -783,3 +796,81 @@ def get_relatorio_engajamento_turma():
         
     conn.close()
     return relatorio
+
+# ==============================================================================
+# Materiais Anexos para Download por Encontro
+# ==============================================================================
+
+ANEXOS_DIR = os.path.join(os.path.dirname(__file__), "data", "anexos")
+
+def adicionar_material_encontro(encontro_numero, nome_arquivo, conteudo_bytes, descricao=""):
+    """Salva arquivo anexo do catequista para o encontro e registra no banco."""
+    pasta_enc = os.path.join(ANEXOS_DIR, f"encontro_{encontro_numero:02d}")
+    os.makedirs(pasta_enc, exist_ok=True)
+    
+    # Sanitização básica do nome do arquivo
+    nome_limpo = os.path.basename(nome_arquivo).replace(" ", "_")
+    caminho_completo = os.path.join(pasta_enc, nome_limpo)
+    
+    # Grava o arquivo físico
+    with open(caminho_completo, "wb") as f:
+        f.write(conteudo_bytes)
+        
+    tamanho = len(conteudo_bytes)
+    data_up = datetime.now().strftime("%d/%m/%Y %H:%M")
+    
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    INSERT INTO materiais_encontros (encontro_numero, nome_arquivo, caminho_arquivo, descricao, tamanho_bytes, data_upload)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (encontro_numero, nome_arquivo, caminho_completo, descricao.strip(), tamanho, data_up))
+    conn.commit()
+    mat_id = cur.lastrowid
+    conn.close()
+    return mat_id
+
+def get_materiais_encontro(encontro_numero):
+    """Retorna a lista de materiais anexos disponíveis para o encontro."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    SELECT * FROM materiais_encontros
+    WHERE encontro_numero = ?
+    ORDER BY id DESC
+    """, (encontro_numero,))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+def remover_material_encontro(material_id):
+    """Remove o anexo do banco e do disco."""
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT caminho_arquivo FROM materiais_encontros WHERE id = ?", (material_id,))
+    row = cur.fetchone()
+    if row and row["caminho_arquivo"] and os.path.exists(row["caminho_arquivo"]):
+        try:
+            os.remove(row["caminho_arquivo"])
+        except Exception:
+            pass
+    cur.execute("DELETE FROM materiais_encontros WHERE id = ?", (material_id,))
+    conn.commit()
+    conn.close()
+
+def get_todas_anotacoes_catecumeno(catecumeno_id):
+    """Retorna todas as anotações do diário feitas pelo catecúmeno em todos os encontros."""
+    if not catecumeno_id:
+        return []
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    SELECT a.*, e.titulo as titulo_encontro, e.bloco
+    FROM anotacoes_diario a
+    LEFT JOIN encontros e ON a.encontro_numero = e.numero
+    WHERE a.catecumeno_id = ?
+    ORDER BY a.id DESC
+    """, (catecumeno_id,))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows

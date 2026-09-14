@@ -22,12 +22,13 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-    tab_turma, tab_chamada, tab_relatorio, tab_engajamento, tab_novo = st.tabs([
+    tab_turma, tab_chamada, tab_relatorio, tab_engajamento, tab_novo, tab_config = st.tabs([
         "📋 Lista da Turma",
         "✅ Registro de Chamada",
         "📊 Frequência Presencial",
         "📈 Estudos Online & Quizzes",
-        "➕ Cadastrar Novo Catecúmeno"
+        "➕ Cadastrar Novo Catecúmeno",
+        "🔑 Certificados & Senha"
     ])
 
     # 1. Lista da Turma
@@ -295,3 +296,80 @@ def render():
                     )
                     st.success(f"Catecúmeno(a) {nome_novo} cadastrado(a) com louvor no Catecumenato!")
                     st.rerun()
+
+    # 6. Certificados & Senha do Catequista
+    with tab_config:
+        st.markdown("""
+        <h4 style="color: #781826; font-family: 'Cinzel', serif;">
+            🎓 Emissão de Certificados & Segurança Pastoral
+        </h4>
+        """, unsafe_allow_html=True)
+
+        col_cert, col_senha = st.columns(2)
+
+        # Emissão de Certificado para Qualquer Aluno
+        with col_cert:
+            st.markdown("""
+            <div class="pergaminho-card" style="height: 100%;">
+                <h5 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+                    🎓 Emitir Certificado de Conclusão Paroquial
+                </h5>
+                <p style="font-size: 0.95rem; color: #3A2315;">
+                    Selecione um catecúmeno para gerar e imprimir o Certificado de Formação Catequética formatado em pergaminho.
+                </p>
+            """, unsafe_allow_html=True)
+
+            alunos_lista = database.get_catecumenos(filtro_ativo=True)
+            if alunos_lista:
+                aluno_selecionado = st.selectbox(
+                    "Selecione o Catecúmeno:",
+                    [a["nome"] for a in alunos_lista],
+                    key="sel_cert_aluno"
+                )
+                from modules.certificado import render_certificado_html
+                cert_html = render_certificado_html(aluno_selecionado)
+                
+                st.download_button(
+                    label=f"📥 Gerar Certificado de {aluno_selecionado.split()[0]} (HTML/PDF)",
+                    data=cert_html.encode("utf-8"),
+                    file_name=f"certificado_{aluno_selecionado.replace(' ', '_')}.html",
+                    mime="text/html",
+                    type="primary",
+                    use_container_width=True
+                )
+            else:
+                st.info("Nenhum catecúmeno ativo cadastrado.")
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # Alteração de Senha Administrativa
+        with col_senha:
+            st.markdown("""
+            <div class="pergaminho-card-bordo" style="height: 100%;">
+                <h5 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+                    🔑 Alterar Senha de Acesso do Catequista
+                </h5>
+                <p style="font-size: 0.95rem; color: #3A2315;">
+                    Atualize a senha de acesso administrativo à Gestão da Turma.
+                </p>
+            """, unsafe_allow_html=True)
+
+            with st.form("form_troca_senha"):
+                senha_atual = st.text_input("Senha Atual do Catequista:", type="password")
+                nova_senha = st.text_input("Nova Senha:", type="password")
+                confirma_senha = st.text_input("Confirmar Nova Senha:", type="password")
+                btn_alterar_senha = st.form_submit_button("Alterar Senha de Acesso ☩", use_container_width=True)
+
+                if btn_alterar_senha:
+                    if not database.verificar_senha_catequista(senha_atual):
+                        st.error("A senha atual informada está incorreta!")
+                    elif len(nova_senha) < 4:
+                        st.warning("A nova senha deve ter pelo menos 4 caracteres.")
+                    elif nova_senha != confirma_senha:
+                        st.error("A nova senha e a confirmação não conferem!")
+                    else:
+                        database.alterar_senha_catequista(nova_senha)
+                        st.success("Senha do Catequista alterada com sucesso!")
+                        st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)

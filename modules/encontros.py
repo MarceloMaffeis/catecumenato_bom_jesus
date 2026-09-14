@@ -156,14 +156,15 @@ def render():
         """, unsafe_allow_html=True)
 
     # Abas com conteúdo aprofundado
-    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao, tab_quiz = st.tabs([
+    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao, tab_quiz, tab_anexos = st.tabs([
         "📋 Roteiro da Aula",
         "📖 Sagrada Escritura",
         "🏛️ Sagrado Magistério & CIC",
         "🕊️ Pílula Franciscana",
         "✍️ Diário & Partilha",
         "🖨️ Ficha de Impressão",
-        "🎯 Quiz da Fé & Reflexão"
+        "🎯 Quiz da Fé & Reflexão",
+        "📎 Materiais & Anexos"
     ])
 
     # 1. Roteiro do Catequista
@@ -535,6 +536,96 @@ Paz e Bem!"""
                         st.rerun()
                     else:
                         st.warning("Por favor, digite sua meditação antes de gravar.")
+
+    # 8. Materiais e Anexos da Aula
+    with tab_anexos:
+        st.markdown("""
+        <div style="text-align: center; margin-bottom: 1.2rem;">
+            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
+                📎 Materiais Complementares & Anexos do Encontro
+            </h4>
+            <p style="font-size: 1.05rem; color: #5A3825; font-style: italic;">
+                Arquivos pastorais, roteiros de leitura, apresentações e textos de apoio disponibilizados pelo catequista
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        materiais = database.get_materiais_encontro(encontro['numero'])
+        perfil_usuario = st.session_state.get("perfil_usuario", "visitante")
+
+        # Se for catequista, exibe formulário de upload
+        if perfil_usuario == "catequista":
+            st.markdown("##### 📤 Disponibilizar Novo Material para a Turma:")
+            with st.form(f"form_upload_material_{encontro['numero']}", clear_on_submit=True):
+                arquivo_enviado = st.file_uploader(
+                    "Selecione o arquivo pastoral (PDF, slides, documento, imagem, áudio):",
+                    type=["pdf", "docx", "pptx", "txt", "png", "jpg", "jpeg", "mp3"],
+                    key=f"file_upload_{encontro['numero']}"
+                )
+                desc_material = st.text_input(
+                    "Descrição breve do material (opcional):",
+                    placeholder="Ex: Slides da aula ministrada no sábado / Roteiro impresso para leitura em família",
+                    key=f"desc_upload_{encontro['numero']}"
+                )
+                btn_enviar = st.form_submit_button("Publicar Anexo para os Catequisandos ☩", type="primary")
+
+                if btn_enviar:
+                    if arquivo_enviado is not None:
+                        conteudo_bytes = arquivo_enviado.read()
+                        database.adicionar_material_encontro(
+                            encontro['numero'],
+                            arquivo_enviado.name,
+                            conteudo_bytes,
+                            desc_material
+                        )
+                        st.success(f"Arquivo '{arquivo_enviado.name}' publicado com sucesso para este encontro!")
+                        st.rerun()
+                    else:
+                        st.warning("Por favor, selecione um arquivo para enviar.")
+
+            st.markdown("---")
+
+        # Lista de materiais para download (visível para catequisandos e catequistas)
+        if materiais:
+            st.markdown(f"##### 📥 Materiais Disponíveis para Download ({len(materiais)}):")
+            for mat in materiais:
+                tamanho_kb = round(mat["tamanho_bytes"] / 1024.0, 1)
+                
+                col_m1, col_m2 = st.columns([3, 1.2])
+                with col_m1:
+                    st.markdown(f"""
+                    <div style="background: #FAF8F5; border: 1px solid #D8C8B4; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 0.6rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="color: #781826; font-size: 1.05rem;">📄 {mat['nome_arquivo']}</strong>
+                            <span style="font-size: 0.85rem; color: #5A3825;">📅 {mat['data_upload']} • {tamanho_kb} KB</span>
+                        </div>
+                        <p style="margin: 0.4rem 0 0 0; font-size: 0.95rem; color: #3A2315; font-style: italic;">
+                            {mat['descricao'] or 'Sem descrição adicional.'}
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col_m2:
+                    caminho_f = mat["caminho_arquivo"]
+                    if os.path.exists(caminho_f):
+                        with open(caminho_f, "rb") as f_down:
+                            bytes_arq = f_down.read()
+                        st.download_button(
+                            label="📥 Baixar Arquivo",
+                            data=bytes_arq,
+                            file_name=mat['nome_arquivo'],
+                            key=f"down_mat_{mat['id']}",
+                            use_container_width=True
+                        )
+                    else:
+                        st.error("Arquivo não encontrado no servidor.")
+
+                    if perfil_usuario == "catequista":
+                        if st.button("🗑️ Remover", key=f"del_mat_{mat['id']}", use_container_width=True):
+                            database.remover_material_encontro(mat["id"])
+                            st.warning("Material removido.")
+                            st.rerun()
+        else:
+            st.info("O catequista ainda não disponibilizou materiais complementares para download neste encontro.")
 
     # Ação de Conclusão do Encontro (para o Catequisando)
     if cid_usuario:

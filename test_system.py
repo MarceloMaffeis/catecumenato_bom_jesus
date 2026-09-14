@@ -158,6 +158,42 @@ def test_progresso_e_quizzes():
     database.delete_catecumeno(cid)
     print("[OK] Teste de Progresso e Persistência de Quizzes (Avanço, Notas e Engajamento): APROVADO")
 
+def test_materiais_e_novos_modulos():
+    # 1. Teste de Materiais Anexos
+    mid = database.adicionar_material_encontro(40, "roteiro_teste.pdf", b"%PDF-1.4 test bytes", "Roteiro da Vigilia")
+    assert mid > 0, "Falha ao registrar anexo"
+    mats = database.get_materiais_encontro(40)
+    assert len(mats) >= 1, "Anexo não recuperado do banco"
+    assert mats[0]["nome_arquivo"] == "roteiro_teste.pdf"
+    database.remover_material_encontro(mid)
+    mats_pos = database.get_materiais_encontro(40)
+    assert len(mats_pos) == 0 or all(m["id"] != mid for m in mats_pos), "Falha ao remover anexo"
+    print("[OK] Teste de Upload e Download de Materiais por Encontro: APROVADO")
+
+    # 2. Teste dos Novos Módulos Pastorais
+    import modules.confissao_e_reconciliacao as conf
+    import modules.tesouro_franciscano as tf
+    import modules.vida_moral as vm
+    import modules.vigilia_pascal as vp
+    import modules.certificado as cert
+    
+    assert hasattr(conf, "render"), "Módulo confissao sem render()"
+    assert hasattr(tf, "render"), "Módulo tesouro_franciscano sem render()"
+    assert hasattr(vm, "render"), "Módulo vida_moral sem render()"
+    assert hasattr(vp, "render"), "Módulo vigilia_pascal sem render()"
+    
+    html_cert = cert.render_certificado_html("Marcelo Maffeis")
+    assert "Marcelo Maffeis" in html_cert, "Nome não encontrado no certificado"
+    assert "BOM JESUS DOS AFLITOS" in html_cert, "Paróquia não encontrada no certificado"
+    print("[OK] Teste dos Novos Módulos (Confissão, Tesouro Franciscano, Vida Moral, Vigília e Certificados): APROVADO")
+
+    # 3. Teste de Alteração de Senha
+    database.alterar_senha_catequista("senha_temporaria")
+    assert database.verificar_senha_catequista("senha_temporaria") is True
+    database.alterar_senha_catequista("pazebem")
+    assert database.verificar_senha_catequista("pazebem") is True
+    print("[OK] Teste de Segurança e Alteração de Senha do Catequista: APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -170,4 +206,5 @@ if __name__ == "__main__":
     test_quizzes()
     test_tratados()
     test_progresso_e_quizzes()
+    test_materiais_e_novos_modulos()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")
