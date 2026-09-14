@@ -34,8 +34,16 @@ def render():
         st.warning("Nenhum encontro encontrado com os filtros selecionados.")
         return
 
+    # Recuperar progresso do catecúmeno para exibir badges
+    cid_usuario = st.session_state.get("catecumeno_id", 0)
+    progresso_info = database.get_progresso_catecumeno(cid_usuario) if cid_usuario else {"lista_concluidos": set()}
+    concluidos_set = progresso_info.get("lista_concluidos", set())
+
     # Seletor do Encontro
-    opcoes_encontros = {f"Encontro {e['numero']:02d}: {e['titulo']}": e["numero"] for e in encontros}
+    opcoes_encontros = {}
+    for e in encontros:
+        badge = " ✅" if e["numero"] in concluidos_set else ""
+        opcoes_encontros[f"Encontro {e['numero']:02d}: {e['titulo']}{badge}"] = e["numero"]
     
     if "encontro_atual_num" not in st.session_state:
         st.session_state.encontro_atual_num = encontros[0]["numero"]
@@ -109,7 +117,24 @@ def render():
                 st.info(f"🎨 {legenda}")
         else:
             st.info(f"🎨 {legenda}")
-    with col_banner_txt:
+        status_html = ""
+        if cid_usuario:
+            info_c = database.is_encontro_concluido(cid_usuario, encontro['numero'])
+            if info_c:
+                status_html = f"""
+                <div style="margin-top: 0.6rem; background: #E8F5E9; border: 1px solid #81C784; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.1rem;">✅</span>
+                    <strong style="color: #2E7D32; font-size: 0.92rem;">Estudo Concluído em {info_c['data_conclusao']}</strong>
+                </div>
+                """
+            else:
+                status_html = """
+                <div style="margin-top: 0.6rem; background: #FFF8E1; border: 1px solid #FFE082; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.1rem;">📖</span>
+                    <span style="color: #795548; font-size: 0.92rem; font-weight: 500;">Encontro em andamento</span>
+                </div>
+                """
+
         st.markdown(f"""
         <div class="pergaminho-card-bordo" style="height: 100%;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
@@ -126,6 +151,7 @@ def render():
             <p style="font-size: 1.1rem; color: #3A2315; font-style: italic; margin-bottom: 0.4rem; line-height: 1.5;">
                 {encontro['resumo']}
             </p>
+            {status_html}
         </div>
         """, unsafe_allow_html=True)
 
@@ -408,12 +434,23 @@ Paz e Bem!"""
         perguntas = dados_quiz.get("perguntas", [])
         reflexao_tema = dados_quiz.get("reflexao", "")
 
+        # Respostas salvas anteriormente no banco para o catecúmeno logado
+        respostas_salvas_db = database.get_respostas_quiz(cid_usuario, encontro['numero']) if cid_usuario else {}
+
         # Seção 1: Questões de Escolha Única
         if perguntas:
             st.markdown("##### 📝 Questões de Escolha Única:")
             for idx_p, p in enumerate(perguntas):
                 chave_pergunta = f"quiz_{encontro['numero']}_{idx_p}"
                 chave_respondido = f"resp_{encontro['numero']}_{idx_p}"
+
+                salvo = respostas_salvas_db.get(idx_p)
+                idx_padrao = salvo["opcao_escolhida"] if salvo else None
+
+                # Se já estava salvo no banco e ainda não está na sessão, preenche a sessão
+                if chave_respondido not in st.session_state and salvo:
+                    exp_salva = p['explicacao_acerto'] if salvo["acertou"] else p['explicacao_erro']
+                    st.session_state[chave_respondido] = (salvo["acertou"], f"{exp_salva}\n\n*(Registrado no histórico em {salvo['data_resposta']})*")
 
                 st.markdown(f"""
                 <div class="pergaminho-card" style="margin-bottom: 0.6rem; border-left: 4px solid #781826;">
@@ -430,7 +467,7 @@ Paz e Bem!"""
                     f"Selecione a alternativa para a questão {idx_p + 1}:",
                     p['opcoes'],
                     key=f"radio_{chave_pergunta}",
-                    index=None,
+                    index=idx_padrao,
                     label_visibility="collapsed"
                 )
 
@@ -447,10 +484,14 @@ Paz e Bem!"""
                         st.warning("Selecione uma das alternativas acima antes de confirmar.")
                     else:
                         idx_escolhido = p['opcoes'].index(escolha)
-                        if idx_escolhido == p['correta']:
-                            st.session_state[chave_respondido] = (True, p['explicacao_acerto'])
-                        else:
-                            st.session_state[chave_respondido] = (False, p['explicacao_erro'])
+                        acertou = (idx_escolhido == p['correta'])
+                        explicacao = p['explicacao_acerto'] if acertou else p['explicacao_erro']
+                        st.session_state[chave_respondido] = (acertou, explicacao)
+                        
+                        # Salvar no banco SQLite de forma permanente
+                        if cid_usuario:
+                            database.salvar_resposta_quiz(cid_usuario, encontro['numero'], idx_p, idx_escolhido, acertou)
+                            st.toast("Resposta gravada no seu histórico de fé! ☩", icon="✅")
 
                 if chave_respondido in st.session_state:
                     acertou, explicacao = st.session_state[chave_respondido]
@@ -494,3 +535,44 @@ Paz e Bem!"""
                         st.rerun()
                     else:
                         st.warning("Por favor, digite sua meditação antes de gravar.")
+
+    # Ação de Conclusão do Encontro (para o Catequisando)
+    if cid_usuario:
+        st.markdown("<br>", unsafe_allow_html=True)
+        info_concl = database.is_encontro_concluido(cid_usuario, encontro['numero'])
+        
+        st.markdown("""
+        <div style="border-top: 1px solid #D8C8B4; margin-top: 1rem; padding-top: 1rem;"></div>
+        """, unsafe_allow_html=True)
+        
+        col_c1, col_c2 = st.columns([2.5, 1.5])
+        with col_c1:
+            if info_concl:
+                st.markdown(f"""
+                <div style="background: #E8F5E9; border-left: 4px solid #2E7D32; padding: 0.8rem 1rem; border-radius: 4px;">
+                    <strong style="color: #1B5E20; font-size: 1.05rem;">🎉 Encontro Concluído!</strong><br>
+                    <span style="color: #2E1B10; font-size: 0.95rem;">
+                        Você registrou a conclusão dos estudos deste encontro em <strong>{info_concl['data_conclusao']}</strong>.
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div style="background: #FAF8F5; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 4px;">
+                    <strong style="color: #781826; font-size: 1.05rem;">☩ Conclusão dos Estudos</strong><br>
+                    <span style="color: #5A3825; font-size: 0.95rem;">
+                        Terminou de estudar o roteiro, as leituras e realizar o quiz? Marque como concluído para atualizar seu avanço na jornada de fé.
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
+        with col_c2:
+            if info_concl:
+                if st.button("↩️ Desmarcar Conclusão", key=f"btn_unmark_{encontro['numero']}", use_container_width=True):
+                    database.desmarcar_encontro_concluido(cid_usuario, encontro['numero'])
+                    st.rerun()
+            else:
+                if st.button("☩ Marcar como Concluído ☩", key=f"btn_mark_{encontro['numero']}", type="primary", use_container_width=True):
+                    database.marcar_encontro_concluido(cid_usuario, encontro['numero'])
+                    st.balloons()
+                    st.success("Encontro marcado como concluído com sucesso!")
+                    st.rerun()

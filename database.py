@@ -105,6 +105,34 @@ def init_db():
     """)
 
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS progresso_encontros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        catecumeno_id INTEGER NOT NULL,
+        encontro_numero INTEGER NOT NULL,
+        concluido INTEGER DEFAULT 1,
+        data_conclusao TEXT NOT NULL,
+        UNIQUE(catecumeno_id, encontro_numero),
+        FOREIGN KEY(catecumeno_id) REFERENCES catecumenos(id),
+        FOREIGN KEY(encontro_numero) REFERENCES encontros(numero)
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS respostas_quiz (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        catecumeno_id INTEGER NOT NULL,
+        encontro_numero INTEGER NOT NULL,
+        questao_idx INTEGER NOT NULL,
+        opcao_escolhida INTEGER NOT NULL,
+        acertou INTEGER NOT NULL,
+        data_resposta TEXT NOT NULL,
+        UNIQUE(catecumeno_id, encontro_numero, questao_idx),
+        FOREIGN KEY(catecumeno_id) REFERENCES catecumenos(id),
+        FOREIGN KEY(encontro_numero) REFERENCES encontros(numero)
+    )
+    """)
+
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS oracoes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         titulo TEXT NOT NULL,
@@ -477,6 +505,8 @@ def delete_catecumeno(cid):
     cur = conn.cursor()
     cur.execute("DELETE FROM presencas WHERE catecumeno_id=?", (cid,))
     cur.execute("DELETE FROM anotacoes_diario WHERE catecumeno_id=?", (cid,))
+    cur.execute("DELETE FROM progresso_encontros WHERE catecumeno_id=?", (cid,))
+    cur.execute("DELETE FROM respostas_quiz WHERE catecumeno_id=?", (cid,))
     cur.execute("DELETE FROM catecumenos WHERE id=?", (cid,))
     conn.commit()
     conn.close()
@@ -575,3 +605,181 @@ def get_categorias_oracoes():
     rows = [r[0] for r in cur.fetchall()]
     conn.close()
     return rows
+
+# ==============================================================================
+# Acompanhamento de Progresso e Quizzes dos Catecúmenos
+# ==============================================================================
+
+def marcar_encontro_concluido(catecumeno_id, encontro_numero):
+    """Registra a conclusão de estudo de um encontro para o catecúmeno."""
+    if not catecumeno_id:
+        return
+    conn = get_connection()
+    cur = conn.cursor()
+    data_concl = datetime.now().strftime("%d/%m/%Y %H:%M")
+    cur.execute("""
+    INSERT INTO progresso_encontros (catecumeno_id, encontro_numero, concluido, data_conclusao)
+    VALUES (?, ?, 1, ?)
+    ON CONFLICT(catecumeno_id, encontro_numero) DO UPDATE SET
+        concluido = 1,
+        data_conclusao = excluded.data_conclusao
+    """, (catecumeno_id, encontro_numero, data_concl))
+    conn.commit()
+    conn.close()
+
+def desmarcar_encontro_concluido(catecumeno_id, encontro_numero):
+    """Desmarca a conclusão de estudo de um encontro."""
+    if not catecumeno_id:
+        return
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM progresso_encontros WHERE catecumeno_id = ? AND encontro_numero = ?", (catecumeno_id, encontro_numero))
+    conn.commit()
+    conn.close()
+
+def is_encontro_concluido(catecumeno_id, encontro_numero):
+    """Verifica se o encontro específico já foi concluído pelo catecúmeno."""
+    if not catecumeno_id:
+        return False
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT concluido, data_conclusao FROM progresso_encontros WHERE catecumeno_id = ? AND encontro_numero = ? AND concluido = 1", (catecumeno_id, encontro_numero))
+    row = cur.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def get_progresso_catecumeno(catecumeno_id):
+    """Retorna métricas consolidadas de progresso nos 40 encontros."""
+    if not catecumeno_id:
+        return {"total_concluidos": 0, "total_encontros": 40, "percentual": 0.0, "lista_concluidos": set()}
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT encontro_numero FROM progresso_encontros WHERE catecumeno_id = ? AND concluido = 1", (catecumeno_id,))
+    concluidos = {r[0] for r in cur.fetchall()}
+    conn.close()
+    total_c = len(concluidos)
+    pct = round((total_c / 40.0) * 100.0, 1)
+    return {
+        "total_concluidos": total_c,
+        "total_encontros": 40,
+        "percentual": pct,
+        "lista_concluidos": concluidos
+    }
+
+def salvar_resposta_quiz(catecumeno_id, encontro_numero, questao_idx, opcao_escolhida, acertou):
+    """Salva a resposta do catecúmeno para uma questão de quiz."""
+    if not catecumeno_id:
+        return
+    conn = get_connection()
+    cur = conn.cursor()
+    data_resp = datetime.now().strftime("%d/%m/%Y %H:%M")
+    cur.execute("""
+    INSERT INTO respostas_quiz (catecumeno_id, encontro_numero, questao_idx, opcao_escolhida, acertou, data_resposta)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(catecumeno_id, encontro_numero, questao_idx) DO UPDATE SET
+        opcao_escolhida = excluded.opcao_escolhida,
+        acertou = excluded.acertou,
+        data_resposta = excluded.data_resposta
+    """, (catecumeno_id, encontro_numero, questao_idx, opcao_escolhida, 1 if acertou else 0, data_resp))
+    conn.commit()
+    conn.close()
+
+def get_respostas_quiz(catecumeno_id, encontro_numero):
+    """Recupera todas as respostas salvas do quiz para um encontro específico."""
+    if not catecumeno_id:
+        return {}
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    SELECT questao_idx, opcao_escolhida, acertou, data_resposta
+    FROM respostas_quiz
+    WHERE catecumeno_id = ? AND encontro_numero = ?
+    """, (catecumeno_id, encontro_numero))
+    res = {}
+    for r in cur.fetchall():
+        res[r["questao_idx"]] = {
+            "opcao_escolhida": r["opcao_escolhida"],
+            "acertou": bool(r["acertou"]),
+            "data_resposta": r["data_resposta"]
+        }
+    conn.close()
+    return res
+
+def get_estatisticas_quiz_catecumeno(catecumeno_id):
+    """Retorna estatísticas gerais de acertos em quizzes para o catecúmeno."""
+    if not catecumeno_id:
+        return {"total_respondidas": 0, "total_acertos": 0, "taxa_acerto": 0.0}
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    SELECT COUNT(*) as total, SUM(acertou) as acertos
+    FROM respostas_quiz
+    WHERE catecumeno_id = ?
+    """, (catecumeno_id,))
+    row = cur.fetchone()
+    conn.close()
+    total = row["total"] if row and row["total"] else 0
+    acertos = row["acertos"] if row and row["acertos"] else 0
+    taxa = round((acertos / total) * 100.0, 1) if total > 0 else 0.0
+    return {
+        "total_respondidas": total,
+        "total_acertos": acertos,
+        "taxa_acerto": taxa
+    }
+
+def get_relatorio_engajamento_turma():
+    """Retorna relatório pastoral consolidado de engajamento de todos os catecúmenos ativos."""
+    conn = get_connection()
+    cur = conn.cursor()
+    
+    # Busca catecúmenos ativos
+    cur.execute("SELECT id, nome FROM catecumenos WHERE ativo = 1 ORDER BY nome ASC")
+    catecumenos = [dict(r) for r in cur.fetchall()]
+    
+    relatorio = []
+    for c in catecumenos:
+        cid = c["id"]
+        
+        # Encontros concluídos
+        cur.execute("SELECT COUNT(*) as total FROM progresso_encontros WHERE catecumeno_id = ? AND concluido = 1", (cid,))
+        total_concluidos = cur.fetchone()["total"]
+        pct_concluido = round((total_concluidos / 40.0) * 100.0, 1)
+        
+        # Quizzes
+        cur.execute("SELECT COUNT(*) as total, SUM(acertou) as acertos FROM respostas_quiz WHERE catecumeno_id = ?", (cid,))
+        q_row = cur.fetchone()
+        q_total = q_row["total"] if q_row and q_row["total"] else 0
+        q_acertos = q_row["acertos"] if q_row and q_row["acertos"] else 0
+        q_taxa = round((q_acertos / q_total) * 100.0, 1) if q_total > 0 else 0.0
+        
+        # Anotações no Diário
+        cur.execute("SELECT COUNT(*) as total FROM anotacoes_diario WHERE catecumeno_id = ?", (cid,))
+        total_anotacoes = cur.fetchone()["total"]
+        
+        # Última atividade
+        cur.execute("""
+        SELECT MAX(data) as ultima FROM (
+            SELECT data_conclusao as data FROM progresso_encontros WHERE catecumeno_id = ?
+            UNION
+            SELECT data_resposta as data FROM respostas_quiz WHERE catecumeno_id = ?
+            UNION
+            SELECT data_registro as data FROM anotacoes_diario WHERE catecumeno_id = ?
+        )
+        """, (cid, cid, cid))
+        row_ult = cur.fetchone()
+        ultima_ativ = row_ult["ultima"] if row_ult and row_ult["ultima"] else "Sem registro"
+        
+        relatorio.append({
+            "id": cid,
+            "nome": c["nome"],
+            "encontros_concluidos": total_concluidos,
+            "pct_conclusao": pct_concluido,
+            "quizzes_respondidos": q_total,
+            "quizzes_acertos": q_acertos,
+            "taxa_acerto_quiz": q_taxa,
+            "total_reflexoes": total_anotacoes,
+            "ultima_atividade": ultima_ativ
+        })
+        
+    conn.close()
+    return relatorio

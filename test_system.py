@@ -100,6 +100,64 @@ def test_tratados():
     assert hasattr(tt, "render"), "Módulo tratados_teologicos sem função render"
     print("[OK] Teste de Tratados Teológicos (Mariologia, Cristologia, Angelologia, etc.): APROVADO")
 
+def test_progresso_e_quizzes():
+    # Cria catecúmeno temporário para testar progresso
+    cid = database.add_catecumeno(
+        nome="Catecúmeno Teste Progresso",
+        email="progresso@teste.com",
+        telefone="15999990001",
+        data_nasc="1995-05-15",
+        estado_civil="Solteiro",
+        batizado=1,
+        eucaristia=0,
+        crismado=0,
+        padrinhos="",
+        obs="Teste"
+    )
+    
+    # 1. Testar marcação de encontro
+    database.marcar_encontro_concluido(cid, 1)
+    database.marcar_encontro_concluido(cid, 2)
+    assert database.is_encontro_concluido(cid, 1) is not None, "Encontro 1 deveria estar concluído"
+    assert database.is_encontro_concluido(cid, 3) is None, "Encontro 3 não deveria estar concluído"
+    
+    prog = database.get_progresso_catecumeno(cid)
+    assert prog["total_concluidos"] == 2, f"Esperado 2 concluídos, obtido {prog['total_concluidos']}"
+    assert prog["percentual"] == 5.0, f"Esperado 5.0%, obtido {prog['percentual']}"
+    assert 1 in prog["lista_concluidos"] and 2 in prog["lista_concluidos"]
+    
+    # 2. Testar persistência de respostas de quiz
+    database.salvar_resposta_quiz(cid, 1, 0, 1, True)
+    database.salvar_resposta_quiz(cid, 1, 1, 2, False)
+    
+    resps = database.get_respostas_quiz(cid, 1)
+    assert len(resps) == 2, f"Esperado 2 respostas salvas, obtido {len(resps)}"
+    assert resps[0]["acertou"] is True
+    assert resps[1]["acertou"] is False
+    
+    stats = database.get_estatisticas_quiz_catecumeno(cid)
+    assert stats["total_respondidas"] == 2
+    assert stats["total_acertos"] == 1
+    assert stats["taxa_acerto"] == 50.0
+    
+    # 3. Testar relatório de engajamento da turma
+    relatorio = database.get_relatorio_engajamento_turma()
+    assert len(relatorio) >= 1
+    achou = False
+    for r in relatorio:
+        if r["id"] == cid:
+            achou = True
+            assert r["encontros_concluidos"] == 2
+            assert r["quizzes_respondidos"] == 2
+            assert r["quizzes_acertos"] == 1
+    assert achou, "Catecúmeno de teste não encontrado no relatório de engajamento"
+    
+    # 4. Testar desmarcar e cleanup
+    database.desmarcar_encontro_concluido(cid, 1)
+    assert database.is_encontro_concluido(cid, 1) is None
+    database.delete_catecumeno(cid)
+    print("[OK] Teste de Progresso e Persistência de Quizzes (Avanço, Notas e Engajamento): APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -111,4 +169,5 @@ if __name__ == "__main__":
     test_terco_e_missa()
     test_quizzes()
     test_tratados()
+    test_progresso_e_quizzes()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")

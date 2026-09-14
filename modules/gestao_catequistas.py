@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Módulo de Gestão Pastoral e Controle de Catecúmenos
 Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
@@ -22,10 +22,11 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-    tab_turma, tab_chamada, tab_relatorio, tab_novo = st.tabs([
+    tab_turma, tab_chamada, tab_relatorio, tab_engajamento, tab_novo = st.tabs([
         "📋 Lista da Turma",
         "✅ Registro de Chamada",
-        "📊 Relatório de Frequência & Prontidão",
+        "📊 Frequência Presencial",
+        "📈 Estudos Online & Quizzes",
         "➕ Cadastrar Novo Catecúmeno"
     ])
 
@@ -176,7 +177,77 @@ def render():
         else:
             st.info("Nenhum dado de frequência registrado ainda.")
 
-    # 4. Cadastrar Novo Catecúmeno
+    # 4. Estudos Online & Quizzes
+    with tab_engajamento:
+        st.markdown("""
+        <h4 style="color: #781826; font-family: 'Cinzel', serif;">
+            📈 Acompanhamento do Estudo Individual e Quizzes da Fé
+        </h4>
+        <p style="font-size: 0.98rem; color: #5A3825;">
+            Monitore em tempo real o avanço dos catecúmenos na plataforma: encontros estudados em casa, acertos nos quizzes e anotações espirituais.
+        </p>
+        """, unsafe_allow_html=True)
+
+        relatorio_online = database.get_relatorio_engajamento_turma()
+
+        if relatorio_online:
+            # Cards de resumo pastoral
+            total_alunos = len(relatorio_online)
+            total_encontros_concluidos_geral = sum(r["encontros_concluidos"] for r in relatorio_online)
+            media_conclusao = round(sum(r["pct_conclusao"] for r in relatorio_online) / total_alunos, 1) if total_alunos > 0 else 0
+            total_quizzes_geral = sum(r["quizzes_respondidos"] for r in relatorio_online)
+            total_acertos_geral = sum(r["quizzes_acertos"] for r in relatorio_online)
+            taxa_acerto_geral = round((total_acertos_geral / total_quizzes_geral) * 100.0, 1) if total_quizzes_geral > 0 else 0.0
+
+            col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+            with col_m1:
+                st.metric("Catecúmenos Ativos", total_alunos)
+            with col_m2:
+                st.metric("Média de Conclusão", f"{media_conclusao}%", delta="dos 40 encontros")
+            with col_m3:
+                st.metric("Exercícios Feitos", total_quizzes_geral)
+            with col_m4:
+                st.metric("Índice de Acertos", f"{taxa_acerto_geral}%", delta=f"{total_acertos_geral} acertos")
+
+            st.markdown("---")
+
+            # Tabela detalhada
+            dados_engajamento = []
+            for r in relatorio_online:
+                if r["pct_conclusao"] >= 75:
+                    status_ritmo = "🌟 Excelente Ritmo"
+                elif r["pct_conclusao"] >= 40:
+                    status_ritmo = "📖 Em Bom Andamento"
+                elif r["pct_conclusao"] > 0:
+                    status_ritmo = "🌱 Iniciando Estudos"
+                else:
+                    status_ritmo = "⏳ Sem Acessos Registrados"
+
+                dados_engajamento.append({
+                    "Catecúmeno": r["nome"],
+                    "Encontros Estudados": f"{r['encontros_concluidos']} / 40",
+                    "Progresso (%)": f"{r['pct_conclusao']}%",
+                    "Quizzes Feitos": r["quizzes_respondidos"],
+                    "Acertos no Quiz": f"{r['taxa_acerto_quiz']}% ({r['quizzes_acertos']})",
+                    "Reflexões no Diário": r["total_reflexoes"],
+                    "Última Atividade": r["ultima_atividade"],
+                    "Avaliação do Catequista": status_ritmo
+                })
+
+            df_eng = pd.DataFrame(dados_engajamento)
+            st.dataframe(df_eng, use_container_width=True, hide_index=True)
+
+            csv_eng = df_eng.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📥 Exportar Relatório de Engajamento Online (Excel/CSV)",
+                data=csv_eng,
+                file_name=f"relatorio_engajamento_online_{datetime.now().strftime('%Y%m%d')}.csv",
+                mime="text/csv"
+            )
+        else:
+            st.info("Nenhum catecúmeno ativo registrado para exibir relatório.")
+
+    # 5. Cadastrar Novo Catecúmeno
     with tab_novo:
         st.markdown("""
         <h4 style="color: #781826; font-family: 'Cinzel', serif;">
