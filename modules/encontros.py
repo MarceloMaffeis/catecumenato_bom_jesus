@@ -34,7 +34,9 @@ def render():
         st.warning("Nenhum encontro encontrado com os filtros selecionados.")
         return
 
-    # Recuperar progresso do catecúmeno para exibir badges
+    # Recuperar identificação e progresso do usuário para badges e controle
+    perfil_usuario = st.session_state.get("perfil_usuario", "visitante")
+    nome_usuario = st.session_state.get("nome_usuario", "Visitante")
     cid_usuario = st.session_state.get("catecumeno_id", 0)
     progresso_info = database.get_progresso_catecumeno(cid_usuario) if cid_usuario else {"lista_concluidos": set()}
     concluidos_set = progresso_info.get("lista_concluidos", set())

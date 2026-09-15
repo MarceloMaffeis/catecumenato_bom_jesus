@@ -190,23 +190,109 @@ h1, h2, h3, .sacro-title {
     border: 1px solid #F4B084;
 }
 
-/* Botões Customizados */
+/* ==========================================================================
+   Template Sacro para Botões (Área Principal)
+   ========================================================================== */
+
+/* Botões Padrão (Secundários / Navegação) */
 .stButton > button {
     font-family: 'Cinzel', serif !important;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    background: linear-gradient(180deg, #8A1C2C 0%, #661320 100%);
-    color: #FAF8F5 !important;
-    border: 1px solid #C5A059 !important;
-    border-radius: 6px;
-    padding: 0.5rem 1.2rem;
-    transition: all 0.2s ease-in-out;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    background: #FFFFFF !important;
+    color: #781826 !important;
+    border: 1.5px solid #D8C8B4 !important;
+    border-radius: 8px !important;
+    padding: 0.55rem 1.3rem !important;
+    box-shadow: 0 2px 6px rgba(90, 56, 37, 0.04) !important;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
 .stButton > button:hover {
-    background: linear-gradient(180deg, #A12234 0%, #781826 100%);
-    box-shadow: 0 4px 10px rgba(120, 24, 38, 0.35);
+    background: #FAF2EB !important;
+    border-color: #781826 !important;
+    color: #781826 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 14px rgba(120, 24, 38, 0.18) !important;
+}
+
+/* Botões Primários (Ações Sagradas / Salvar / Concluir) */
+.stButton > button[kind="primary"],
+button[data-testid="baseButton-primary"] {
+    background: linear-gradient(135deg, #781826 0%, #5A111C 100%) !important;
+    color: #FAF8F5 !important;
+    border: 1.5px solid #C5A059 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    padding: 0.6rem 1.4rem !important;
+    box-shadow: 0 4px 14px rgba(120, 24, 38, 0.28) !important;
+}
+
+.stButton > button[kind="primary"]:hover,
+button[data-testid="baseButton-primary"]:hover {
+    background: linear-gradient(135deg, #911F30 0%, #6E1623 100%) !important;
     border-color: #E6CA85 !important;
-    transform: translateY(-1px);
+    color: #FFFFFF !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(120, 24, 38, 0.4) !important;
+}
+
+/* Botões de Download (CSV / Certificados) */
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid #81C784 !important;
+    border-radius: 8px !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    padding: 0.55rem 1.3rem !important;
+    box-shadow: 0 3px 10px rgba(46, 125, 50, 0.25) !important;
+    transition: all 0.22s ease !important;
+}
+
+.stDownloadButton > button:hover {
+    background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%) !important;
+    border-color: #A5D6A7 !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(46, 125, 50, 0.35) !important;
+}
+
+/* Botões de Link Externo */
+.stLinkButton > a {
+    background: #FFFFFF !important;
+    color: #5A3825 !important;
+    border: 1.5px solid #C5A059 !important;
+    border-radius: 8px !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    padding: 0.55rem 1.3rem !important;
+    box-shadow: 0 2px 6px rgba(197, 160, 89, 0.1) !important;
+    transition: all 0.2s ease !important;
+}
+
+.stLinkButton > a:hover {
+    background: #FAF2EB !important;
+    border-color: #781826 !important;
+    color: #781826 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(120, 24, 38, 0.15) !important;
+}
+
+/* Campos de Formulário no Conteúdo Principal */
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea,
+.stSelectbox > div > div {
+    border-radius: 8px !important;
+    border: 1px solid #D8C8B4 !important;
+    background: #FFFFFF !important;
+    transition: all 0.2s ease !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: #781826 !important;
+    box-shadow: 0 0 0 2px rgba(120, 24, 38, 0.15) !important;
 }
 
 /* ==========================================================================
@@ -339,21 +425,65 @@ h1, h2, h3, .sacro-title {
     color: #781826 !important;
 }
 
-/* Abas */
+/* ==========================================================================
+   Template Nobre para as Guias / Abas (Segmented Pill Cards)
+   ========================================================================== */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 8px;
-    border-bottom: 2px solid #D8C8B4;
+    background: #FAF5EB !important;
+    border: 1px solid #E2D7C7 !important;
+    border-radius: 12px !important;
+    padding: 6px 8px !important;
+    gap: 8px !important;
+    box-shadow: inset 0 2px 4px rgba(90, 56, 37, 0.04) !important;
+    margin-bottom: 1.5rem !important;
+    overflow-x: auto !important;
+    border-bottom: 1px solid #E2D7C7 !important;
 }
+
+/* Ocultar barra horizontal nativa do Streamlit */
+.stTabs [data-baseweb="tab-highlight"],
+.stTabs [data-baseweb="tab-border"] {
+    display: none !important;
+}
+
+/* Cada Guia / Aba como um Card Litúrgico */
 .stTabs [data-baseweb="tab"] {
-    font-family: 'Cinzel', serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 8px 16px;
-    color: #5A3825;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E6DCCD !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    font-size: 0.90rem !important;
+    color: #5A3825 !important;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+    white-space: nowrap !important;
 }
-.stTabs [aria-selected="true"] {
+
+/* Hover na Guia */
+.stTabs [data-baseweb="tab"]:hover {
+    background-color: #FFFDF9 !important;
+    border-color: #C5A059 !important;
     color: #781826 !important;
-    border-bottom-color: #781826 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 10px rgba(197, 160, 89, 0.18) !important;
+}
+
+/* Guia ATIVA / SELECIONADA */
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    background: linear-gradient(135deg, #781826 0%, #5A111C 100%) !important;
+    border: 1px solid #781826 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(120, 24, 38, 0.3) !important;
+    transform: translateY(-2px) !important;
+}
+.stTabs [data-baseweb="tab"][aria-selected="true"] p,
+.stTabs [data-baseweb="tab"][aria-selected="true"] span,
+.stTabs [data-baseweb="tab"][aria-selected="true"] div {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
 }
 </style>
 """
