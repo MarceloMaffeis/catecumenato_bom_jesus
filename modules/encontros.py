@@ -326,27 +326,30 @@ def render():
         </p>
         """, unsafe_allow_html=True)
 
-        with st.form(f"form_anotacao_{encontro['numero']}", clear_on_submit=True):
-            if perfil_usuario == "catequista":
-                catecumenos_lista = database.get_catecumenos(filtro_ativo=True)
-                opcoes_autor = ["Catequista / Registro Geral"] + [f"{c['nome']} (Catecúmeno)" for c in catecumenos_lista]
-                autor_selecionado = st.selectbox("Autor da Anotação:", opcoes_autor)
-                cat_id = 0
-                autor_nome = "Catequista"
-                if " (Catecúmeno)" in autor_selecionado:
-                    nome_puro = autor_selecionado.replace(" (Catecúmeno)", "")
-                    autor_nome = nome_puro
-                    for c in catecumenos_lista:
-                        if c["nome"] == nome_puro:
-                            cat_id = c["id"]
-                            break
-            else:
-                autor_nome = nome_usuario
-                cat_id = cid_usuario
-                st.info(f"Registrando reflexão como: **{autor_nome}**")
+        if perfil_usuario == "degustacao":
+            st.info("🔒 **Modo Degustação (Visitante):** O Diário Espiritual é uma ferramenta pessoal dos alunos matriculados na turma. No modo de degustação, as anotações não são gravadas no banco de dados. Para ter um diário permanente, faça sua matrícula em uma turma com o catequista!")
+        else:
+            with st.form(f"form_anotacao_{encontro['numero']}", clear_on_submit=True):
+                if perfil_usuario == "catequista":
+                    catecumenos_lista = database.get_catecumenos(filtro_ativo=True)
+                    opcoes_autor = ["Catequista / Registro Geral"] + [f"{c['nome']} (Catecúmeno)" for c in catecumenos_lista]
+                    autor_selecionado = st.selectbox("Autor da Anotação:", opcoes_autor)
+                    cat_id = 0
+                    autor_nome = "Catequista"
+                    if " (Catecúmeno)" in autor_selecionado:
+                        nome_puro = autor_selecionado.replace(" (Catecúmeno)", "")
+                        autor_nome = nome_puro
+                        for c in catecumenos_lista:
+                            if c["nome"] == nome_puro:
+                                cat_id = c["id"]
+                                break
+                else:
+                    autor_nome = nome_usuario
+                    cat_id = cid_usuario
+                    st.info(f"Registrando reflexão como: **{autor_nome}**")
 
-            texto_anotacao = st.text_area("Reflexão espiritual ou apontamento da aula:", placeholder="Escreva aqui a síntese da partilha, o que mais tocou seu coração neste encontro...")
-            btn_salvar = st.form_submit_button("Salvar Reflexão no Diário ☩")
+                texto_anotacao = st.text_area("Reflexão espiritual ou apontamento da aula:", placeholder="Escreva aqui a síntese da partilha, o que mais tocou seu coração neste encontro...")
+                btn_salvar = st.form_submit_button("Salvar Reflexão no Diário ☩")
 
             if btn_salvar:
                 if texto_anotacao.strip():
@@ -489,8 +492,10 @@ Paz e Bem!"""
                         explicacao = p['explicacao_acerto'] if acertou else p['explicacao_erro']
                         st.session_state[chave_respondido] = (acertou, explicacao)
                         
-                        # Salvar no banco SQLite de forma permanente
-                        if cid_usuario:
+                        # Salvar no banco SQLite de forma permanente apenas para alunos matriculados
+                        if perfil_usuario == "degustacao":
+                            st.toast("Resposta avaliada! No modo degustação não gravamos no histórico. 🌟", icon="🌟")
+                        elif cid_usuario:
                             database.salvar_resposta_quiz(cid_usuario, encontro['numero'], idx_p, idx_escolhido, acertou)
                             st.toast("Resposta gravada no seu histórico de fé! ☩", icon="✅")
 
@@ -517,25 +522,28 @@ Paz e Bem!"""
             </div>
             """, unsafe_allow_html=True)
 
-            with st.form(f"form_reflexao_quiz_{encontro['numero']}"):
-                texto_refl = st.text_area(
-                    "Sua oração ou compromisso de vida diante desta meditação:",
-                    placeholder="Escreva sua oração sincera a Deus ou como você pretende viver este ensinamento em sua vida prática...",
-                    key=f"txt_refl_{encontro['numero']}"
-                )
-                btn_salvar_refl = st.form_submit_button("Gravar no Meu Diário Espiritual ☩")
-                if btn_salvar_refl:
-                    if texto_refl.strip():
-                        database.add_anotacao(
-                            st.session_state.get("catecumeno_id", 0),
-                            encontro['numero'],
-                            st.session_state.get("nome_usuario", "Catequisando"),
-                            f"[Reflexão do Quiz] {texto_refl.strip()}"
-                        )
-                        st.success("Sua reflexão foi gravada com sucesso no diário espiritual!")
-                        st.rerun()
-                    else:
-                        st.warning("Por favor, digite sua meditação antes de gravar.")
+            if perfil_usuario == "degustacao":
+                st.info("🔒 No Modo Degustação, a gravação de orações e meditações no diário espiritual está desativada.")
+            else:
+                with st.form(f"form_reflexao_quiz_{encontro['numero']}"):
+                    texto_refl = st.text_area(
+                        "Sua oração ou compromisso de vida diante desta meditação:",
+                        placeholder="Escreva sua oração sincera a Deus ou como você pretende viver este ensinamento em sua vida prática...",
+                        key=f"txt_refl_{encontro['numero']}"
+                    )
+                    btn_salvar_refl = st.form_submit_button("Gravar no Meu Diário Espiritual ☩")
+                    if btn_salvar_refl:
+                        if texto_refl.strip():
+                            database.add_anotacao(
+                                st.session_state.get("catecumeno_id", 0),
+                                encontro['numero'],
+                                st.session_state.get("nome_usuario", "Catequisando"),
+                                f"[Reflexão do Quiz] {texto_refl.strip()}"
+                            )
+                            st.success("Sua reflexão foi gravada com sucesso no diário espiritual!")
+                            st.rerun()
+                        else:
+                            st.warning("Por favor, digite sua meditação antes de gravar.")
 
     # 8. Materiais e Anexos da Aula
     with tab_anexos:

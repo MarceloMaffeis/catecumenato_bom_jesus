@@ -61,6 +61,27 @@ def init_db():
         cur.execute("ALTER TABLE encontros ADD COLUMN imagem_legenda TEXT")
 
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS turmas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        nivel TEXT NOT NULL,
+        ano TEXT,
+        horario TEXT,
+        catequista_responsavel TEXT,
+        ativa INTEGER DEFAULT 1,
+        data_criacao TEXT
+    )
+    """)
+
+    # Verificar se existe pelo menos uma turma inicial padrão
+    cur.execute("SELECT COUNT(*) FROM turmas")
+    if cur.fetchone()[0] == 0:
+        cur.execute("""
+        INSERT INTO turmas (nome, nivel, ano, horario, catequista_responsavel, ativa, data_criacao)
+        VALUES ('Turma Bom Jesus 2026', 'Catecumenato de Adultos', '2026', 'Sábado às 15h00', 'Frei / Catequista', 1, ?)
+        """, (datetime.now().strftime("%Y-%m-%d"),))
+
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS catecumenos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
@@ -75,16 +96,22 @@ def init_db():
         observacoes TEXT,
         ativo INTEGER DEFAULT 1,
         data_cadastro TEXT,
-        senha TEXT DEFAULT 'pazebem'
+        senha TEXT DEFAULT 'pazebem',
+        turma_id INTEGER DEFAULT 1,
+        FOREIGN KEY(turma_id) REFERENCES turmas(id)
     )
     """)
 
-    # Verificar se coluna senha existe em catecumenos
+    # Verificar se colunas senha e turma_id existem em catecumenos
     cur.execute("PRAGMA table_info(catecumenos)")
     colunas_cat = [r[1] for r in cur.fetchall()]
     if "senha" not in colunas_cat:
         cur.execute("ALTER TABLE catecumenos ADD COLUMN senha TEXT DEFAULT 'pazebem'")
     cur.execute("UPDATE catecumenos SET senha = 'pazebem' WHERE senha IS NULL OR senha = ''")
+    
+    if "turma_id" not in colunas_cat:
+        cur.execute("ALTER TABLE catecumenos ADD COLUMN turma_id INTEGER DEFAULT 1")
+    cur.execute("UPDATE catecumenos SET turma_id = 1 WHERE turma_id IS NULL OR turma_id = 0")
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS presencas (
@@ -474,14 +501,93 @@ def get_blocos():
     conn.close()
     return rows
 
-# Consultas e Operações de Catecúmenos
-def get_catecumenos(filtro_ativo=True):
+# Níveis Formativos da Catequese Católica
+NIVEIS_CATEQUESE = [
+    "Pré-Catequese",
+    "Catequese Ano 1",
+    "Catequese Ano 2",
+    "Catequese Ano 3",
+    "Crisma 1",
+    "Crisma 2",
+    "Crisma 3",
+    "Catecumenato de Adultos"
+]
+
+# Consultas e Operações de Turmas
+def get_turmas(apenas_ativas=True):
     conn = get_connection()
     cur = conn.cursor()
+    filtro = "WHERE t.ativa = 1" if apenas_ativas else ""
+    cur.execute(f"""
+    SELECT t.*, COUNT(c.id) as total_alunos
+    FROM turmas t
+    LEFT JOIN catecumenos c ON t.id = c.turma_id AND c.ativo = 1
+    {filtro}
+    GROUP BY t.id
+    ORDER BY t.ano DESC, t.nome ASC
+    """)
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+def get_turma(turma_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM turmas WHERE id = ?", (turma_id,))
+    row = cur.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def add_turma(nome, nivel, ano="2026", horario="", catequista_responsavel="Catequista", ativa=1):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    INSERT INTO turmas (nome, nivel, ano, horario, catequista_responsavel, ativa, data_criacao)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (nome.strip(), nivel.strip(), str(ano).strip(), horario.strip(), catequista_responsavel.strip(), ativa, datetime.now().strftime("%Y-%m-%d")))
+    conn.commit()
+    new_id = cur.lastrowid
+    conn.close()
+    return new_id
+
+def update_turma(turma_id, nome, nivel, ano, horario, catequista_responsavel="Catequista", ativa=1):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+    UPDATE turmas
+    SET nome=?, nivel=?, ano=?, horario=?, catequista_responsavel=?, ativa=?
+    WHERE id=?
+    """, (nome.strip(), nivel.strip(), str(ano).strip(), horario.strip(), catequista_responsavel.strip(), ativa, turma_id))
+    conn.commit()
+    conn.close()
+    return True
+
+def delete_turma(turma_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE turmas SET ativa = 0 WHERE id = ?", (turma_id,))
+    conn.commit()
+    conn.close()
+    return True
+
+# Consultas e Operações de Catecúmenos
+def get_catecumenos(filtro_ativo=True, turma_id=None):
+    conn = get_connection()
+    cur = conn.cursor()
+    query = """
+    SELECT c.*, t.nome as turma_nome, t.nivel as turma_nivel, t.ano as turma_ano
+    FROM catecumenos c
+    LEFT JOIN turmas t ON c.turma_id = t.id
+    WHERE 1=1
+    """
+    params = []
     if filtro_ativo:
-        cur.execute("SELECT * FROM catecumenos WHERE ativo = 1 ORDER BY nome ASC")
-    else:
-        cur.execute("SELECT * FROM catecumenos ORDER BY nome ASC")
+        query += " AND c.ativo = 1"
+    if turma_id is not None and turma_id != 0:
+        query += " AND c.turma_id = ?"
+        params.append(turma_id)
+    query += " ORDER BY c.nome ASC"
+    cur.execute(query, params)
     rows = [dict(r) for r in cur.fetchall()]
     conn.close()
     return rows
@@ -489,47 +595,52 @@ def get_catecumenos(filtro_ativo=True):
 def get_catecumeno(cid):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM catecumenos WHERE id = ?", (cid,))
+    cur.execute("""
+    SELECT c.*, t.nome as turma_nome, t.nivel as turma_nivel, t.ano as turma_ano
+    FROM catecumenos c
+    LEFT JOIN turmas t ON c.turma_id = t.id
+    WHERE c.id = ?
+    """, (cid,))
     row = cur.fetchone()
     conn.close()
     return dict(row) if row else None
 
-def add_catecumeno(nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, senha="pazebem"):
+def add_catecumeno(nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, senha="pazebem", turma_id=1):
     conn = get_connection()
     cur = conn.cursor()
     senha_final = senha.strip() if senha and senha.strip() else "pazebem"
     cur.execute("""
     INSERT INTO catecumenos (nome, email, telefone, data_nascimento, estado_civil,
                              batizado, primeira_eucaristia, crismado, padrinho_madrinha,
-                             observacoes, ativo, data_cadastro, senha)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
-    """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, datetime.now().strftime("%Y-%m-%d"), senha_final))
+                             observacoes, ativo, data_cadastro, senha, turma_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?)
+    """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, datetime.now().strftime("%Y-%m-%d"), senha_final, turma_id or 1))
     conn.commit()
     new_id = cur.lastrowid
     conn.close()
     return new_id
 
-def update_catecumeno(cid, nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, senha=None):
+def update_catecumeno(cid, nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, senha=None, turma_id=None):
     conn = get_connection()
     cur = conn.cursor()
+    campos = [
+        "nome=?", "email=?", "telefone=?", "data_nascimento=?", "estado_civil=?",
+        "batizado=?", "primeira_eucaristia=?", "crismado=?", "padrinho_madrinha=?",
+        "observacoes=?", "ativo=?"
+    ]
+    valores = [nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo]
     if senha and senha.strip():
-        cur.execute("""
-        UPDATE catecumenos
-        SET nome=?, email=?, telefone=?, data_nascimento=?, estado_civil=?,
-            batizado=?, primeira_eucaristia=?, crismado=?, padrinho_madrinha=?,
-            observacoes=?, ativo=?, senha=?
-        WHERE id=?
-        """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, senha.strip(), cid))
-    else:
-        cur.execute("""
-        UPDATE catecumenos
-        SET nome=?, email=?, telefone=?, data_nascimento=?, estado_civil=?,
-            batizado=?, primeira_eucaristia=?, crismado=?, padrinho_madrinha=?,
-            observacoes=?, ativo=?
-        WHERE id=?
-        """, (nome, email, telefone, data_nasc, estado_civil, batizado, eucaristia, crismado, padrinhos, obs, ativo, cid))
+        campos.append("senha=?")
+        valores.append(senha.strip())
+    if turma_id is not None and turma_id > 0:
+        campos.append("turma_id=?")
+        valores.append(turma_id)
+    valores.append(cid)
+    sql = f"UPDATE catecumenos SET {', '.join(campos)} WHERE id=?"
+    cur.execute(sql, valores)
     conn.commit()
     conn.close()
+    return True
 
 def verificar_senha_catecumeno(cid, senha_digitada):
     if cid == 0:
@@ -585,22 +696,30 @@ def get_presencas_encontro(encontro_numero):
     conn.close()
     return rows
 
-def get_estatisticas_frequencia():
+def get_estatisticas_frequencia(turma_id=None):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("""
-    SELECT c.id, c.nome, c.batizado, c.primeira_eucaristia, c.crismado,
+    filtro_turma = ""
+    params = []
+    if turma_id is not None and turma_id != 0:
+        filtro_turma = " AND c.turma_id = ?"
+        params.append(turma_id)
+    cur.execute(f"""
+    SELECT c.id, c.nome, c.batizado, c.primeira_eucaristia, c.crismado, c.turma_id,
+           t.nome as turma_nome, t.nivel as turma_nivel,
            COUNT(CASE WHEN p.presente = 1 THEN 1 END) as total_presencas,
            COUNT(p.id) as total_aulas_registradas
     FROM catecumenos c
+    LEFT JOIN turmas t ON c.turma_id = t.id
     LEFT JOIN presencas p ON c.id = p.catecumeno_id
-    WHERE c.ativo = 1
+    WHERE c.ativo = 1 {filtro_turma}
     GROUP BY c.id
     ORDER BY c.nome ASC
-    """)
+    """, params)
     rows = [dict(r) for r in cur.fetchall()]
     conn.close()
     return rows
+
 
 # Anotações do Diário Espiritual
 def add_anotacao(catecumeno_id, encontro_numero, autor, texto):
@@ -778,13 +897,25 @@ def get_estatisticas_quiz_catecumeno(catecumeno_id):
         "taxa_acerto": taxa
     }
 
-def get_relatorio_engajamento_turma():
+def get_relatorio_engajamento_turma(turma_id=None):
     """Retorna relatório pastoral consolidado de engajamento de todos os catecúmenos ativos."""
     conn = get_connection()
     cur = conn.cursor()
     
+    filtro_turma = ""
+    params = []
+    if turma_id is not None and turma_id != 0:
+        filtro_turma = " AND c.turma_id = ?"
+        params.append(turma_id)
+        
     # Busca catecúmenos ativos
-    cur.execute("SELECT id, nome FROM catecumenos WHERE ativo = 1 ORDER BY nome ASC")
+    cur.execute(f"""
+    SELECT c.id, c.nome, c.turma_id, t.nome as turma_nome, t.nivel as turma_nivel
+    FROM catecumenos c
+    LEFT JOIN turmas t ON c.turma_id = t.id
+    WHERE c.ativo = 1 {filtro_turma}
+    ORDER BY c.nome ASC
+    """, params)
     catecumenos = [dict(r) for r in cur.fetchall()]
     
     relatorio = []

@@ -253,6 +253,95 @@ def test_autenticacao_catecumenos():
     database.delete_catecumeno(cid)
     print("[OK] Teste de Autenticação, Proteção por Senha e Redefinição de Catecúmenos: APROVADO")
 
+def test_sistema_turmas_e_degustacao():
+    # 1. Validar Níveis Catequéticos Canônicos
+    niveis_esperados = [
+        "Pré-Catequese", "Catequese Ano 1", "Catequese Ano 2", "Catequese Ano 3",
+        "Crisma 1", "Crisma 2", "Crisma 3", "Catecumenato de Adultos"
+    ]
+    for n in niveis_esperados:
+        assert n in database.NIVEIS_CATEQUESE, f"Nível '{n}' não encontrado em database.NIVEIS_CATEQUESE"
+
+    # 2. Testar Listagem Inicial de Turmas
+    turmas = database.get_turmas(apenas_ativas=True)
+    assert len(turmas) >= 1, "Deveria existir pelo menos a Turma Bom Jesus 2026 inicial"
+
+    # 3. Testar Criação de Nova Turma
+    tid = database.add_turma(
+        nome="Turma Crisma São Francisco 2026",
+        nivel="Crisma 1",
+        ano="2026",
+        horario="Sábado às 16h30",
+        catequista_responsavel="Frei / Marcelo Maffeis"
+    )
+    assert tid > 0, "Falha ao criar nova turma"
+    turma_criada = database.get_turma(tid)
+    assert turma_criada["nome"] == "Turma Crisma São Francisco 2026"
+    assert turma_criada["nivel"] == "Crisma 1"
+    assert turma_criada["ativa"] == 1
+
+    # 4. Testar Atualização de Turma
+    database.update_turma(
+        tid,
+        nome="Turma Crisma São Francisco 2026 (Atualizada)",
+        nivel="Crisma 2",
+        ano="2026",
+        horario="Sábado às 17h00",
+        catequista_responsavel="Frei / Marcelo Maffeis",
+        ativa=1
+    )
+    turma_atualizada = database.get_turma(tid)
+    assert turma_atualizada["nome"] == "Turma Crisma São Francisco 2026 (Atualizada)"
+    assert turma_atualizada["nivel"] == "Crisma 2"
+
+    # 5. Testar Matrícula de Aluno na Nova Turma
+    cid = database.add_catecumeno(
+        nome="Catequizando Turma Específica",
+        email="crisma@teste.com",
+        telefone="15977770000",
+        data_nasc="2008-03-15",
+        estado_civil="Solteiro(a)",
+        batizado=1,
+        eucaristia=1,
+        crismado=0,
+        padrinhos="Madrinha Crisma",
+        obs="Teste Multi-Turmas",
+        turma_id=tid
+    )
+    assert cid > 0, "Falha ao matricular aluno na turma"
+    cat = database.get_catecumeno(cid)
+    assert cat["turma_id"] == tid
+    assert cat["turma_nome"] == "Turma Crisma São Francisco 2026 (Atualizada)"
+    assert cat["turma_nivel"] == "Crisma 2"
+
+    # 6. Testar Filtro de Alunos por Turma
+    alunos_turma = database.get_catecumenos(filtro_ativo=True, turma_id=tid)
+    assert len(alunos_turma) == 1
+    assert alunos_turma[0]["id"] == cid
+
+    # 7. Testar Relatórios Filtrados por Turma
+    freq_turma = database.get_estatisticas_frequencia(turma_id=tid)
+    assert len(freq_turma) == 1
+    assert freq_turma[0]["id"] == cid
+
+    eng_turma = database.get_relatorio_engajamento_turma(turma_id=tid)
+    assert len(eng_turma) == 1
+    assert eng_turma[0]["id"] == cid
+
+    # 8. Testar Modo Degustação (Visitante cid=0) - Isolamento Seguro
+    assert database.verificar_senha_catecumeno(0, "pazebem") is True
+    assert database.verificar_senha_catecumeno(0, "") is True
+    assert database.get_respostas_quiz(0, 1) == {}
+    assert database.get_progresso_catecumeno(0)["total_concluidos"] == 0
+    assert database.get_todas_anotacoes_catecumeno(0) == []
+
+    # 9. Cleanup
+    database.delete_catecumeno(cid)
+    database.delete_turma(tid)
+    turma_inativa = database.get_turma(tid)
+    assert turma_inativa["ativa"] == 0
+    print("[OK] Teste do Sistema de Multi-Turmas (Níveis, Matrículas, Filtros) e Modo Degustação: APROVADO")
+
 if __name__ == "__main__":
     database.init_db()
     test_encontros()
@@ -268,4 +357,5 @@ if __name__ == "__main__":
     test_materiais_e_novos_modulos()
     test_estrutura_navegacao_e_grupos()
     test_autenticacao_catecumenos()
+    test_sistema_turmas_e_degustacao()
     print("\n>>> TODOS OS TESTES PASSARAM COM 100% DE SUCESSO! <<<")

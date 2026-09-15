@@ -39,6 +39,12 @@ if "nome_usuario" not in st.session_state:
     st.session_state.nome_usuario = ""
 if "catecumeno_id" not in st.session_state:
     st.session_state.catecumeno_id = 0
+if "turma_id" not in st.session_state:
+    st.session_state.turma_id = 1
+if "turma_nome" not in st.session_state:
+    st.session_state.turma_nome = ""
+if "turma_nivel" not in st.session_state:
+    st.session_state.turma_nivel = ""
 
 # TELA DE LOGIN SACRA (se não autenticado)
 if not st.session_state.autenticado:
@@ -58,68 +64,106 @@ if not st.session_state.autenticado:
     </div>
     """, unsafe_allow_html=True)
 
-    col_vazia1, col_login, col_vazia2 = st.columns([1, 2, 1])
+    col_vazia1, col_login, col_vazia2 = st.columns([1, 2.2, 1])
 
     with col_login:
-        tab_aluno, tab_catequista = st.tabs([
-            "📖 Acesso do Catequisando (Aluno)",
-            "🔑 Acesso do Catequista (Administrador)"
+        tab_aluno, tab_degustacao, tab_catequista = st.tabs([
+            "📖 Acesso do Aluno (Por Turma)",
+            "🌟 Acesso Degustação (Visitante)",
+            "🔑 Acesso do Catequista (Admin)"
         ])
 
-        # 1. Acesso do Catequisando
+        # 1. Acesso do Catequisando por Turma
         with tab_aluno:
             st.markdown("""
             <div class="pergaminho-card">
                 <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
                     Seja bem-vindo, catecúmeno!
                 </h4>
-                <p style="font-size: 1rem; line-height: 1.5; color: #3A2315;">
-                    Selecione seu nome na lista da turma e insira sua senha de acesso para entrar na sua formação.
+                <p style="font-size: 0.98rem; line-height: 1.5; color: #3A2315; margin-bottom: 0;">
+                    Selecione a sua <strong>Turma</strong>, identifique seu <strong>Nome</strong> e insira sua senha de acesso.
                 </p>
             </div>
             """, unsafe_allow_html=True)
 
-            catecumenos_ativos = database.get_catecumenos(filtro_ativo=True)
-            opcoes_alunos = {f"{c['nome']} (Turma Atual)": c for c in catecumenos_ativos}
-            opcoes_alunos["Ouvinte / Visitante Convidado"] = {"id": 0, "nome": "Ouvinte Convidado"}
+            turmas_ativas = database.get_turmas(apenas_ativas=True)
+            if not turmas_ativas:
+                turmas_ativas = [{"id": 1, "nome": "Turma Bom Jesus 2026", "nivel": "Catecumenato de Adultos"}]
 
-            aluno_escolhido_label = st.selectbox("Identifique seu nome:", list(opcoes_alunos.keys()))
-            aluno_obj = opcoes_alunos[aluno_escolhido_label]
+            opcoes_turmas = {f"🏫 {t['nome']} — {t['nivel']}": t for t in turmas_ativas}
+            turma_label_sel = st.selectbox("1. Selecione a sua Turma:", list(opcoes_turmas.keys()), key="login_sel_turma")
+            turma_obj = opcoes_turmas[turma_label_sel]
 
-            with st.form("form_login_catequisando"):
-                senha_aluno = st.text_input(
-                    "Sua Senha de Acesso:",
-                    type="password",
-                    placeholder="Digite sua senha (padrão inicial: pazebem)",
-                    help="Senha inicial padrão: pazebem. Você pode alterá-la no painel após entrar."
-                )
-                st.caption("🔒 *Dica:* A senha inicial de todos os catecúmenos é **`pazebem`**.")
+            alunos_turma = database.get_catecumenos(filtro_ativo=True, turma_id=turma_obj["id"])
+            if not alunos_turma:
+                st.warning(f"Ainda não há catequisandos cadastrados na {turma_obj['nome']}. O catequista pode cadastrar os alunos no painel administrativo.")
+            else:
+                opcoes_alunos = {f"👤 {c['nome']}": c for c in alunos_turma}
+                aluno_escolhido_label = st.selectbox("2. Identifique seu Nome:", list(opcoes_alunos.keys()), key="login_sel_aluno")
+                aluno_obj = opcoes_alunos[aluno_escolhido_label]
 
-                btn_entrar_aluno = st.form_submit_button("Entrar como Catequisando ☩", type="primary", use_container_width=True)
+                with st.form("form_login_catequisando"):
+                    senha_aluno = st.text_input(
+                        "3. Sua Senha de Acesso:",
+                        type="password",
+                        placeholder="Digite sua senha (padrão inicial: pazebem)",
+                        help="Senha inicial padrão: pazebem. Você pode alterá-la no painel após entrar."
+                    )
+                    st.caption("🔒 *Dica:* A senha inicial de todos os catecúmenos é **`pazebem`**.")
 
-                if btn_entrar_aluno:
-                    # Checagem com fallback resiliente contra cache do servidor
-                    acesso_permitido = False
-                    if hasattr(database, "verificar_senha_catecumeno"):
-                        acesso_permitido = database.verificar_senha_catecumeno(aluno_obj["id"], senha_aluno)
-                    else:
-                        if aluno_obj["id"] == 0:
-                            acesso_permitido = senha_aluno.strip().lower() in ["pazebem", ""]
+                    btn_entrar_aluno = st.form_submit_button("Entrar como Catequisando ☩", type="primary", use_container_width=True)
+
+                    if btn_entrar_aluno:
+                        acesso_permitido = False
+                        if hasattr(database, "verificar_senha_catecumeno"):
+                            acesso_permitido = database.verificar_senha_catecumeno(aluno_obj["id"], senha_aluno)
                         else:
                             cat = database.get_catecumeno(aluno_obj["id"])
                             senha_salva = (cat.get("senha") if cat else None) or "pazebem"
                             acesso_permitido = senha_aluno.strip().lower() == senha_salva.strip().lower()
 
-                    if acesso_permitido:
-                        st.session_state.autenticado = True
-                        st.session_state.perfil_usuario = "catequisando"
-                        st.session_state.nome_usuario = aluno_obj["nome"]
-                        st.session_state.catecumeno_id = aluno_obj["id"]
-                        st.rerun()
-                    else:
-                        st.error("Senha incorreta! A senha inicial padrão é 'pazebem'. Se você alterou e esqueceu, solicite ao catequista para redefini-la.")
+                        if acesso_permitido:
+                            st.session_state.autenticado = True
+                            st.session_state.perfil_usuario = "catequisando"
+                            st.session_state.nome_usuario = aluno_obj["nome"]
+                            st.session_state.catecumeno_id = aluno_obj["id"]
+                            st.session_state.turma_id = turma_obj["id"]
+                            st.session_state.turma_nome = turma_obj["nome"]
+                            st.session_state.turma_nivel = turma_obj["nivel"]
+                            st.rerun()
+                        else:
+                            st.error("Senha incorreta! A senha inicial padrão é 'pazebem'. Se você alterou e esqueceu, solicite ao catequista para redefini-la.")
 
-        # 2. Acesso do Catequista (Admin)
+        # 2. Acesso de Degustação (Visitante Aberto)
+        with tab_degustacao:
+            st.markdown("""
+            <div class="pergaminho-card-franciscano">
+                <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+                    🌟 Degustação da Formação Católica
+                </h4>
+                <p style="font-size: 1.02rem; line-height: 1.6; color: #2E1B10; text-align: justify; margin-bottom: 0.5rem;">
+                    Paz e Bem! Criamos este acesso aberto para que qualquer pessoa possa <strong>conhecer, ler e estudar</strong> 
+                    todo o tesouro da fé católica da Paróquia Bom Jesus dos Aflitos: os 40 encontros, os tratados de teologia, 
+                    a Santa Missa, o Santo Terço e as orações dos santos franciscanos.
+                </p>
+                <div style="background: #FDFBF7; border-left: 4px solid #C5A059; padding: 0.7rem 0.9rem; border-radius: 4px; font-size: 0.92rem; color: #5A3825; margin: 0.8rem 0;">
+                    <strong>ℹ️ Como funciona este modo:</strong> Você pode ler todos os materiais e realizar os testes da fé. 
+                    Como é um acesso de visitante, <em>nenhuma informação de presença, nota ou diário pessoal é gravada no servidor</em>.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            if st.button("Entrar no Modo Degustação ☩", type="primary", use_container_width=True, key="btn_entrar_degustacao"):
+                st.session_state.autenticado = True
+                st.session_state.perfil_usuario = "degustacao"
+                st.session_state.nome_usuario = "Visitante em Degustação"
+                st.session_state.catecumeno_id = 0
+                st.session_state.turma_id = 0
+                st.session_state.turma_nome = "Acesso Geral Aberto"
+                st.session_state.turma_nivel = "Visitante"
+                st.rerun()
+
+        # 3. Acesso do Catequista (Admin)
         with tab_catequista:
             st.markdown("""
             <div class="pergaminho-card-bordo">
@@ -128,7 +172,7 @@ if not st.session_state.autenticado:
                 </h4>
                 <p style="font-size: 1rem; line-height: 1.5; color: #3A2315;">
                     Área exclusiva para os catequistas da Paróquia Bom Jesus dos Aflitos. 
-                    Permite gestão de matrículas, controle de presença, relatórios e acompanhamento sacramental.
+                    Permite gestão de turmas, matrículas, controle de presença, relatórios e acompanhamento sacramental.
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -143,6 +187,9 @@ if not st.session_state.autenticado:
                         st.session_state.perfil_usuario = "catequista"
                         st.session_state.nome_usuario = "Catequista Administrador"
                         st.session_state.catecumeno_id = 0
+                        st.session_state.turma_id = 0
+                        st.session_state.turma_nome = "Todas as Turmas"
+                        st.session_state.turma_nivel = "Coordenação"
                         st.success("Acesso autorizado! Paz e Bem.")
                         st.rerun()
                     else:
@@ -179,11 +226,25 @@ with st.sidebar:
             <span style="font-size: 0.82rem; color: #4A2E1B;">Acesso Completo de Gestão</span>
         </div>
         """, unsafe_allow_html=True)
+    elif perfil == "degustacao":
+        st.markdown(f"""
+        <div style="background: #FFF8E7; border-left: 4px solid #C5A059; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.88rem; margin-bottom: 1rem;">
+            <strong style="color: #8C6A1D;">🌟 Modo Degustação:</strong><br>
+            <span style="font-weight: bold; color: #2E1B10;">Visitante Convidado</span><br>
+            <span style="font-size: 0.78rem; color: #6B5218;">Navegação aberta sem gravação</span>
+        </div>
+        """, unsafe_allow_html=True)
     else:
+        turma_nome_exib = st.session_state.get("turma_nome", "")
+        turma_nivel_exib = st.session_state.get("turma_nivel", "")
+        turma_nome_exib = st.session_state.get("turma_nome", "")
+        turma_nivel_exib = st.session_state.get("turma_nivel", "")
+        turma_info_html = f"<div style='font-size: 0.76rem; color: #2E7D32; margin-top: 2px;'>🏫 <em>{turma_nome_exib} ({turma_nivel_exib})</em></div>" if turma_nome_exib else ""
         st.markdown(f"""
         <div style="background: #E8F0E4; border-left: 4px solid #2E7D32; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.88rem; margin-bottom: 1rem;">
             <strong style="color: #1B5E20;">👤 Catequisando:</strong><br>
             <span style="font-weight: bold; color: #2E1B10;">{nome}</span>
+            {turma_info_html}
         </div>
         """, unsafe_allow_html=True)
 
@@ -277,6 +338,9 @@ with st.sidebar:
         st.session_state.perfil_usuario = "visitante"
         st.session_state.nome_usuario = ""
         st.session_state.catecumeno_id = 0
+        st.session_state.turma_id = 0
+        st.session_state.turma_nome = ""
+        st.session_state.turma_nivel = ""
         st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)

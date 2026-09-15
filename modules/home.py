@@ -18,15 +18,53 @@ def render():
     cid_usuario = st.session_state.get("catecumeno_id", 0)
     nome_usuario = st.session_state.get("nome_usuario", "Irmão em Cristo")
 
-    if perfil == "catequisando":
+    if perfil == "degustacao":
+        # Painel Acolhedor do Visitante / Degustação
+        st.markdown("""
+        <div class="pergaminho-card-franciscano">
+            <h3 style="color: #781826; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                <span>☩</span> Paz e Bem, querido(a) visitante!
+            </h3>
+            <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 0.5rem; text-align: justify;">
+                Seja muito bem-vindo ao portal de formação na fé católica da <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong>, 
+                confiada aos <strong>Frades Menores Franciscanos</strong>. 
+                Você está no <strong>Modo Degustação</strong>: todo o conteúdo catequético, tratados teológicos, 
+                orações, a Santa Missa e o Santo Terço estão 100% abertos para seu estudo e crescimento espiritual.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="pergaminho-card" style="border-left: 4px solid #C5A059; margin-top: 1rem;">
+            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+                🌟 Como aproveitar ao máximo sua Degustação:
+            </h4>
+            <ul style="font-size: 1.02rem; line-height: 1.8; padding-left: 1.2rem; color: #2E1B10;">
+                <li>📖 <strong>Os 40 Encontros:</strong> Estude os encontros com Bíblia, Magistério e baixe os materiais pastorais (PDFs).</li>
+                <li>🎯 <strong>Quizzes Interativos:</strong> Teste seu conhecimento doutrinal ao final de cada aula com feedback explicativo imediato.</li>
+                <li>🏛️ <strong>Tratados Teológicos:</strong> Aprofunde-se nos tratados de Mariologia, Cristologia, Eclesiologia, Trindade e Anjos.</li>
+                <li>⛪ <strong>Liturgia & Oração:</strong> Reze o Santo Terço com os mistérios do dia, compreenda a Santa Missa e contemple o Tesouro Franciscano.</li>
+            </ul>
+            <div style="background: #FAF5EB; border: 1px dashed #C5A059; padding: 0.8rem; border-radius: 6px; font-size: 0.95rem; color: #5A3825; margin-top: 0.8rem;">
+                🔔 <em>Nota pastoral:</em> No modo degustação, suas respostas de quizzes e anotações não são gravadas no servidor. 
+                Para ter acompanhamento pastoral, controle de frequência e diário espiritual gravado, procure a Paróquia Bom Jesus dos Aflitos para efetuar sua matrícula em uma turma regular com o catequista!
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif perfil == "catequisando":
         # Painel Pessoal do Catequisando
+        turma_nome_aluno = st.session_state.get("turma_nome", "")
+        turma_nivel_aluno = st.session_state.get("turma_nivel", "")
+        sub_turma = f"<br><span style='font-size: 0.92rem; color: #2E7D32; font-weight: normal;'>🏫 Turma: <strong>{turma_nome_aluno}</strong> ({turma_nivel_aluno})</span>" if turma_nome_aluno else ""
+
         st.markdown(f"""
         <div class="pergaminho-card-franciscano">
             <h3 style="color: #5A3825; margin-top: 0; display: flex; align-items: center; gap: 8px;">
                 <span>☩</span> Paz e Bem, caríssimo(a) {nome_usuario}!
             </h3>
             <p style="font-size: 1.12rem; line-height: 1.6; margin-bottom: 0.3rem;">
-                Seja bem-vindo ao seu espaço de formação na fé da <strong>Paróquia Bom Jesus dos Aflitos</strong>.
+                Seja bem-vindo ao seu espaço de formação na fé da <strong>Paróquia Bom Jesus dos Aflitos</strong>.{sub_turma}
                 Aqui você acompanha sua evolução espiritual, estuda os 40 encontros, realiza os exercícios de fixação e guarda suas reflexões para a vida eterna.
             </p>
         </div>
