@@ -117,43 +117,52 @@ def render():
                 st.info(f"🎨 {legenda}")
         else:
             st.info(f"🎨 {legenda}")
+    with col_banner_txt:
         status_html = ""
-        if cid_usuario:
+        if cid_usuario and cid_usuario > 0:
             info_c = database.is_encontro_concluido(cid_usuario, encontro['numero'])
             if info_c:
-                status_html = f"""
-                <div style="margin-top: 0.6rem; background: #E8F5E9; border: 1px solid #81C784; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.1rem;">✅</span>
-                    <strong style="color: #2E7D32; font-size: 0.92rem;">Estudo Concluído em {info_c['data_conclusao']}</strong>
-                </div>
-                """
+                status_html = (
+                    f'<div style="margin-top: 0.6rem; background: #E8F5E9; border: 1px solid #81C784; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
+                    f'<span style="font-size: 1.1rem;">✅</span>'
+                    f'<strong style="color: #2E7D32; font-size: 0.92rem;">Estudo Concluído em {info_c["data_conclusao"]}</strong>'
+                    f'</div>'
+                )
             else:
-                status_html = """
-                <div style="margin-top: 0.6rem; background: #FFF8E1; border: 1px solid #FFE082; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.1rem;">📖</span>
-                    <span style="color: #795548; font-size: 0.92rem; font-weight: 500;">Encontro em andamento</span>
-                </div>
-                """
+                status_html = (
+                    '<div style="margin-top: 0.6rem; background: #FFF8E1; border: 1px solid #FFE082; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
+                    '<span style="font-size: 1.1rem;">📖</span>'
+                    '<span style="color: #795548; font-size: 0.92rem; font-weight: 500;">Encontro em andamento</span>'
+                    '</div>'
+                )
+        elif perfil_usuario == "degustacao":
+            status_html = (
+                '<div style="margin-top: 0.6rem; background: #EDE7F6; border: 1px solid #B39DDB; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
+                '<span style="font-size: 1.1rem;">🌟</span>'
+                '<span style="color: #4A148C; font-size: 0.92rem; font-weight: 500;">Modo Degustação (Visitante)</span>'
+                '</div>'
+            )
 
-        st.markdown(f"""
-        <div class="pergaminho-card-bordo" style="height: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                <span style="background: #781826; color: #FAF8F5; padding: 4px 12px; border-radius: 4px; font-family: 'Cinzel', serif; font-size: 0.9rem;">
-                    Módulo: {encontro['bloco']}
-                </span>
-                <span style="font-family: 'Cinzel', serif; font-weight: bold; color: #781826; font-size: 1.1rem;">
-                    Encontro {encontro['numero']} de 40
-                </span>
-            </div>
-            <h2 style="color: #781826; margin: 0.6rem 0 0.4rem 0; font-family: 'Cinzel', serif; font-size: 1.6rem;">
-                {encontro['titulo']}
-            </h2>
-            <p style="font-size: 1.1rem; color: #3A2315; font-style: italic; margin-bottom: 0.4rem; line-height: 1.5;">
-                {encontro['resumo']}
-            </p>
-            {status_html}
-        </div>
-        """, unsafe_allow_html=True)
+        card_html = (
+            f'<div class="pergaminho-card-bordo" style="height: 100%;">'
+            f'<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">'
+            f'<span style="background: #781826; color: #FAF8F5; padding: 4px 12px; border-radius: 4px; font-family: \'Cinzel\', serif; font-size: 0.9rem;">'
+            f'Módulo: {encontro["bloco"]}'
+            f'</span>'
+            f'<span style="font-family: \'Cinzel\', serif; font-weight: bold; color: #781826; font-size: 1.1rem;">'
+            f'Encontro {encontro["numero"]} de 40'
+            f'</span>'
+            f'</div>'
+            f'<h2 style="color: #781826; margin: 0.6rem 0 0.4rem 0; font-family: \'Cinzel\', serif; font-size: 1.6rem;">'
+            f'{encontro["titulo"]}'
+            f'</h2>'
+            f'<p style="font-size: 1.05rem; color: #3A2315; font-style: italic; margin-bottom: 0.4rem; line-height: 1.5;">'
+            f'{encontro["resumo"]}'
+            f'</p>'
+            f'{status_html}'
+            f'</div>'
+        )
+        st.markdown(card_html, unsafe_allow_html=True)
 
     # Abas com conteúdo aprofundado
     tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao, tab_quiz, tab_anexos = st.tabs([
