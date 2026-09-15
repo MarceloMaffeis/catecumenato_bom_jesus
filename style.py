@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Estilos e Identidade Visual Sacra & Franciscana
 Cores litúrgicas, tipografia clássica e ornamentos reverentes
@@ -209,14 +209,129 @@ h1, h2, h3, .sacro-title {
     transform: translateY(-1px);
 }
 
-/* Sidebar Customizada */
+/* ==========================================================================
+   Sidebar Customizada - Template Sacro & Espaçoso
+   ========================================================================== */
 [data-testid="stSidebar"] {
-    background-color: #F8F5F0;
-    border-right: 1px solid #D8C8B4;
+    background: linear-gradient(180deg, #FBF9F5 0%, #F4EFE6 100%) !important;
+    border-right: 1px solid #E2D7C7 !important;
+    box-shadow: 2px 0 12px rgba(90, 56, 37, 0.05) !important;
 }
+
+[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {
+    padding: 1.4rem 1.1rem 2rem 1.1rem !important;
+}
+
 [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
     color: #781826 !important;
 }
+
+/* Espaçamento e Estilo do Seletor de Pilar (Selectbox) */
+[data-testid="stSidebar"] [data-testid="stSelectbox"] {
+    margin-bottom: 0.5rem !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stSelectbox"] > div > div {
+    background-color: #FFFFFF !important;
+    border: 1px solid #D8C8B4 !important;
+    border-radius: 8px !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 600 !important;
+    color: #781826 !important;
+    padding: 2px 4px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+    transition: all 0.2s ease;
+}
+
+[data-testid="stSidebar"] [data-testid="stSelectbox"] > div > div:hover {
+    border-color: #C5A059 !important;
+    box-shadow: 0 2px 8px rgba(197, 160, 89, 0.15) !important;
+}
+
+/* ==========================================================================
+   Itens do Menu Lateral (Cards de Navegação Interativos)
+   ========================================================================== */
+[data-testid="stSidebar"] [data-testid="stRadio"] > div[role="radiogroup"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+}
+
+/* Cada opção do menu como um Card Elegante */
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    background-color: #FFFFFF !important;
+    border: 1px solid #E2D7C7 !important;
+    border-left: 4px solid #C5A059 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-shadow: 0 2px 5px rgba(90, 56, 37, 0.03) !important;
+}
+
+/* Efeito Hover nos Cards do Menu */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+    background-color: #FAF5EB !important;
+    border-color: #C5A059 !important;
+    border-left: 4px solid #781826 !important;
+    transform: translateX(4px) !important;
+    box-shadow: 0 4px 10px rgba(197, 160, 89, 0.18) !important;
+}
+
+/* Ocultar o círculo de rádio padrão para visual moderno de Menu de App */
+[data-testid="stSidebar"] [data-testid="stRadio"] label > div:first-child {
+    display: none !important;
+}
+
+/* Tipografia dos Itens de Menu Inativos */
+[data-testid="stSidebar"] [data-testid="stRadio"] label p {
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.90rem !important;
+    font-weight: 600 !important;
+    color: #4A2E1B !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
+}
+
+/* Card do Item ATIVO / SELECIONADO */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) {
+    background: linear-gradient(135deg, #781826 0%, #5E101D 100%) !important;
+    border-color: #781826 !important;
+    border-left: 4px solid #E6CA85 !important;
+    box-shadow: 0 4px 12px rgba(120, 24, 38, 0.28) !important;
+    transform: translateX(4px) !important;
+}
+
+/* Texto do Item ATIVO */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Botão Sair no Sidebar */
+[data-testid="stSidebar"] .stButton > button {
+    background: #FFFFFF !important;
+    color: #781826 !important;
+    border: 1px solid #D8C8B4 !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.88rem !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03) !important;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: #FAF2EB !important;
+    border-color: #781826 !important;
+    color: #781826 !important;
+    box-shadow: 0 4px 10px rgba(120, 24, 38, 0.12) !important;
+    transform: translateY(-1px) !important;
+}
+
 
 /* Destaques e Métricas */
 [data-testid="stMetricValue"] {

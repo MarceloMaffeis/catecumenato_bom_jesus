@@ -199,51 +199,61 @@ if not st.session_state.autenticado:
 
 # USUÁRIO AUTENTICADO - NAVEGAÇÃO PRINCIPAL
 with st.sidebar:
-    # Cabeçalho Paroquial
+    # Cabeçalho Paroquial Nobre
     st.markdown("""
-    <div style="text-align: center; padding: 0.8rem 0.5rem; background: #FAF5EB; border: 1px solid #D8C8B4; border-radius: 8px; margin-bottom: 1rem;">
-        <div style="font-size: 2rem; color: #781826; line-height: 1;">☩</div>
-        <div style="font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.05rem; color: #781826; margin-top: 0.3rem;">
+    <div style="text-align: center; padding: 1.1rem 0.8rem; background: #FFFFFF; border: 1px solid #E2D7C7; border-top: 4px solid #781826; border-radius: 12px; box-shadow: 0 4px 14px rgba(120, 24, 38, 0.05); margin-bottom: 1.2rem;">
+        <div style="font-size: 1.8rem; color: #781826; line-height: 1; margin-bottom: 0.2rem;">☩</div>
+        <div style="font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.05rem; color: #781826; letter-spacing: 0.5px;">
             BOM JESUS DOS AFLITOS
         </div>
-        <div style="font-size: 0.82rem; color: #5A3825; font-family: 'Cinzel', serif; letter-spacing: 1px;">
+        <div style="font-size: 0.78rem; color: #5A3825; font-family: 'Cinzel', serif; letter-spacing: 1.5px; margin-top: 0.2rem;">
             SOROCABA / SP • FRANCISCANOS
         </div>
-        <div style="margin-top: 0.3rem; font-size: 0.78rem; background: #C5A059; color: #2B1810; display: inline-block; padding: 2px 8px; border-radius: 12px; font-weight: bold;">
-            PAZ E BEM!
+        <div style="margin-top: 0.55rem;">
+            <span style="font-size: 0.76rem; background: #FAF2E2; border: 1px solid #C5A059; color: #5A3825; padding: 3px 12px; border-radius: 16px; font-weight: 700; font-family: 'Cinzel', serif; letter-spacing: 1px;">
+                PAZ E BEM!
+            </span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Identificação do Usuário Conectado
+    # Identificação do Usuário Conectado (Card de Credencial)
     perfil = st.session_state.perfil_usuario
     nome = st.session_state.nome_usuario
 
     if perfil == "catequista":
-        st.markdown(f"""
-        <div style="background: #EEDCCE; border-left: 4px solid #781826; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.88rem; margin-bottom: 1rem;">
-            <strong style="color: #781826;">🛡️ Modo: Catequista</strong><br>
-            <span style="font-size: 0.82rem; color: #4A2E1B;">Acesso Completo de Gestão</span>
+        st.markdown("""
+        <div style="background: #FFFFFF; border: 1px solid #E2D7C7; border-left: 4px solid #781826; padding: 0.75rem 0.9rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 1.3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #781826; font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700;">🛡️ MODO PASTORAL</span>
+                <span style="background: #F8EAE9; color: #781826; font-size: 0.70rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;">CATEQUISTA</span>
+            </div>
+            <div style="font-weight: 700; color: #2E1B10; font-size: 0.95rem; margin-top: 0.25rem;">Catequista / Coordenação</div>
+            <div style="font-size: 0.78rem; color: #6D4C41; margin-top: 2px;">Acesso Completo de Gestão</div>
         </div>
         """, unsafe_allow_html=True)
     elif perfil == "degustacao":
-        st.markdown(f"""
-        <div style="background: #FFF8E7; border-left: 4px solid #C5A059; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.88rem; margin-bottom: 1rem;">
-            <strong style="color: #8C6A1D;">🌟 Modo Degustação:</strong><br>
-            <span style="font-weight: bold; color: #2E1B10;">Visitante Convidado</span><br>
-            <span style="font-size: 0.78rem; color: #6B5218;">Navegação aberta sem gravação</span>
+        st.markdown("""
+        <div style="background: #FFFFFF; border: 1px solid #E8E0D2; border-left: 4px solid #C5A059; padding: 0.75rem 0.9rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 1.3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #8C6A1D; font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700;">🌟 CONVIDADO</span>
+                <span style="background: #FFF8E1; color: #8C6A1D; font-size: 0.70rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;">DEGUSTAÇÃO</span>
+            </div>
+            <div style="font-weight: 700; color: #2E1B10; font-size: 0.95rem; margin-top: 0.25rem;">Visitante Convidado</div>
+            <div style="font-size: 0.78rem; color: #6D4C41; margin-top: 2px;">Navegação aberta sem gravação</div>
         </div>
         """, unsafe_allow_html=True)
     else:
         turma_nome_exib = st.session_state.get("turma_nome", "")
         turma_nivel_exib = st.session_state.get("turma_nivel", "")
-        turma_nome_exib = st.session_state.get("turma_nome", "")
-        turma_nivel_exib = st.session_state.get("turma_nivel", "")
-        turma_info_html = f"<div style='font-size: 0.76rem; color: #2E7D32; margin-top: 2px;'>🏫 <em>{turma_nome_exib} ({turma_nivel_exib})</em></div>" if turma_nome_exib else ""
+        turma_info_html = f"<div style='font-size: 0.78rem; color: #2E7D32; margin-top: 2px; font-weight: 500;'>🏫 {turma_nome_exib} ({turma_nivel_exib})</div>" if turma_nome_exib else ""
         st.markdown(f"""
-        <div style="background: #E8F0E4; border-left: 4px solid #2E7D32; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.88rem; margin-bottom: 1rem;">
-            <strong style="color: #1B5E20;">👤 Catequisando:</strong><br>
-            <span style="font-weight: bold; color: #2E1B10;">{nome}</span>
+        <div style="background: #FFFFFF; border: 1px solid #D5E5D5; border-left: 4px solid #2E7D32; padding: 0.75rem 0.9rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 1.3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #2E7D32; font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700;">👤 CATEQUISANDO</span>
+                <span style="background: #E8F5E9; color: #2E7D32; font-size: 0.70rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;">ALUNO</span>
+            </div>
+            <div style="font-weight: 700; color: #2E1B10; font-size: 0.95rem; margin-top: 0.25rem;">{nome}</div>
             {turma_info_html}
         </div>
         """, unsafe_allow_html=True)
@@ -296,8 +306,11 @@ with st.sidebar:
         }
 
     st.markdown("""
-    <div style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: bold; color: #781826; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem;">
-        ☩ Dimensão / Pilar:
+    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 0.45rem;">
+        <span style="color: #781826; font-size: 0.95rem;">☩</span>
+        <span style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; color: #781826; text-transform: uppercase; letter-spacing: 1px;">
+            Dimensão Formativa:
+        </span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -317,8 +330,11 @@ with st.sidebar:
     st.session_state.pilar_ativo = grupo_selecionado
 
     st.markdown("""
-    <div style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: bold; color: #5A3825; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.7rem; margin-bottom: 0.3rem;">
-        📄 Conteúdos & Módulos:
+    <div style="display: flex; align-items: center; gap: 6px; margin-top: 1.3rem; margin-bottom: 0.55rem;">
+        <span style="color: #5A3825; font-size: 0.85rem;">✦</span>
+        <span style="font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; color: #5A3825; text-transform: uppercase; letter-spacing: 1px;">
+            Módulos & Conteúdos:
+        </span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -330,7 +346,9 @@ with st.sidebar:
         key=f"radio_pag_{grupo_selecionado}"
     )
 
-    st.markdown("---")
+    st.markdown("""
+    <div style="margin: 1.4rem 0 1.1rem 0; height: 1px; background: linear-gradient(to right, transparent, #D8C8B4, transparent);"></div>
+    """, unsafe_allow_html=True)
 
     # Botão de Sair / Trocar Usuário
     if st.button("🚪 Sair / Trocar de Usuário", use_container_width=True):
@@ -343,20 +361,22 @@ with st.sidebar:
         st.session_state.turma_nivel = ""
         st.rerun()
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
     # Itinerário Litúrgico
     st.markdown("""
-    <div style="background: #F4EBE1; border-left: 3px solid #781826; padding: 0.7rem; border-radius: 4px; font-size: 0.85rem;">
-        <strong style="color: #781826; font-family: 'Cinzel', serif;">Itinerário Litúrgico:</strong><br>
-        • Apresentação: <em>4º Dom. Quaresma</em><br>
-        • Sacramentos: <em>Vigília Pascal</em>
+    <div style="background: #FFFFFF; border: 1px solid #E2D7C7; border-left: 3px solid #781826; padding: 0.8rem; border-radius: 8px; font-size: 0.84rem; margin-top: 1.2rem; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+        <div style="color: #781826; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.82rem; margin-bottom: 0.3rem;">
+            ⏳ ITINERÁRIO LITÚRGICO
+        </div>
+        <div style="color: #4A2E1B; line-height: 1.45;">
+            • Apresentação: <em>4º Dom. Quaresma</em><br>
+            • Sacramentos: <em>Vigília Pascal</em>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
     # Bênção de Frei Leão
     st.markdown("""
-    <div style="text-align: center; font-size: 0.8rem; color: #5A3825; font-style: italic; border-top: 1px solid #D8C8B4; padding-top: 0.8rem; margin-top: 0.8rem;">
+    <div style="text-align: center; font-size: 0.82rem; color: #5A3825; font-style: italic; border-top: 1px solid #E2D7C7; padding-top: 0.9rem; margin-top: 1.2rem; line-height: 1.4;">
         "O Senhor te abençoe e te guarde.<br>Mostre-te a sua face e te dê a paz!" ☩
     </div>
     """, unsafe_allow_html=True)
