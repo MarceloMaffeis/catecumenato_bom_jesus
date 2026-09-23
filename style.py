@@ -485,6 +485,145 @@ button[data-testid="baseButton-primary"]:hover {
     color: #FFFFFF !important;
     font-weight: 700 !important;
 }
+
+/* ========================================================================= */
+/* PADRÃO HUB SACRO: SETORES, CARDS E BOTÕES DE ACESSO DIRETO (NOVA STELLARIS) */
+/* ========================================================================= */
+
+.sector-header-sacro {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, #F6ECE0 0%, #FAF8F5 100%);
+    border-left: 6px solid #781826;
+    border-radius: 8px;
+    margin: 26px 0 16px 0;
+    border-top: 1px solid #E2D7C7;
+    border-bottom: 1px solid #E2D7C7;
+    border-right: 1px solid #E2D7C7;
+    box-shadow: 0 2px 8px rgba(120, 24, 38, 0.03);
+}
+
+.sector-header-sacro .sector-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.sector-header-sacro h3 {
+    font-family: 'Cinzel', serif !important;
+    color: #781826 !important;
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+.sector-header-sacro .sector-desc {
+    color: #5A3825 !important;
+    font-size: 0.90rem !important;
+    margin: 3px 0 0 0 !important;
+    font-style: italic;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Cartões Diretos de Acesso aos Módulos Sacros com Altura Rigorosamente Alinhada */
+.hub-card-sacro {
+    background: #FFFFFF;
+    background-image: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
+    border: 1px solid #D8C8B4;
+    border-radius: 14px;
+    padding: 16px 12px 12px 12px;
+    text-align: center;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    height: 175px !important;
+    min-height: 175px !important;
+    max-height: 175px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    margin-bottom: 8px;
+}
+
+.hub-card-sacro::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #C5A059;
+}
+
+.hub-card-sacro:hover {
+    transform: translateY(-4px);
+    border-color: #781826;
+    box-shadow: 0 10px 24px rgba(120, 24, 38, 0.12);
+    background: #FFFEFD;
+}
+
+.hub-card-sacro.accent-bordo::before { background: #781826; }
+.hub-card-sacro.accent-ouro::before { background: #C5A059; }
+.hub-card-sacro.accent-franciscano::before { background: #5A3825; }
+.hub-card-sacro.accent-verde::before { background: #2E7D32; }
+
+.hub-card-icon {
+    font-size: 2.1rem;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.hub-card-title {
+    color: #781826 !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    margin: 0 0 4px 0 !important;
+    min-height: 2.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.25;
+}
+
+.hub-card-desc {
+    color: #5A3825 !important;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.84rem !important;
+    line-height: 1.35;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Alinhamento uniforme dos botões de acesso */
+div[data-testid="stColumn"] .stButton > button {
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+    border-radius: 8px !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 700 !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0.3px !important;
+    border: 1px solid #C5A059 !important;
+    background: #FFFFFF !important;
+    color: #781826 !important;
+    transition: all 0.22s ease !important;
+}
+
+div[data-testid="stColumn"] .stButton > button:hover {
+    background: linear-gradient(135deg, #781826 0%, #5A111C 100%) !important;
+    color: #FFFFFF !important;
+    border-color: #781826 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 14px rgba(120, 24, 38, 0.22) !important;
+}
 </style>
 """
 
@@ -509,3 +648,27 @@ def render_header(titulo="CATECUMENATO DE ADULTOS", subtitulo="Iniciação Crist
 def render_divider(texto="✦ ☩ ✦"):
     import streamlit as st
     st.markdown(f'<div class="sacro-divider"><span>{texto}</span></div>', unsafe_allow_html=True)
+
+def render_sector_header(icone, titulo, subtitulo):
+    import streamlit as st
+    html = f"""
+    <div class="sector-header-sacro">
+        <span class="sector-icon">{icone}</span>
+        <div>
+            <h3>{titulo}</h3>
+            <div class="sector-desc">{subtitulo}</div>
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
+
+def render_hub_card(icone, titulo, descricao, accent_class="accent-bordo"):
+    import streamlit as st
+    html = f"""
+    <div class="hub-card-sacro {accent_class}">
+        <div class="hub-card-icon">{icone}</div>
+        <div class="hub-card-title">{titulo}</div>
+        <div class="hub-card-desc">{descricao}</div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)

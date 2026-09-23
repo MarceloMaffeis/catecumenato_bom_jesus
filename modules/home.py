@@ -329,7 +329,7 @@ def render():
             <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
                 ⚡ Pilares da Formação
             </h4>
-            <p style="font-size: 0.98rem; margin-bottom: 0.8rem;">Dimensões organizadas no menu lateral:</p>
+            <p style="font-size: 0.98rem; margin-bottom: 0.8rem;">Dimensões da fé no portal de formação:</p>
             <ul style="font-size: 0.96rem; line-height: 1.8; list-style-type: none; padding-left: 0;">
                 <li>🎓 <strong>Curso & Formação:</strong> Encontros, Chamada e Vigília</li>
                 <li>🏛️ <strong>Teologia & Doutrina:</strong> Tratados, Moral e Confissão</li>
