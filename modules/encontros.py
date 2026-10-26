@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-Módulo dos 40 Encontros do Catecumenato com Arte Sacra Católica
-Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
+Módulo dos 40 Encontros da Catequese com Arte Sacra Católica
+Catequese da Igreja Católica Apostólica Romana — Diretório de Sorocaba
+Hub de Consulta, Formação Doutrinal e Testes com Download em HTML
 """
 
+import os
 import streamlit as st
 import database
 from style import render_divider
+from data.quizzes_encontros import get_quiz_for_encontro
+from modules.export_html import gerar_html_anotacoes, gerar_html_quiz
 
 def render():
     st.markdown("""
     <div style="text-align: center; margin-bottom: 1.5rem;">
         <h2 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
-            ☩ Os 40 Encontros do Catecumenato ☩
+            ☩ Os 40 Encontros da Catequese ☩
         </h2>
         <p style="font-size: 1.1rem; color: #5A3825; font-style: italic;">
-            Sequência completa de formação doutrinal, bíblica, espiritual e litúrgica
+            Diretório de Sorocaba • Sequência completa de formação doutrinal, bíblica, espiritual e litúrgica
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -34,18 +38,10 @@ def render():
         st.warning("Nenhum encontro encontrado com os filtros selecionados.")
         return
 
-    # Recuperar identificação e progresso do usuário para badges e controle
-    perfil_usuario = st.session_state.get("perfil_usuario", "visitante")
-    nome_usuario = st.session_state.get("nome_usuario", "Visitante")
-    cid_usuario = st.session_state.get("catecumeno_id", 0)
-    progresso_info = database.get_progresso_catecumeno(cid_usuario) if cid_usuario else {"lista_concluidos": set()}
-    concluidos_set = progresso_info.get("lista_concluidos", set())
-
     # Seletor do Encontro
     opcoes_encontros = {}
     for e in encontros:
-        badge = " ✅" if e["numero"] in concluidos_set else ""
-        opcoes_encontros[f"Encontro {e['numero']:02d}: {e['titulo']}{badge}"] = e["numero"]
+        opcoes_encontros[f"Encontro {e['numero']:02d}: {e['titulo']}"] = e["numero"]
     
     if "encontro_atual_num" not in st.session_state:
         st.session_state.encontro_atual_num = encontros[0]["numero"]
@@ -71,7 +67,7 @@ def render():
             st.session_state.encontro_atual_num = opcoes_encontros[opcoes_keys[idx_atual + 1]]
             st.rerun()
     with col_nav2:
-        escolha = st.selectbox("Selecione o Encontro para Estudo e Aula:", opcoes_keys, index=idx_atual)
+        escolha = st.selectbox("Selecione o Encontro para Consulta e Estudo:", opcoes_keys, index=idx_atual)
         st.session_state.encontro_atual_num = opcoes_encontros[escolha]
 
     encontro = database.get_encontro_by_numero(st.session_state.encontro_atual_num)
@@ -81,22 +77,18 @@ def render():
     # Painel do Encontro com Obra de Arte Sacra
     col_banner_img, col_banner_txt = st.columns([1, 1.6])
     with col_banner_img:
-        import os
         num_enc = encontro.get("numero", 1)
         legenda = encontro.get("imagem_legenda", "")
         img_ref = encontro.get("imagem_url")
         
-        # Diretório base do repositório
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
-        # Candidatos prioritários de arquivos locais
         candidatos = [
             os.path.join(base_dir, "assets", "images", f"encontro_{num_enc:02d}.jpg"),
             os.path.join("assets", "images", f"encontro_{num_enc:02d}.jpg"),
             os.path.abspath(os.path.join("assets", "images", f"encontro_{num_enc:02d}.jpg"))
         ]
         
-        # Adicionar o img_ref se fornecido e for caminho de arquivo
         if img_ref and not img_ref.startswith("http://") and not img_ref.startswith("https://"):
             candidatos.insert(0, os.path.join(base_dir, img_ref) if not os.path.isabs(img_ref) else img_ref)
             candidatos.insert(1, img_ref)
@@ -110,7 +102,7 @@ def render():
         if caminho_final:
             try:
                 st.image(caminho_final, caption=legenda, use_container_width=True)
-            except Exception as e:
+            except Exception:
                 st.info(f"🎨 {legenda}")
         elif img_ref and (img_ref.startswith("http://") or img_ref.startswith("https://")):
             try:
@@ -119,32 +111,8 @@ def render():
                 st.info(f"🎨 {legenda}")
         else:
             st.info(f"🎨 {legenda}")
-    with col_banner_txt:
-        status_html = ""
-        if cid_usuario and cid_usuario > 0:
-            info_c = database.is_encontro_concluido(cid_usuario, encontro['numero'])
-            if info_c:
-                status_html = (
-                    f'<div style="margin-top: 0.6rem; background: #E8F5E9; border: 1px solid #81C784; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
-                    f'<span style="font-size: 1.1rem;">✅</span>'
-                    f'<strong style="color: #2E7D32; font-size: 0.92rem;">Estudo Concluído em {info_c["data_conclusao"]}</strong>'
-                    f'</div>'
-                )
-            else:
-                status_html = (
-                    '<div style="margin-top: 0.6rem; background: #FFF8E1; border: 1px solid #FFE082; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
-                    '<span style="font-size: 1.1rem;">📖</span>'
-                    '<span style="color: #795548; font-size: 0.92rem; font-weight: 500;">Encontro em andamento</span>'
-                    '</div>'
-                )
-        elif perfil_usuario == "degustacao":
-            status_html = (
-                '<div style="margin-top: 0.6rem; background: #EDE7F6; border: 1px solid #B39DDB; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
-                '<span style="font-size: 1.1rem;">🌟</span>'
-                '<span style="color: #4A148C; font-size: 0.92rem; font-weight: 500;">Modo Degustação (Visitante)</span>'
-                '</div>'
-            )
 
+    with col_banner_txt:
         card_html = (
             f'<div class="pergaminho-card-bordo" style="height: 100%;">'
             f'<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">'
@@ -161,24 +129,27 @@ def render():
             f'<p style="font-size: 1.05rem; color: #3A2315; font-style: italic; margin-bottom: 0.4rem; line-height: 1.5;">'
             f'{encontro["resumo"]}'
             f'</p>'
-            f'{status_html}'
+            f'<div style="margin-top: 0.6rem; background: #FAF5EB; border: 1px solid #C5A059; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px;">'
+            f'<span style="font-size: 1.1rem;">☩</span>'
+            f'<span style="color: #5A3825; font-size: 0.92rem; font-weight: 600;">Diretório de Sorocaba • Hub de Consulta Livre</span>'
+            f'</div>'
             f'</div>'
         )
         st.markdown(card_html, unsafe_allow_html=True)
 
     # Abas com conteúdo aprofundado
-    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_impressao, tab_quiz, tab_anexos = st.tabs([
+    tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_quiz, tab_impressao, tab_anexos = st.tabs([
         "📋 Roteiro da Aula",
         "📖 Sagrada Escritura",
         "🏛️ Sagrado Magistério & CIC",
-        "🕊️ Pílula Franciscana",
-        "✍️ Diário & Partilha",
+        "🕊️ Espiritualidade",
+        "✍️ Anotações (Download HTML)",
+        "🎯 Teste da Fé (Download HTML)",
         "🖨️ Ficha de Impressão",
-        "🎯 Quiz da Fé & Reflexão",
         "📎 Materiais & Anexos"
     ])
 
-    # 1. Roteiro do Catequista
+    # 1. Roteiro do Catequista / Aula
     with tab_roteiro:
         col_r1, col_r2 = st.columns([1.2, 1])
         with col_r1:
@@ -253,7 +224,7 @@ def render():
         """, unsafe_allow_html=True)
 
         st.link_button(
-            "🔗 Abrir Bíblia Católica Online (Padre Paulo Ricardo / Edição Canônica)",
+            "🔗 Abrir Bíblia Católica Online (Edição Canônica)",
             "https://padrepauloricardo.org/biblia",
             help="Acesso ao texto bíblico integral com notas e comentários católicos"
         )
@@ -297,22 +268,22 @@ def render():
                 "https://www.vatican.va/archive/cdc/index_po.htm"
             )
 
-    # 4. Pílula Franciscana
+    # 4. Pílula Franciscana / Espiritualidade
     with tab_franciscano:
         st.markdown("""
         <h4 style="color: #5A3825; font-family: 'Cinzel', serif;">
-            🌿 Espiritualidade Franciscana e o Bom Jesus dos Aflitos
+            🌿 Espiritualidade e Reflexão Espiritual
         </h4>
         """, unsafe_allow_html=True)
 
         st.markdown(f"""
         <div class="pilula-franciscana">
-            <h4>☩ O Testemunho do Irmão Menor</h4>
+            <h4>☩ Testemunho & Vivência Cristã</h4>
             <p style="font-size: 1.15rem; line-height: 1.7; color: #2E1B10;">
                 {encontro['reflexao_franciscana']}
             </p>
             <div style="margin-top: 1rem; font-size: 0.95rem; color: #5A3825; font-style: italic;">
-                "Paz e Bem em todas as coisas!" • Paróquia Bom Jesus dos Aflitos de Sorocaba
+                "Paz e Bem em todas as coisas!" • Diretório de Sorocaba
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -322,150 +293,86 @@ def render():
             "https://franciscanos.org.br/#gsc.tab=0"
         )
 
-    # 5. Diário & Partilha
+    # 5. Anotações & Estudo Pessoal (Download em HTML)
     with tab_diario:
-        perfil_usuario = st.session_state.get("perfil_usuario", "catequista")
-        nome_usuario = st.session_state.get("nome_usuario", "Catequista")
-        cid_usuario = st.session_state.get("catecumeno_id", 0)
-
-        st.markdown(f"""
-        <h4 style="color: #781826; font-family: 'Cinzel', serif;">
-            ✍️ Diário Espiritual & Partilha da Turma
-        </h4>
-        <p style="font-size: 0.98rem; color: #5A3825;">
-            Espaço sagrado para registrar orações, dúvidas que surgiram e propósitos de vida cristã.
-        </p>
-        """, unsafe_allow_html=True)
-
-        if perfil_usuario == "degustacao":
-            st.info("🔒 **Modo Degustação (Visitante):** O Diário Espiritual é uma ferramenta pessoal dos alunos matriculados na turma. No modo de degustação, as anotações não são gravadas no banco de dados. Para ter um diário permanente, faça sua matrícula em uma turma com o catequista!")
-        else:
-            with st.form(f"form_anotacao_{encontro['numero']}", clear_on_submit=True):
-                if perfil_usuario == "catequista":
-                    catecumenos_lista = database.get_catecumenos(filtro_ativo=True)
-                    opcoes_autor = ["Catequista / Registro Geral"] + [f"{c['nome']} (Catecúmeno)" for c in catecumenos_lista]
-                    autor_selecionado = st.selectbox("Autor da Anotação:", opcoes_autor)
-                    cat_id = 0
-                    autor_nome = "Catequista"
-                    if " (Catecúmeno)" in autor_selecionado:
-                        nome_puro = autor_selecionado.replace(" (Catecúmeno)", "")
-                        autor_nome = nome_puro
-                        for c in catecumenos_lista:
-                            if c["nome"] == nome_puro:
-                                cat_id = c["id"]
-                                break
-                else:
-                    autor_nome = nome_usuario
-                    cat_id = cid_usuario
-                    st.info(f"Registrando reflexão como: **{autor_nome}**")
-
-                texto_anotacao = st.text_area("Reflexão espiritual ou apontamento da aula:", placeholder="Escreva aqui a síntese da partilha, o que mais tocou seu coração neste encontro...")
-                btn_salvar = st.form_submit_button("Salvar Reflexão no Diário ☩")
-
-            if btn_salvar:
-                if texto_anotacao.strip():
-                    database.add_anotacao(cat_id, encontro['numero'], autor_nome, texto_anotacao.strip())
-                    st.success("Reflexão gravada com sucesso no diário!")
-                    st.rerun()
-                else:
-                    st.warning("Por favor, digite o texto da reflexão.")
-
-        # Histórico de anotações
-        if perfil_usuario == "catequista":
-            anotacoes = database.get_anotacoes(encontro['numero'])
-        else:
-            anotacoes = database.get_anotacoes(encontro['numero'], catecumeno_id=cid_usuario)
-
-        if anotacoes:
-            st.markdown("##### 📜 Registros Deste Encontro:")
-            for a in anotacoes:
-                st.markdown(f"""
-                <div style="background: #FAF8F5; border: 1px solid #D8C8B4; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 0.8rem;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: #781826; font-weight: bold;">
-                        <span>👤 {a['autor']}</span>
-                        <span>📅 {a['data_registro']}</span>
-                    </div>
-                    <p style="font-size: 1.05rem; margin: 0.5rem 0 0 0; color: #2B1810; line-height: 1.5;">
-                        {a['texto']}
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-        else:
-            st.info("Nenhuma reflexão registrada ainda para este encontro.")
-
-    # 6. Ficha de Impressão
-    with tab_impressao:
         st.markdown("""
         <h4 style="color: #781826; font-family: 'Cinzel', serif;">
-            🖨️ Ficha Resumo do Encontro para Levar à Paróquia
+            ✍️ Anotações Pessoais & Diário de Estudo
         </h4>
-        <p style="font-size: 0.95rem;">
-            Você pode copiar este resumo limpo para imprimir ou enviar aos catecúmenos via WhatsApp/E-mail.
+        <p style="font-size: 1rem; color: #5A3825;">
+            Espaço para redigir seus apontamentos da aula, orações pessoais ou sínteses doutrinais. 
+            Você pode gerar e baixar um arquivo formatado em <strong>HTML</strong> pronto para guardar ou imprimir.
         </p>
         """, unsafe_allow_html=True)
 
-        resumo_texto = f"""PARÓQUIA BOM JESUS DOS AFLITOS - SOROCABA/SP (FRANCISCANOS)
-CATECUMENATO DE ADULTOS — ENCONTRO {encontro['numero']:02d} / 40
-TEMA: {encontro['titulo'].upper()}
-MÓDULO: {encontro['bloco']}
+        nome_autor = st.text_input(
+            "Seu Nome (opcional para constar no cabeçalho do documento):",
+            placeholder="Ex: João da Silva / Catequisando",
+            key=f"autor_anot_{encontro['numero']}"
+        )
 
-OBJETIVO E RESUMO:
-{encontro['resumo']}
+        texto_anotacao = st.text_area(
+            "Suas anotações, síntese do encontro ou oração pessoal:",
+            placeholder="Escreva aqui o que mais tocou seu coração neste encontro, dúvidas esclarecidas ou propósitos práticos de vida cristã...",
+            height=220,
+            key=f"texto_anot_{encontro['numero']}"
+        )
 
-SUBTEMAS ABORDADOS:
-{encontro['subtemas']}
+        col_d1, col_d2 = st.columns([1.5, 2])
+        with col_d1:
+            if texto_anotacao.strip():
+                html_gerado = gerar_html_anotacoes(encontro, texto_anotacao.strip(), nome_autor.strip())
+                st.download_button(
+                    label="📥 Baixar Minhas Anotações em HTML",
+                    data=html_gerado.encode("utf-8"),
+                    file_name=f"Anotacoes_Encontro_{encontro['numero']:02d}.html",
+                    mime="text/html",
+                    type="primary",
+                    use_container_width=True,
+                    key=f"btn_down_anot_{encontro['numero']}"
+                )
+            else:
+                st.button(
+                    "📥 Baixar Minhas Anotações em HTML",
+                    disabled=True,
+                    help="Digite suas anotações no campo acima para habilitar o download.",
+                    use_container_width=True
+                )
 
-PASSAGENS BÍBLICAS PARA LEITURA DURANTE A SEMANA:
-{encontro['referencias_biblicas']}
+        st.markdown("""
+        <div style="background: #FAF8F5; border: 1px dashed #C5A059; border-radius: 6px; padding: 0.8rem 1rem; margin-top: 1rem; font-size: 0.92rem; color: #5A3825;">
+            💡 <strong>Privacidade Total:</strong> Suas anotações não são gravadas em nenhum banco de dados ou servidor externo. O arquivo <code>.html</code> baixado é totalmente autônomo, formatado com tipografia sacra e pronto para ser visualizado em qualquer navegador ou impresso diretamente em PDF (A4).
+        </div>
+        """, unsafe_allow_html=True)
 
-CATECISMO DA IGREJA CATÓLICA:
-{encontro['referencias_magisterio']}
-
-ESPIRITUALIDADE FRANCISCANA:
-{encontro['reflexao_franciscana']}
-
-ORAÇÃO FINAL DO ENCONTRO:
-"{encontro['oracao_final']}"
-
-Paz e Bem!"""
-
-        st.text_area("Texto formatado para cópia/impressão:", value=resumo_texto, height=350)
-
-    # 7. Quiz da Fé & Reflexão Pessoal
+    # 6. Teste da Fé & Avaliação Doutrinal (Download em HTML)
     with tab_quiz:
         st.markdown("""
         <div style="text-align: center; margin-bottom: 1.2rem;">
             <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
-                🎯 Exercício de Fixação da Fé & Meditação Pessoal
+                🎯 Teste de Fixação da Fé & Doutrina Católica
             </h4>
             <p style="font-size: 1.05rem; color: #5A3825; font-style: italic;">
-                Teste sua compreensão da sã doutrina católica com feedback imediato e reflita sobre sua caminhada cristã
+                Avalie seus conhecimentos da sã doutrina católica, receba sua nota instantânea e baixe o relatório completo em HTML
             </p>
         </div>
         """, unsafe_allow_html=True)
 
-        from data.quizzes_encontros import get_quiz_for_encontro
         dados_quiz = get_quiz_for_encontro(encontro['numero'])
         perguntas = dados_quiz.get("perguntas", [])
         reflexao_tema = dados_quiz.get("reflexao", "")
 
-        # Respostas salvas anteriormente no banco para o catecúmeno logado
-        respostas_salvas_db = database.get_respostas_quiz(cid_usuario, encontro['numero']) if cid_usuario else {}
+        nome_estudante_quiz = st.text_input(
+            "Seu Nome (opcional para constar no relatório da avaliação):",
+            placeholder="Ex: Maria de Nazaré / Estudante",
+            key=f"nome_quiz_{encontro['numero']}"
+        )
 
-        # Seção 1: Questões de Escolha Única
+        respostas_usuario = {}
         if perguntas:
-            st.markdown("##### 📝 Questões de Escolha Única:")
+            st.markdown("##### 📝 Questões de Múltipla Escolha:")
             for idx_p, p in enumerate(perguntas):
-                chave_pergunta = f"quiz_{encontro['numero']}_{idx_p}"
-                chave_respondido = f"resp_{encontro['numero']}_{idx_p}"
-
-                salvo = respostas_salvas_db.get(idx_p)
-                idx_padrao = salvo["opcao_escolhida"] if salvo else None
-
-                # Se já estava salvo no banco e ainda não está na sessão, preenche a sessão
-                if chave_respondido not in st.session_state and salvo:
-                    exp_salva = p['explicacao_acerto'] if salvo["acertou"] else p['explicacao_erro']
-                    st.session_state[chave_respondido] = (salvo["acertou"], f"{exp_salva}\n\n*(Registrado no histórico em {salvo['data_resposta']})*")
+                chave_pergunta = f"quiz_sel_{encontro['numero']}_{idx_p}"
 
                 st.markdown(f"""
                 <div class="pergaminho-card" style="margin-bottom: 0.6rem; border-left: 4px solid #781826;">
@@ -479,53 +386,23 @@ Paz e Bem!"""
                 """, unsafe_allow_html=True)
 
                 escolha = st.radio(
-                    f"Selecione a alternativa para a questão {idx_p + 1}:",
-                    p['opcoes'],
-                    key=f"radio_{chave_pergunta}",
-                    index=idx_padrao,
+                    f"Questão {idx_p + 1}",
+                    options=p['opcoes'],
+                    key=chave_pergunta,
+                    index=None,
                     label_visibility="collapsed"
                 )
+                if escolha is not None:
+                    respostas_usuario[idx_p] = p['opcoes'].index(escolha)
 
-                col_btn, col_espaco = st.columns([1.2, 2])
-                with col_btn:
-                    btn_verificar = st.button(
-                        f"Confirmar Resposta {idx_p + 1} ☩",
-                        key=f"btn_{chave_pergunta}",
-                        type="primary"
-                    )
-
-                if btn_verificar:
-                    if escolha is None:
-                        st.warning("Selecione uma das alternativas acima antes de confirmar.")
-                    else:
-                        idx_escolhido = p['opcoes'].index(escolha)
-                        acertou = (idx_escolhido == p['correta'])
-                        explicacao = p['explicacao_acerto'] if acertou else p['explicacao_erro']
-                        st.session_state[chave_respondido] = (acertou, explicacao)
-                        
-                        # Salvar no banco SQLite de forma permanente apenas para alunos matriculados
-                        if perfil_usuario == "degustacao":
-                            st.toast("Resposta avaliada! No modo degustação não gravamos no histórico. 🌟", icon="🌟")
-                        elif cid_usuario:
-                            database.salvar_resposta_quiz(cid_usuario, encontro['numero'], idx_p, idx_escolhido, acertou)
-                            st.toast("Resposta gravada no seu histórico de fé! ☩", icon="✅")
-
-                if chave_respondido in st.session_state:
-                    acertou, explicacao = st.session_state[chave_respondido]
-                    if acertou:
-                        st.success(f"✅ **RESPOSTA CORRETA!**\n\n{explicacao}")
-                    else:
-                        st.error(f"❌ **RESPOSTA INCORRETA**\n\n{explicacao}")
-
-                st.markdown("<hr style='border: 0; border-top: 1px dashed #D8C8B4; margin: 1rem 0 1.5rem 0;'>", unsafe_allow_html=True)
-
-        # Seção 2: Meditação Espiritual & Partilha
+        # Reflexão / Meditação Opcional
+        texto_meditacao = ""
         if reflexao_tema:
-            st.markdown("##### 🕊️ Meditação Espiritual & Exame do Coração:")
+            st.markdown("##### 🕊️ Meditação & Exame do Coração:")
             st.markdown(f"""
             <div class="pilula-franciscana">
                 <h5 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">
-                    🌿 Pergunta para Meditação Pessoal:
+                    🌿 Questão para Meditação Pessoal:
                 </h5>
                 <p style="font-size: 1.1rem; line-height: 1.6; color: #2E1B10; font-style: italic; margin-bottom: 0;">
                     "{reflexao_tema}"
@@ -533,28 +410,135 @@ Paz e Bem!"""
             </div>
             """, unsafe_allow_html=True)
 
-            if perfil_usuario == "degustacao":
-                st.info("🔒 No Modo Degustação, a gravação de orações e meditações no diário espiritual está desativada.")
+            texto_meditacao = st.text_area(
+                "Sua oração ou compromisso espiritual diante desta meditação (opcional):",
+                placeholder="Escreva sua oração ou como pretende viver este ensinamento...",
+                key=f"txt_meditacao_quiz_{encontro['numero']}"
+            )
+
+        col_q1, col_q2 = st.columns([1.5, 2])
+        with col_q1:
+            btn_avaliar = st.button("Avaliar Teste & Calcular Nota ☩", type="primary", use_container_width=True, key=f"btn_avaliar_{encontro['numero']}")
+
+        chave_resultado = f"resultado_quiz_{encontro['numero']}"
+        if btn_avaliar:
+            if len(respostas_usuario) < len(perguntas):
+                st.warning(f"Por favor, responda a todas as {len(perguntas)} questões antes de calcular sua nota.")
             else:
-                with st.form(f"form_reflexao_quiz_{encontro['numero']}"):
-                    texto_refl = st.text_area(
-                        "Sua oração ou compromisso de vida diante desta meditação:",
-                        placeholder="Escreva sua oração sincera a Deus ou como você pretende viver este ensinamento em sua vida prática...",
-                        key=f"txt_refl_{encontro['numero']}"
-                    )
-                    btn_salvar_refl = st.form_submit_button("Gravar no Meu Diário Espiritual ☩")
-                    if btn_salvar_refl:
-                        if texto_refl.strip():
-                            database.add_anotacao(
-                                st.session_state.get("catecumeno_id", 0),
-                                encontro['numero'],
-                                st.session_state.get("nome_usuario", "Catequisando"),
-                                f"[Reflexão do Quiz] {texto_refl.strip()}"
-                            )
-                            st.success("Sua reflexão foi gravada com sucesso no diário espiritual!")
-                            st.rerun()
-                        else:
-                            st.warning("Por favor, digite sua meditação antes de gravar.")
+                acertos = sum(1 for idx, p in enumerate(perguntas) if respostas_usuario.get(idx) == p['correta'])
+                total = len(perguntas)
+                pct = int(round((acertos / total) * 100)) if total > 0 else 0
+                st.session_state[chave_resultado] = {
+                    "acertos": acertos,
+                    "total": total,
+                    "percentual": pct,
+                    "respostas": respostas_usuario,
+                    "meditacao": texto_meditacao,
+                    "nome": nome_estudante_quiz
+                }
+                st.rerun()
+
+        # Exibição do Resultado se já avaliado
+        if chave_resultado in st.session_state:
+            res = st.session_state[chave_resultado]
+            acertos = res["acertos"]
+            total = res["total"]
+            pct = res["percentual"]
+
+            render_divider("RESULTADO DO SEU TESTE DA FÉ")
+            
+            cor_box = "#2E7D32" if pct >= 70 else "#C62828"
+            st.markdown(f"""
+            <div style="background: #FFFFFF; border: 2px solid {cor_box}; border-radius: 10px; padding: 1.2rem; text-align: center; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <div style="font-family: 'Cinzel', serif; font-size: 1.1rem; color: #5A3825; font-weight: bold;">
+                    RELATÓRIO DE AVALIAÇÃO DA SÃ DOUTRINA
+                </div>
+                <div style="font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 900; color: {cor_box}; margin: 0.3rem 0;">
+                    Nota: {acertos} / {total}
+                </div>
+                <div style="font-size: 1.2rem; font-weight: 600; color: #2B1810;">
+                    Aproveitamento: {pct}%
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Detalhes e feedback de cada questão
+            for idx, p in enumerate(perguntas):
+                resp_dada = res["respostas"].get(idx)
+                acertou = (resp_dada == p['correta'])
+                explicacao = p['explicacao_acerto'] if acertou else p['explicacao_erro']
+
+                if acertou:
+                    st.success(f"✅ **Questão {idx + 1}: Resposta Correta!**\n\n{explicacao}")
+                else:
+                    st.error(f"❌ **Questão {idx + 1}: Resposta Incorreta**\n\n*Resposta correta:* **{p['opcoes'][p['correta']]}**\n\n{explicacao}")
+
+            # Botão de Download do Teste em HTML
+            html_teste = gerar_html_quiz(
+                encontro=encontro,
+                perguntas=perguntas,
+                respostas_usuario=res["respostas"],
+                nota=acertos,
+                total=total,
+                percentual=pct,
+                reflexao_texto=res.get("meditacao", ""),
+                nome_autor=res.get("nome", "")
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_down1, col_down2 = st.columns([1.5, 2])
+            with col_down1:
+                st.download_button(
+                    label="📥 Baixar Teste Concluído em HTML",
+                    data=html_teste.encode("utf-8"),
+                    file_name=f"Teste_Encontro_{encontro['numero']:02d}.html",
+                    mime="text/html",
+                    type="primary",
+                    use_container_width=True,
+                    key=f"btn_down_quiz_{encontro['numero']}"
+                )
+
+            st.caption("📄 *O arquivo HTML baixado inclui todas as questões, suas respostas, o gabarito oficial com a fundamentação do Catecismo e a sua nota.*")
+
+    # 7. Ficha de Impressão
+    with tab_impressao:
+        st.markdown("""
+        <h4 style="color: #781826; font-family: 'Cinzel', serif;">
+            🖨️ Ficha Resumo do Encontro para Estudo
+        </h4>
+        <p style="font-size: 0.95rem;">
+            Texto sumarizado com todos os tópicos, fundamentações e oração deste encontro para cópia rápida.
+        </p>
+        """, unsafe_allow_html=True)
+
+        resumo_texto = f"""CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA — DIRETÓRIO DE SOROCABA
+ENCONTRO {encontro['numero']:02d} / 40: {encontro['titulo'].upper()}
+MÓDULO: {encontro['bloco']}
+
+OBJETIVO E RESUMO:
+{encontro['resumo']}
+
+SUBTEMAS ABORDADOS:
+{encontro['subtemas']}
+
+PASSAGENS BÍBLICAS PARA LEITURA DURANTE A SEMANA:
+{encontro['referencias_biblicas']}
+
+CATECISMO DA IGREJA CATÓLICA (CIC):
+{encontro['referencias_magisterio']}
+
+FONTES COMPLEMENTARES:
+{encontro['fontes_complementares']}
+
+ESPIRITUALIDADE:
+{encontro['reflexao_franciscana']}
+
+ORAÇÃO FINAL DO ENCONTRO:
+"{encontro['oracao_final']}"
+
+Paz e Bem! — Diretório de Sorocaba"""
+
+        st.text_area("Texto formatado para cópia/impressão:", value=resumo_texto, height=350)
 
     # 8. Materiais e Anexos da Aula
     with tab_anexos:
@@ -564,52 +548,16 @@ Paz e Bem!"""
                 📎 Materiais Complementares & Anexos do Encontro
             </h4>
             <p style="font-size: 1.05rem; color: #5A3825; font-style: italic;">
-                Arquivos pastorais, roteiros de leitura, apresentações e textos de apoio disponibilizados pelo catequista
+                Arquivos, roteiros de leitura e textos de apoio disponibilizados para este encontro
             </p>
         </div>
         """, unsafe_allow_html=True)
 
         materiais = database.get_materiais_encontro(encontro['numero'])
-        perfil_usuario = st.session_state.get("perfil_usuario", "visitante")
-
-        # Se for catequista, exibe formulário de upload
-        if perfil_usuario == "catequista":
-            st.markdown("##### 📤 Disponibilizar Novo Material para a Turma:")
-            with st.form(f"form_upload_material_{encontro['numero']}", clear_on_submit=True):
-                arquivo_enviado = st.file_uploader(
-                    "Selecione o arquivo pastoral (PDF, slides, documento, imagem, áudio):",
-                    type=["pdf", "docx", "pptx", "txt", "png", "jpg", "jpeg", "mp3"],
-                    key=f"file_upload_{encontro['numero']}"
-                )
-                desc_material = st.text_input(
-                    "Descrição breve do material (opcional):",
-                    placeholder="Ex: Slides da aula ministrada no sábado / Roteiro impresso para leitura em família",
-                    key=f"desc_upload_{encontro['numero']}"
-                )
-                btn_enviar = st.form_submit_button("Publicar Anexo para os Catequisandos ☩", type="primary")
-
-                if btn_enviar:
-                    if arquivo_enviado is not None:
-                        conteudo_bytes = arquivo_enviado.read()
-                        database.adicionar_material_encontro(
-                            encontro['numero'],
-                            arquivo_enviado.name,
-                            conteudo_bytes,
-                            desc_material
-                        )
-                        st.success(f"Arquivo '{arquivo_enviado.name}' publicado com sucesso para este encontro!")
-                        st.rerun()
-                    else:
-                        st.warning("Por favor, selecione um arquivo para enviar.")
-
-            st.markdown("---")
-
-        # Lista de materiais para download (visível para catequisandos e catequistas)
         if materiais:
             st.markdown(f"##### 📥 Materiais Disponíveis para Download ({len(materiais)}):")
             for mat in materiais:
                 tamanho_kb = round(mat["tamanho_bytes"] / 1024.0, 1)
-                
                 col_m1, col_m2 = st.columns([3, 1.2])
                 with col_m1:
                     st.markdown(f"""
@@ -637,52 +585,5 @@ Paz e Bem!"""
                         )
                     else:
                         st.error("Arquivo não encontrado no servidor.")
-
-                    if perfil_usuario == "catequista":
-                        if st.button("🗑️ Remover", key=f"del_mat_{mat['id']}", use_container_width=True):
-                            database.remover_material_encontro(mat["id"])
-                            st.warning("Material removido.")
-                            st.rerun()
         else:
-            st.info("O catequista ainda não disponibilizou materiais complementares para download neste encontro.")
-
-    # Ação de Conclusão do Encontro (para o Catequisando)
-    if cid_usuario:
-        st.markdown("<br>", unsafe_allow_html=True)
-        info_concl = database.is_encontro_concluido(cid_usuario, encontro['numero'])
-        
-        st.markdown("""
-        <div style="border-top: 1px solid #D8C8B4; margin-top: 1rem; padding-top: 1rem;"></div>
-        """, unsafe_allow_html=True)
-        
-        col_c1, col_c2 = st.columns([2.5, 1.5])
-        with col_c1:
-            if info_concl:
-                st.markdown(f"""
-                <div style="background: #E8F5E9; border-left: 4px solid #2E7D32; padding: 0.8rem 1rem; border-radius: 4px;">
-                    <strong style="color: #1B5E20; font-size: 1.05rem;">🎉 Encontro Concluído!</strong><br>
-                    <span style="color: #2E1B10; font-size: 0.95rem;">
-                        Você registrou a conclusão dos estudos deste encontro em <strong>{info_concl['data_conclusao']}</strong>.
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown("""
-                <div style="background: #FAF8F5; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 4px;">
-                    <strong style="color: #781826; font-size: 1.05rem;">☩ Conclusão dos Estudos</strong><br>
-                    <span style="color: #5A3825; font-size: 0.95rem;">
-                        Terminou de estudar o roteiro, as leituras e realizar o quiz? Marque como concluído para atualizar seu avanço na jornada de fé.
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
-        with col_c2:
-            if info_concl:
-                if st.button("↩️ Desmarcar Conclusão", key=f"btn_unmark_{encontro['numero']}", use_container_width=True):
-                    database.desmarcar_encontro_concluido(cid_usuario, encontro['numero'])
-                    st.rerun()
-            else:
-                if st.button("☩ Marcar como Concluído ☩", key=f"btn_mark_{encontro['numero']}", type="primary", use_container_width=True):
-                    database.marcar_encontro_concluido(cid_usuario, encontro['numero'])
-                    st.balloons()
-                    st.success("Encontro marcado como concluído com sucesso!")
-                    st.rerun()
+            st.info("Não há arquivos externos anexados para este encontro. O conteúdo formativo está integralmente disponível nas abas acima.")

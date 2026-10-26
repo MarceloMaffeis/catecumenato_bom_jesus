@@ -631,15 +631,15 @@ def apply_sacred_style():
     import streamlit as st
     st.markdown(SACRED_CSS, unsafe_allow_html=True)
 
-def render_header(titulo="CATECUMENATO DE ADULTOS", subtitulo="Iniciação Cristã e Formação na Fé Católica"):
+def render_header(titulo="CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA", subtitulo="Diretório de Sorocaba • Hub de Consulta e Formação Doutrinal"):
     import streamlit as st
     html = f"""
     <div class="parish-header">
-        <div class="tau-badge">☩ PAZ E BEM! • SOROCABA / SP ☩</div>
+        <div class="tau-badge">☩ DIRETÓRIO DE SOROCABA • IGREJA CATÓLICA APOSTÓLICA ROMANA ☩</div>
         <h1>{titulo}</h1>
         <div class="subtitulo">{subtitulo}</div>
         <div style="font-size: 0.95rem; margin-top: 0.6rem; color: #E8D8B8; font-family: 'Cinzel', serif;">
-            Paróquia Bom Jesus dos Aflitos • Frades Franciscanos Menores
+            Diretório de Sorocaba • Formação, Sagrada Escritura e Tradição Católica
         </div>
     </div>
     """

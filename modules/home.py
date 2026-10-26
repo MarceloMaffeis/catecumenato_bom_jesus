@@ -1,263 +1,139 @@
 # -*- coding: utf-8 -*-
 """
 Módulo Principal: Página Inicial e Visão Geral Pastoral
-Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
+Catequese da Igreja Católica Apostólica Romana — Diretório de Sorocaba
+Hub de Consulta e Formação Doutrinal Aberta
 """
 
 import streamlit as st
 import database
-from style import render_header, render_divider
+from style import render_header, render_divider, render_hub_card, render_sector_header
 
 def render():
     render_header(
-        titulo="CATECUMENATO DE ADULTOS",
-        subtitulo="Iniciação Cristã • Encontro Pessoal com Jesus Cristo"
+        titulo="CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA",
+        subtitulo="Diretório de Sorocaba • Hub de Consulta, Formação & Doutrina"
     )
 
-    perfil = st.session_state.get("perfil_usuario", "visitante")
-    cid_usuario = st.session_state.get("catecumeno_id", 0)
-    nome_usuario = st.session_state.get("nome_usuario", "Irmão em Cristo")
+    # Painel Acolhedor de Abertura do Hub
+    st.markdown("""
+    <div class="pergaminho-card-franciscano">
+        <h3 style="color: #781826; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+            <span>☩</span> Paz e Bem! Seja bem-vindo ao Hub de Consulta da Catequese
+        </h3>
+        <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 0.5rem; text-align: justify;">
+            Este portal reúne o <strong>itinerário formativo completo da fé católica</strong> organizado pelo 
+            <strong>Diretório de Sorocaba da Igreja Católica Apostólica Romana</strong>. 
+            Desenvolvido como um <strong>espaço de livre consulta e estudo</strong>, aqui catequistas, catequisandos, 
+            estudantes de teologia e qualquer fiel católico têm acesso direto e irrestrito ao acervo dos 
+            <strong>40 Encontros</strong>, aos <strong>Tratados Teológicos</strong>, à <strong>Sagrada Liturgia</strong> e às 
+            <strong>Fontes do Magistério da Igreja</strong>.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if perfil == "degustacao":
-        # Painel Acolhedor do Visitante / Degustação
-        st.markdown("""
-        <div class="pergaminho-card-franciscano">
-            <h3 style="color: #781826; margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                <span>☩</span> Paz e Bem, querido(a) visitante!
-            </h3>
-            <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 0.5rem; text-align: justify;">
-                Seja muito bem-vindo ao portal de formação na fé católica da <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong>, 
-                confiada aos <strong>Frades Menores Franciscanos</strong>. 
-                Você está no <strong>Modo Degustação</strong>: todo o conteúdo catequético, tratados teológicos, 
-                orações, a Santa Missa e o Santo Terço estão 100% abertos para seu estudo e crescimento espiritual.
-            </p>
+    # Guia Rápido de Utilização do Hub
+    st.markdown("""
+    <div class="pergaminho-card" style="border-left: 4px solid #C5A059; margin-top: 1rem;">
+        <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
+            🌟 Como utilizar este Hub de Consulta:
+        </h4>
+        <ul style="font-size: 1.05rem; line-height: 1.8; padding-left: 1.2rem; color: #2E1B10;">
+            <li>📖 <strong>Os 40 Encontros:</strong> Acesse cada aula com fundamentação bíblica, Catecismo da Igreja Católica (CIC), roteiro detalhado, arte sacra e espiritualidade.</li>
+            <li>🎯 <strong>Testes da Fé com Download em HTML:</strong> Responda às questões doutrinais de cada encontro, receba a nota instantânea com fundamentação teológica e <strong>baixe o teste completo em HTML</strong> para seu computador ou celular.</li>
+            <li>✍️ <strong>Anotações Pessoais em HTML:</strong> Faça suas reflexões, anotações de estudo ou orações e <strong>baixe um arquivo HTML formatado</strong> (sem nada ser armazenado no servidor, com total privacidade).</li>
+            <li>🏛️ <strong>Tratados & Doutrina:</strong> Estude aprofundadamente Mariologia, Cristologia, Santíssima Trindade, Vida Moral e o Sacramento da Reconciliação.</li>
+            <li>⛪ <strong>Liturgia Viva:</strong> Contemple o passo a passo da Santa Missa, os Mistérios do Santo Terço e as orações do Tesouro Franciscano.</li>
+        </ul>
+        <div style="background: #FAF5EB; border: 1px dashed #C5A059; padding: 0.8rem 1rem; border-radius: 6px; font-size: 0.95rem; color: #5A3825; margin-top: 0.8rem;">
+            🔒 <strong>Privacidade Total & Sem Necessidade de Cadastro:</strong> Não é preciso fazer login nem cadastrar senhas. O portal é 100% aberto para consulta imediata. Suas anotações e testes podem ser salvos diretamente em seus arquivos pessoais através do download em formato HTML.
         </div>
-        """, unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 
-        st.markdown("""
-        <div class="pergaminho-card" style="border-left: 4px solid #C5A059; margin-top: 1rem;">
-            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                🌟 Como aproveitar ao máximo sua Degustação:
-            </h4>
-            <ul style="font-size: 1.02rem; line-height: 1.8; padding-left: 1.2rem; color: #2E1B10;">
-                <li>📖 <strong>Os 40 Encontros:</strong> Estude os encontros com Bíblia, Magistério e baixe os materiais pastorais (PDFs).</li>
-                <li>🎯 <strong>Quizzes Interativos:</strong> Teste seu conhecimento doutrinal ao final de cada aula com feedback explicativo imediato.</li>
-                <li>🏛️ <strong>Tratados Teológicos:</strong> Aprofunde-se nos tratados de Mariologia, Cristologia, Eclesiologia, Trindade e Anjos.</li>
-                <li>⛪ <strong>Liturgia & Oração:</strong> Reze o Santo Terço com os mistérios do dia, compreenda a Santa Missa e contemple o Tesouro Franciscano.</li>
-            </ul>
-            <div style="background: #FAF5EB; border: 1px dashed #C5A059; padding: 0.8rem; border-radius: 6px; font-size: 0.95rem; color: #5A3825; margin-top: 0.8rem;">
-                🔔 <em>Nota pastoral:</em> No modo degustação, suas respostas de quizzes e anotações não são gravadas no servidor. 
-                Para ter acompanhamento pastoral, controle de frequência e diário espiritual gravado, procure a Paróquia Bom Jesus dos Aflitos para efetuar sua matrícula em uma turma regular com o catequista!
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    render_divider("☩ OS 7 MÓDULOS TEMÁTICOS DA FORMAÇÃO CATEQUÉTICA ☩")
 
-    elif perfil == "catequisando":
-        # Painel Pessoal do Catequisando
-        turma_nome_aluno = st.session_state.get("turma_nome", "")
-        turma_nivel_aluno = st.session_state.get("turma_nivel", "")
-        sub_turma = f"<br><span style='font-size: 0.92rem; color: #2E7D32; font-weight: normal;'>🏫 Turma: <strong>{turma_nome_aluno}</strong> ({turma_nivel_aluno})</span>" if turma_nome_aluno else ""
+    # Panorama dos 7 Blocos Formativos dos 40 Encontros
+    blocos_dados = [
+        {
+            "bloco": "Módulo 1: O Anúncio e o Encontro com a Palavra",
+            "encontros": "Encontros 01 a 05",
+            "desc": "A Bíblia Sagrada (Dei Verbum), o Magistério, a Tradição, a Criação do Mundo e o Plano de Salvação de Deus.",
+            "icone": "📜",
+            "accent": "accent-bordo"
+        },
+        {
+            "bloco": "Módulo 2: A História da Salvação e as Alianças",
+            "encontros": "Encontros 06 a 11",
+            "desc": "De Abraão aos Profetas: a preparação da humanidade para a vinda do Salvador prometido.",
+            "icone": "⛺",
+            "accent": "accent-ouro"
+        },
+        {
+            "bloco": "Módulo 3: Jesus Cristo, Verdadeiro Deus e Verdadeiro Homem",
+            "encontros": "Encontros 12 a 18",
+            "desc": "A Encarnação, Vida Pública, o Sermão da Montanha, a Paixão, Morte e a Ressurreição gloriosa do Senhor.",
+            "icone": "✝️",
+            "accent": "accent-bordo"
+        },
+        {
+            "bloco": "Módulo 4: O Espírito Santo e a Santa Igreja Católica",
+            "encontros": "Encontros 19 a 24",
+            "desc": "Pentecostes, a fundação da Igreja por Cristo, as 4 marcas da Igreja, o Primado de Pedro e a Comunhão dos Santos.",
+            "icone": "🕊️",
+            "accent": "accent-franciscano"
+        },
+        {
+            "bloco": "Módulo 5: Os Sete Sacramentos da Vida Cristã",
+            "encontros": "Encontros 25 a 31",
+            "desc": "Batismo, Crisma, Santíssima Eucaristia, Penitência, Unção dos Enfermos, Ordem e Matrimônio.",
+            "icone": "⛪",
+            "accent": "accent-ouro"
+        },
+        {
+            "bloco": "Módulo 6: A Vida Moral em Cristo & Mandamentos",
+            "encontros": "Encontros 32 a 36",
+            "desc": "A Lei de Deus, a Consciência Moral, o Decálogo, as Bem-Aventuranças e o combate contra o pecado.",
+            "icone": "⚖️",
+            "accent": "accent-bordo"
+        },
+        {
+            "bloco": "Módulo 7: A Oração do Cristão & Vigília Pascal",
+            "encontros": "Encontros 37 a 40",
+            "desc": "A Oração do Pai-Nosso, a Mãe Santíssima, a contemplação cristã e a celebração culminante da Noite Pascal.",
+            "icone": "🕯️",
+            "accent": "accent-ouro"
+        }
+    ]
 
-        st.markdown(f"""
-        <div class="pergaminho-card-franciscano">
-            <h3 style="color: #5A3825; margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                <span>☩</span> Paz e Bem, caríssimo(a) {nome_usuario}!
-            </h3>
-            <p style="font-size: 1.12rem; line-height: 1.6; margin-bottom: 0.3rem;">
-                Seja bem-vindo ao seu espaço de formação na fé da <strong>Paróquia Bom Jesus dos Aflitos</strong>.{sub_turma}
-                Aqui você acompanha sua evolução espiritual, estuda os 40 encontros, realiza os exercícios de fixação e guarda suas reflexões para a vida eterna.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Métricas Pessoais de Progresso
-        prog = database.get_progresso_catecumeno(cid_usuario)
-        quiz_stats = database.get_estatisticas_quiz_catecumeno(cid_usuario)
-
-        st.markdown("### 🕊️ Minha Jornada Espiritual no Catecumenato")
-        
-        # Barra de Progresso Visual
-        progresso_decimal = min(prog["total_concluidos"] / 40.0, 1.0)
-        st.progress(progresso_decimal, text=f"Progresso Geral da Formação: {prog['total_concluidos']} de 40 encontros concluídos ({prog['percentual']}%)")
-
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric(label="Encontros Concluídos", value=f"{prog['total_concluidos']} / 40", delta=f"{prog['percentual']}%")
-        with col2:
-            st.metric(label="Encontros Restantes", value=f"{40 - prog['total_concluidos']}")
-        with col3:
-            st.metric(label="Questões de Fé Feitas", value=quiz_stats["total_respondidas"])
-        with col4:
-            st.metric(label="Taxa de Acertos no Quiz", value=f"{quiz_stats['taxa_acerto']}%", delta=f"{quiz_stats['total_acertos']} acertos")
-
-        # Próximo Encontro Sugerido & Marco Espiritual
-        proximo_enc_num = 1
-        for num in range(1, 41):
-            if num not in prog["lista_concluidos"]:
-                proximo_enc_num = num
-                break
-
-        enc_prox = database.get_encontro_by_numero(proximo_enc_num)
-        
-        # Marco Espiritual Atual
-        if prog["total_concluidos"] == 0:
-            marco_titulo = "🌱 Início da Caminhada"
-            marco_desc = "Você está prestes a dar os primeiros passos nesta linda jornada com Cristo Jesus!"
-        elif prog["total_concluidos"] < 10:
-            marco_titulo = "🌿 Semeador da Palavra"
-            marco_desc = "Você já iniciou os estudos e a semente da fé está brotando no seu coração."
-        elif prog["total_concluidos"] < 20:
-            marco_titulo = "📜 Ouvinte Atento do Evangelho"
-            marco_desc = "Você aprofundou a Palavra e o Magistério, construindo sua fé sobre a rocha firme."
-        elif prog["total_concluidos"] < 30:
-            marco_titulo = "✝️ Discípulo do Bom Jesus"
-            marco_desc = "Você conhece a doutrina dos Sacramentos e vive a fraternidade franciscana."
-        elif prog["total_concluidos"] < 40:
-            marco_titulo = "⛪ Pilar Vivo da Comunidade"
-            marco_desc = "Falta muito pouco para a conclusão total do itinerário de formação catequética!"
-        else:
-            marco_titulo = "🌟 Plena Prontidão Pascal"
-            marco_desc = "Louvado seja Deus! Todos os 40 encontros concluídos. Você está pronto para os Santos Mistérios!"
-
-        col_prox, col_marco = st.columns([1.3, 1])
-        with col_prox:
-            if enc_prox:
-                st.markdown(f"""
-                <div class="pergaminho-card-bordo">
-                    <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                        🎯 Próximo Encontro da Sua Caminhada
-                    </h4>
-                    <p style="font-size: 1.15rem; font-weight: bold; color: #2B1810; margin-bottom: 0.3rem;">
-                        Encontro {enc_prox['numero']:02d}: {enc_prox['titulo']}
-                    </p>
-                    <p style="font-size: 0.95rem; color: #5A3825; font-style: italic; margin-bottom: 0.8rem;">
-                        Módulo: {enc_prox['bloco']}
-                    </p>
-                    <p style="font-size: 0.98rem; color: #3A2315; line-height: 1.5;">
-                        {enc_prox['resumo'][:160]}...
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-        with col_marco:
+    col_b1, col_b2 = st.columns(2)
+    for idx, b in enumerate(blocos_dados):
+        col_atual = col_b1 if idx % 2 == 0 else col_b2
+        with col_atual:
             st.markdown(f"""
-            <div class="pilula-franciscana">
-                <h4 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">
-                    {marco_titulo}
-                </h4>
-                <p style="font-size: 1.05rem; line-height: 1.6; color: #2E1B10; font-style: italic;">
-                    "{marco_desc}"
-                </p>
-                <div style="font-size: 0.88rem; color: #781826; font-weight: bold; margin-top: 0.5rem;">
-                    Status: {prog['total_concluidos']} / 40 encontros concluídos
+            <div class="pergaminho-card" style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                    <span style="font-family: 'Cinzel', serif; font-weight: bold; color: #781826; font-size: 1.05rem;">
+                        {b['icone']} {b['bloco']}
+                    </span>
+                    <span style="background: #F4EAD4; color: #5A3825; padding: 2px 8px; border-radius: 4px; font-size: 0.82rem; font-weight: bold;">
+                        {b['encontros']}
+                    </span>
                 </div>
+                <p style="font-size: 0.98rem; color: #3A2315; margin: 0; line-height: 1.5;">
+                    {b['desc']}
+                </p>
             </div>
             """, unsafe_allow_html=True)
 
-        # Certificado Solene de Conclusão (quando atingir 40 encontros ou botão pastoral)
-        if prog["total_concluidos"] >= 40:
-            st.markdown("---")
-            st.success("🎉 **Parabéns em Cristo! Você completou com louvor todos os 40 encontros do Catecumenato!**")
-            from modules.certificado import render_certificado_html
-            cert_html = render_certificado_html(nome_usuario)
-            col_cert1, col_cert2 = st.columns([2.5, 1.5])
-            with col_cert1:
-                st.markdown("Seu **Certificado Solene de Formação Catequética** está emitido e pronto para ser impresso ou salvo em PDF.")
-            with col_cert2:
-                st.download_button(
-                    label="🎓 Baixar / Imprimir Certificado",
-                    data=cert_html.encode("utf-8"),
-                    file_name=f"certificado_catecumenato_{nome_usuario.replace(' ', '_')}.html",
-                    mime="text/html",
-                    use_container_width=True
-                )
+    # Botão de Ação Rápida para Estudar
+    c_ir1, c_ir2, c_ir3 = st.columns([1, 2, 1])
+    with c_ir2:
+        if st.button("📖 Acessar Diretamente os 40 Encontros 📖", type="primary", use_container_width=True, key="btn_home_to_enc"):
+            st.session_state.pagina_ativa = "encontros"
+            st.rerun()
 
-        # Linha do Tempo Unificada do Diário Espiritual do Aluno
-        st.markdown("---")
-        with st.expander("📜 Meu Diário de Bordo Espiritual (Todas as Minhas Reflexões)", expanded=False):
-            todas_anotacoes = database.get_todas_anotacoes_catecumeno(cid_usuario)
-            if todas_anotacoes:
-                st.markdown(f"**Total de reflexões e partilhas registradas ao longo do ano:** {len(todas_anotacoes)}")
-                for a in todas_anotacoes:
-                    st.markdown(f"""
-                    <div style="background: #FAF8F5; border: 1px solid #D8C8B4; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 0.8rem;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.88rem; color: #781826; font-weight: bold;">
-                            <span>📖 Encontro {a['encontro_numero']:02d}: {a.get('titulo_encontro', 'Encontro')}</span>
-                            <span>📅 {a['data_registro']}</span>
-                        </div>
-                        <p style="font-size: 1.02rem; margin: 0.5rem 0 0 0; color: #2B1810; line-height: 1.5;">
-                            {a['texto']}
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("Você ainda não registrou reflexões no diário. Ao estudar os encontros e responder aos quizzes, registre suas orações na aba 'Diário & Partilha'!")
-
-        # Alteração de Senha do Catequisando
-        if cid_usuario > 0:
-            with st.expander("🔑 Alterar Minha Senha de Acesso ao Portal", expanded=False):
-                st.markdown("Se desejar substituir a senha inicial padrão (*pazebem*) por uma senha pessoal, digite-a abaixo:")
-                col_s1, col_s2 = st.columns([2, 1])
-                with col_s1:
-                    nova_senha_aluno = st.text_input(
-                        "Nova Senha Pessoal:", 
-                        type="password", 
-                        key="input_nova_senha_aluno",
-                        placeholder="Digite sua nova senha"
-                    )
-                with col_s2:
-                    st.write("")
-                    st.write("")
-                    if st.button("Atualizar Minha Senha ☩", key="btn_salvar_minha_senha"):
-                        if nova_senha_aluno.strip():
-                            if hasattr(database, "alterar_senha_catecumeno"):
-                                database.alterar_senha_catecumeno(cid_usuario, nova_senha_aluno.strip())
-                            else:
-                                conn = database.get_connection()
-                                cur = conn.cursor()
-                                cur.execute("UPDATE catecumenos SET senha = ? WHERE id = ?", (nova_senha_aluno.strip(), cid_usuario))
-                                conn.commit()
-                                conn.close()
-                            st.success("Sua senha foi atualizada com sucesso! Guarde-a para os próximos acessos.")
-                        else:
-                            st.warning("Por favor, digite uma senha válida.")
-
-    else:
-        # Modo Catequista Administrador
-        st.markdown("""
-        <div class="pergaminho-card-franciscano">
-            <h3 style="color: #5A3825; margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                <span>☩</span> Paz e Bem, caríssimo catequista e irmão em Cristo!
-            </h3>
-            <p style="font-size: 1.15rem; line-height: 1.6; margin-bottom: 0.5rem;">
-                Seja bem-vindo ao portal de formação catequética e gestão pastoral da 
-                <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong>, confiada ao pastoreio dos 
-                <strong>Frades Menores Franciscanos</strong>. 
-                Este espaço foi concebido com zelo divino e reverência católica para orientar a caminhada de fé dos adultos 
-                rumo aos sacramentos da Iniciação Cristã: <em>Batismo, Crisma e Santíssima Eucaristia</em>.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Métricas Pastorais Dinâmicas
-        st.markdown("### 📊 Panorama da Turma Paroquial")
-        catecumenos = database.get_catecumenos(filtro_ativo=True)
-        total_cat = len(catecumenos)
-
-        precisam_batismo = sum(1 for c in catecumenos if c["batizado"] == 0)
-        precisam_eucaristia = sum(1 for c in catecumenos if c["primeira_eucaristia"] == 0)
-        precisam_crisma = sum(1 for c in catecumenos if c["crismado"] == 0)
-
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric(label="Catecúmenos Inscritos", value=total_cat, help="Adultos em acompanhamento ativo na turma")
-        with col2:
-            st.metric(label="Rumo ao Batismo", value=precisam_batismo, delta="Vigília Pascal", delta_color="normal")
-        with col3:
-            st.metric(label="Rumo à 1ª Eucaristia", value=precisam_eucaristia)
-        with col4:
-            st.metric(label="Rumo à Crisma", value=precisam_crisma)
-
-    render_divider("☩ AS DIRETRIZES DA CATEQUESE DE ADULTOS ☩")
+    render_divider("☩ DIRETRIZES DO DIRETÓRIO DE SOROCABA ☩")
 
     col_esq, col_dir = st.columns([1.4, 1])
 
@@ -265,21 +141,19 @@ def render():
         st.markdown("""
         <div class="pergaminho-card">
             <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                📜 Objetivo e Missão do Catecumenato
+                📜 Fidelidade ao Depósito da Fé (Depositum Fidei)
             </h4>
             <p style="font-size: 1.05rem; text-align: justify; line-height: 1.6;">
-                A catequese de adultos é um dos maiores desafios e bênçãos da Igreja. Os catequistas devem estar 
-                profundamente preparados para transmitir com segurança o <strong>depósito sagrado da fé</strong> e, 
-                acima de tudo, proporcionar aos catecúmenos uma experiência real de <strong>encontro pessoal com Cristo</strong>.
+                A catequese da Igreja Católica não ensina opiniões humanas passageiras, mas transmite com fidelidade 
+                o <strong>depósito sagrado da fé</strong> confiado aos Apóstolos. O tripé que sustenta toda a formação é composto por:
             </p>
-            <p style="font-size: 1.05rem; text-align: justify; line-height: 1.6;">
-                Nossa missão vai além da sala de aula: busca despertar o compromisso dos catecúmenos com o Evangelho 
-                no mundo do trabalho (testemunho), na comunidade eclesial (participação nas pastorais) e na missão 
-                como discípulos missionários.
-            </p>
-            <div style="background: #F2E8DC; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 4px; font-size: 0.98rem; font-style: italic;">
-                <strong>Atenção pastoral crucial:</strong> Deve-se combater com carinho qualquer mentalidade 
-                meramente sacramentalista. O Catecumenato não é um cursinho para receber um diploma, mas a gestação de uma vida nova em Cristo.
+            <ul style="font-size: 1.02rem; line-height: 1.7; padding-left: 1.2rem; color: #2E1B10;">
+                <li><strong>Sagrada Escritura:</strong> A Palavra de Deus escrita sob a inspiração do Espírito Santo.</li>
+                <li><strong>Sagrada Tradição:</strong> A transmissão viva da Palavra confiada à Igreja ao longo dos séculos.</li>
+                <li><strong>Sagrado Magistério:</strong> A autoridade de ensinar em nome de Cristo exercida pelo Papa e pelos Bispos em comunhão com ele.</li>
+            </ul>
+            <div style="background: #F2E8DC; border-left: 4px solid #781826; padding: 0.8rem 1rem; border-radius: 4px; font-size: 0.98rem; font-style: italic; margin-top: 0.8rem;">
+                <em>"Ide por todo o mundo e pregai o Evangelho a toda criatura. Quem crer e for batizado será salvo."</em> (Mc 16,15-16)
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -287,16 +161,17 @@ def render():
         st.markdown("""
         <div class="pergaminho-card-bordo">
             <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                🕊️ O Rito Litúrgico Tradicional
+                🕊️ O Itinerário da Iniciação Cristã de Adultos (RICA)
             </h4>
             <ul style="font-size: 1.05rem; line-height: 1.7; padding-left: 1.2rem;">
-                <li><strong>Apresentação à Comunidade:</strong> Conforme antiga Tradição da Igreja desde o século II, os catecúmenos são apresentados solenemente no <em>4º Domingo da Quaresma (Domingo Laetare)</em>.</li>
-                <li><strong>Recepção dos Divinos Mistérios:</strong> O Batismo, a Crisma e a Eucaristia são celebrados na solene <em>Vigília Pascal (Sábado Santo)</em>.</li>
-                <li><strong>O Querigma e o Retiro Quaresmal:</strong> O anúncio primordial do amor salvífico de Cristo permeia todo o ano e culmina no Retiro Espiritual da Quaresma.</li>
-                <li><strong>Jovens de 15 anos:</strong> Realizam 1 ano de Pré-Catecumenato com acompanhamento e retiros. A partir de 16 anos, integram-se diretamente com os demais adultos.</li>
+                <li><strong>Pré-Catecumenato:</strong> Primeiro anúncio (Querigma) e acolhimento dos que buscam a fé.</li>
+                <li><strong>Catecumenato:</strong> Período prolongado de catequese integral, oração e vivência comunitária (os 40 encontros).</li>
+                <li><strong>Purificação e Iluminação:</strong> Tempo quaresmal de retiro e escrutínios espirituais.</li>
+                <li><strong>Mistagogia:</strong> Aprofundamento pós-sacramental após a recepção dos sacramentos na solene Vigília Pascal.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
+
     with col_dir:
         import os
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -304,37 +179,22 @@ def render():
         if not os.path.exists(caminho_cruz):
             caminho_cruz = os.path.join("assets", "images", "encontro_15.jpg")
         if os.path.exists(caminho_cruz):
-            st.image(caminho_cruz, caption="O Santo Crucifixo de São Damião: 'Francisco, vai e restaura a Minha Igreja!'", use_container_width=True)
+            st.image(caminho_cruz, caption="O Santo Crucifixo: 'Vai e restaura a Minha Igreja!'", use_container_width=True)
 
         st.markdown("""
         <div class="pilula-franciscana">
             <h4 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">
-                🌿 Sabedoria Franciscana
+                🌿 Paz e Bem!
             </h4>
             <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; color: #3A2315;">
-                "Comece fazendo o que é necessário, depois o que é possível, e de repente você estará fazendo o impossível."
+                "Senhor, fazei-me instrumento de vossa paz. Onde houver ódio, que eu leve o amor; onde houver erro, que eu leve a verdade."
             </p>
             <div style="text-align: right; font-weight: bold; font-size: 0.95rem; color: #5A3825;">
-                — São Francisco de Assis
+                — Oração da Paz
             </div>
-            <hr style="border: 0; border-top: 1px solid #D8C8B4; margin: 1rem 0;">
-            <p style="font-size: 0.95rem; color: #4A3525;">
-                <strong>Oração do Catequista:</strong> Coloque aos pés do Bom Jesus dos Aflitos cada catecúmeno pelo nome antes de ministrar os encontros semanais.
+            <hr style="border: 0; border-top: 1px solid #D8C8B4; margin: 0.8rem 0;">
+            <p style="font-size: 0.95rem; color: #4A3525; margin: 0;">
+                <strong>Diretório de Sorocaba:</strong> Que a luz do Evangelho ilumine cada coração na busca dos Santos Sacramentos.
             </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="pergaminho-card">
-            <h4 style="color: #781826; font-family: 'Cinzel', serif; margin-top: 0;">
-                ⚡ Pilares da Formação
-            </h4>
-            <p style="font-size: 0.98rem; margin-bottom: 0.8rem;">Dimensões da fé no portal de formação:</p>
-            <ul style="font-size: 0.96rem; line-height: 1.8; list-style-type: none; padding-left: 0;">
-                <li>🎓 <strong>Curso & Formação:</strong> Encontros, Chamada e Vigília</li>
-                <li>🏛️ <strong>Teologia & Doutrina:</strong> Tratados, Moral e Confissão</li>
-                <li>⛪ <strong>Liturgia & Oração:</strong> Santa Missa, Terço e Tesouro Franciscano</li>
-                <li>🔍 <strong>Pesquisa & Fontes:</strong> Biblioteca Sacra, CIC e Bíblia</li>
-            </ul>
         </div>
         """, unsafe_allow_html=True)
