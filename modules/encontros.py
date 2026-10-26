@@ -36,7 +36,10 @@ def render():
 
     if not encontros:
         st.warning("Nenhum encontro encontrado com os filtros selecionados.")
+        st.info("Dica: Tente buscar por outros termos como 'Eucaristia', 'Batismo', 'Trindade' ou selecione 'Todos os Blocos'.")
         return
+
+    st.markdown(f"<div style='font-size: 0.88rem; color: #5A3825; margin-bottom: 6px;'>✨ Exibindo <strong>{len(encontros)}</strong> de <strong>40</strong> encontros formativos disponíveis</div>", unsafe_allow_html=True)
 
     # Seletor do Encontro
     opcoes_encontros = {}
@@ -57,13 +60,13 @@ def render():
             idx_atual = idx
             break
 
-    col_nav1, col_nav2, col_nav3 = st.columns([1, 4, 1])
+    col_nav1, col_nav2, col_nav3 = st.columns([1.2, 3.6, 1.2])
     with col_nav1:
-        if st.button("⬅️ Anterior", disabled=(idx_atual == 0)):
+        if st.button("◀ Anterior", disabled=(idx_atual == 0), use_container_width=True, key="btn_nav_prev"):
             st.session_state.encontro_atual_num = opcoes_encontros[opcoes_keys[idx_atual - 1]]
             st.rerun()
     with col_nav3:
-        if st.button("Próximo ➡️", disabled=(idx_atual >= len(opcoes_keys) - 1)):
+        if st.button("Próximo ▶", disabled=(idx_atual >= len(opcoes_keys) - 1), use_container_width=True, key="btn_nav_next"):
             st.session_state.encontro_atual_num = opcoes_encontros[opcoes_keys[idx_atual + 1]]
             st.rerun()
     with col_nav2:
@@ -137,16 +140,16 @@ def render():
         )
         st.markdown(card_html, unsafe_allow_html=True)
 
-    # Abas com conteúdo aprofundado
+    # Abas com conteúdo aprofundado numeradas para clareza pedagógica
     tab_roteiro, tab_biblia, tab_magisterio, tab_franciscano, tab_diario, tab_quiz, tab_impressao, tab_anexos = st.tabs([
-        "📋 Roteiro da Aula",
-        "📖 Sagrada Escritura",
-        "🏛️ Sagrado Magistério & CIC",
-        "🕊️ Espiritualidade",
-        "✍️ Anotações (Download HTML)",
-        "🎯 Teste da Fé (Download HTML)",
-        "🖨️ Ficha de Impressão",
-        "📎 Materiais & Anexos"
+        "📋 1. Roteiro da Aula",
+        "📖 2. Sagrada Escritura",
+        "🏛️ 3. Magistério & CIC",
+        "🕊️ 4. Espiritualidade",
+        "✍️ 5. Anotações (Download HTML)",
+        "🎯 6. Teste da Fé (Download HTML)",
+        "🖨️ 7. Ficha de Impressão",
+        "📎 8. Materiais & Anexos"
     ])
 
     # 1. Roteiro do Catequista / Aula

@@ -110,19 +110,19 @@ if st.session_state.pagina_ativa == "hub":
     c1, c2, c3 = st.columns(3)
     with c1:
         style.render_hub_card("🏠", "Guia & Itinerário", "Visão geral dos 40 encontros, os 7 blocos temáticos e diretrizes catequéticas.", "accent-bordo")
-        if st.button("Abrir Guia & Itinerário 🏠", use_container_width=True, key="hub_jorn"):
+        if st.button("▶ ACESSAR: Guia & Itinerário 🏠", use_container_width=True, key="hub_jorn"):
             st.session_state.pagina_ativa = "jornada"
             st.rerun()
 
     with c2:
         style.render_hub_card("📖", "Os 40 Encontros", "Bíblia, Magistério, apostilas, anotações e testes com download em HTML.", "accent-ouro")
-        if st.button("Consultar os 40 Encontros 📖", use_container_width=True, key="hub_enc"):
+        if st.button("▶ ACESSAR: Os 40 Encontros 📖", use_container_width=True, key="hub_enc"):
             st.session_state.pagina_ativa = "encontros"
             st.rerun()
 
     with c3:
         style.render_hub_card("🕯️", "Vigília Pascal", "Rito dos sacramentos pascais, testemunho cristão e requisitos de padrinhos.", "accent-franciscano")
-        if st.button("Ver Vigília & Sacramentos 🕯️", use_container_width=True, key="hub_vig"):
+        if st.button("▶ ACESSAR: Vigília Pascal 🕯️", use_container_width=True, key="hub_vig"):
             st.session_state.pagina_ativa = "vigilia"
             st.rerun()
 
@@ -134,91 +134,126 @@ if st.session_state.pagina_ativa == "hub":
     c1, c2, c3 = st.columns(3)
     with c1:
         style.render_hub_card("🏛️", "Tratados Teológicos", "Mariologia, Cristologia, Santíssima Trindade, Igreja e Anjos.", "accent-ouro")
-        if st.button("Consultar Tratados 🏛️", use_container_width=True, key="hub_trat"):
+        if st.button("▶ ACESSAR: Tratados Teológicos 🏛️", use_container_width=True, key="hub_trat"):
             st.session_state.pagina_ativa = "tratados"
             st.rerun()
 
     with c2:
         style.render_hub_card("📜", "Vida Moral & Virtudes", "Os 10 Mandamentos, bem-aventuranças e vida cristã prática.", "accent-bordo")
-        if st.button("Estudar Vida Moral 📜", use_container_width=True, key="hub_moral"):
+        if st.button("▶ ACESSAR: Vida Moral & Virtudes 📜", use_container_width=True, key="hub_moral"):
             st.session_state.pagina_ativa = "vida_moral"
             st.rerun()
 
     with c3:
         style.render_hub_card("🕊️", "Confissão & Penitência", "Exame de consciência profundo e rito do perdão dos pecados.", "accent-franciscano")
-        if st.button("Preparar Confissão 🕊️", use_container_width=True, key="hub_conf"):
+        if st.button("▶ ACESSAR: Confissão & Penitência 🕊️", use_container_width=True, key="hub_conf"):
             st.session_state.pagina_ativa = "confissao"
             st.rerun()
 
     # ==========================================================================
-    # SETOR 3: ⛪ LITURGIA & ORAÇÃO FRANCISCANA
+    # SETOR 3: ⛪ LITURGIA & ORAÇÃO
     # ==========================================================================
     style.render_sector_header("⛪", "Setor 3 — Liturgia & Oração", "A celebração eucarística, o Rosário contemplativo e a espiritualidade dos Santos")
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         style.render_hub_card("⛪", "A Santa Missa", "Passo a passo dos ritos, paramentos, cores e mistério eucarístico.", "accent-bordo")
-        if st.button("Conhecer a Missa ⛪", use_container_width=True, key="hub_missa"):
+        if st.button("▶ ACESSAR: A Santa Missa ⛪", use_container_width=True, key="hub_missa"):
             st.session_state.pagina_ativa = "santa_missa"
             st.rerun()
 
     with c2:
         style.render_hub_card("📿", "O Santo Terço", "Mistérios do dia, meditações bíblicas e orações marianas.", "accent-ouro")
-        if st.button("Rezar o Terço 📿", use_container_width=True, key="hub_terco"):
+        if st.button("▶ ACESSAR: O Santo Terço 📿", use_container_width=True, key="hub_terco"):
             st.session_state.pagina_ativa = "santo_terco"
             st.rerun()
 
     with c3:
         style.render_hub_card("🌿", "Tesouro Franciscano", "Cântico das Criaturas, orações de paz e testemunho dos santos.", "accent-franciscano")
-        if st.button("Meditar Tesouro 🌿", use_container_width=True, key="hub_tesouro"):
+        if st.button("▶ ACESSAR: Tesouro Franciscano 🌿", use_container_width=True, key="hub_tesouro"):
             st.session_state.pagina_ativa = "tesouro"
             st.rerun()
 
     with c4:
         style.render_hub_card("🕊️", "Oratório & Devoção", "Devocionário tradicional, liturgia diária e salmos de louvor.", "accent-verde")
-        if st.button("Abrir Oratório 🕊️", use_container_width=True, key="hub_orat"):
+        if st.button("▶ ACESSAR: Oratório & Devoção 🕊️", use_container_width=True, key="hub_orat"):
             st.session_state.pagina_ativa = "oratorio"
             st.rerun()
 
     # ==========================================================================
-    # SETOR 4: 📜 PESQUISA & FONTES SACRAS + ITINERÁRIO
+    # SETOR 4: 📜 PESQUISA & FONTES SACRAS
     # ==========================================================================
     style.render_sector_header("📜", "Setor 4 — Pesquisa & Fontes Sacras", "Acesso ao magistério da Igreja, Sagrada Escritura e Tradição Católica")
 
-    c_bib, c_itin, c_benc = st.columns([1.2, 1.4, 1.4])
-    with c_bib:
+    c_bib1, c_bib2 = st.columns([1.5, 2.5])
+    with c_bib1:
         style.render_hub_card("📜", "Biblioteca Sacra", "Catecismo da Igreja Católica (CIC), Bíblia Sagrada e Concílios.", "accent-bordo")
-        if st.button("Acessar Biblioteca 📜", use_container_width=True, key="hub_biblio"):
+        if st.button("▶ ACESSAR: Biblioteca Sacra & Fontes 📜", use_container_width=True, key="hub_biblio"):
             st.session_state.pagina_ativa = "biblioteca"
             st.rerun()
 
+    with c_bib2:
+        st.markdown("""
+        <div class="hub-card-static" style="display: flex; flex-direction: column; justify-content: center; height: 180px;">
+            <div style="margin-bottom: 6px;">
+                <span style="background: #FAF5EB; border: 1px solid #C5A059; color: #781826; padding: 2px 8px; border-radius: 4px; font-size: 0.72rem; font-family: 'Cinzel', serif; font-weight: bold;">
+                    🏛️ FONTES DA VERDADE CATÓLICA
+                </span>
+            </div>
+            <div style="font-family: 'Cinzel', serif; color: #781826; font-size: 1.05rem; font-weight: bold;">
+                O Depósito Sagrado da Fé ao Seu Alcance
+            </div>
+            <p style="font-size: 0.95rem; color: #5A3825; margin: 6px 0 0 0; line-height: 1.5;">
+                Acesso direto e irrestrito ao <strong>Catecismo da Igreja Católica (CIC)</strong>, à <strong>Sagrada Bíblia Canônica</strong> de 73 livros, 
+                aos <strong>Concílios Ecumênicos</strong> e aos escritos dos Santos Doutores da Igreja.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ==========================================================================
+    # PAINÉIS INFORMATIVOS LITÚRGICOS (LEITURA E ESPIRITUALIDADE)
+    # ==========================================================================
+    style.render_sector_header("📌", "Diretório Litúrgico & Bênção Tradicional", "Orientações da Igreja Católica Apostólica Romana e oração de paz")
+
+    c_itin, c_benc = st.columns(2)
     with c_itin:
         st.markdown("""
-        <div style="background: #FFFFFF; border: 1px solid #E2D7C7; border-top: 4px solid #781826; border-radius: 14px; padding: 14px 16px; height: 175px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between;">
-            <div style="color: #781826; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
-                <span>⏳</span> DIRETÓRIO DE SOROCABA
+        <div class="hub-card-static">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="color: #781826; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.92rem;">
+                    ⏳ DIRETÓRIO DE SOROCABA
+                </span>
+                <span style="background: #F4EAD4; color: #5A3825; padding: 2px 8px; border-radius: 4px; font-size: 0.70rem; font-weight: bold; font-family: 'Cinzel', serif;">
+                    ℹ️ PAINEL INFORMATIVO
+                </span>
             </div>
-            <div style="color: #4A2E1B; font-size: 0.84rem; line-height: 1.5;">
-                • <strong>Itinerário Catequético:</strong><br><em>40 Encontros de Formação Integral</em><br>
-                • <strong>Sacramentos Pascais:</strong><br><em>Batismo, Crisma e Eucaristia</em>
+            <div style="color: #4A2E1B; font-size: 0.92rem; line-height: 1.6;">
+                • <strong>Itinerário Catequético:</strong> 40 Encontros de Formação Integral da Fé.<br>
+                • <strong>Apresentação à Comunidade:</strong> 4º Domingo da Quaresma (Domingo Laetare).<br>
+                • <strong>Sacramentos Pascais:</strong> Batismo, Crisma e Eucaristia na Vigília Pascal.
             </div>
-            <div style="font-size: 0.76rem; color: #8C6A1D; font-style: italic;">
-                Igreja Católica Apostólica Romana
+            <div style="font-size: 0.80rem; color: #8C6A1D; font-style: italic; margin-top: 8px;">
+                Iniciação Cristã da Igreja Católica Apostólica Romana
             </div>
         </div>
         """, unsafe_allow_html=True)
 
     with c_benc:
         st.markdown("""
-        <div style="background: #FFFFFF; border: 1px solid #E2D7C7; border-top: 4px solid #C5A059; border-radius: 14px; padding: 14px 16px; height: 175px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
-            <div style="color: #8C6A1D; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.88rem;">
-                🕊️ BÊNÇÃO TRADICIONAL
+        <div class="hub-card-static" style="text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="color: #8C6A1D; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.92rem;">
+                    🕊️ BÊNÇÃO TRADICIONAL
+                </span>
+                <span style="background: #F4EAD4; color: #5A3825; padding: 2px 8px; border-radius: 4px; font-size: 0.70rem; font-weight: bold; font-family: 'Cinzel', serif;">
+                    ℹ️ PAINEL INFORMATIVO
+                </span>
             </div>
-            <div style="font-size: 0.86rem; color: #5A3825; font-style: italic; line-height: 1.45;">
+            <div style="font-size: 0.95rem; color: #5A3825; font-style: italic; line-height: 1.5; margin: 10px 0;">
                 "O Senhor te abençoe e te guarde.<br>Mostre-te a sua face e te dê a paz!" ☩
             </div>
-            <div style="font-size: 0.76rem; color: #781826; font-family: 'Cinzel', serif; font-weight: bold;">
-                Paz e Bem!
+            <div style="font-size: 0.82rem; color: #781826; font-family: 'Cinzel', serif; font-weight: bold;">
+                São Francisco de Assis • Paz e Bem!
             </div>
         </div>
         """, unsafe_allow_html=True)

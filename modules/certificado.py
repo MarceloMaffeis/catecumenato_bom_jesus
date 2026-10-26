@@ -7,7 +7,7 @@ Paróquia Bom Jesus dos Aflitos - Sorocaba / Franciscanos
 import streamlit as st
 from datetime import datetime
 
-def render_certificado_html(nome_catecumeno, data_conclusao=None, nome_paroquia="Paróquia Bom Jesus dos Aflitos — Sorocaba / SP"):
+def render_certificado_html(nome_catecumeno, data_conclusao=None, nome_paroquia="Diretório de Sorocaba — Igreja Católica Apostólica Romana"):
     if not data_conclusao:
         data_conclusao = datetime.now().strftime("%d de %B de %Y")
         
@@ -165,9 +165,9 @@ def render_certificado_html(nome_catecumeno, data_conclusao=None, nome_paroquia=
         <div class="certificado-borda-externa">
             <div class="certificado-borda-interna">
                 <div class="cruz">☩</div>
-                <div class="diocese">Arquidiocese de Sorocaba / SP</div>
-                <div class="paroquia">PARÓQUIA BOM JESUS DOS AFLITOS</div>
-                <div class="ordem">Ordem dos Frades Menores — Província Franciscana da Imaculada Conceição</div>
+                <div class="diocese">Igreja Católica Apostólica Romana</div>
+                <div class="paroquia">DIRETÓRIO DE SOROCABA</div>
+                <div class="ordem">Formação Catequética, Sagrada Tradição e Doutrina Cristã</div>
                 
                 <div class="titulo-cert">CERTIFICADO DE FORMAÇÃO CATEQUÉTICA</div>
                 
@@ -175,9 +175,9 @@ def render_certificado_html(nome_catecumeno, data_conclusao=None, nome_paroquia=
                     Certificamos com júbilo pastoral que o(a) irmão(ã) em Cristo
                     <span class="nome-aluno">{nome_catecumeno}</span>
                     completou com zelo, assiduidade e aproveitamento doutrinal todo o itinerário formativo dos 
-                    <strong>40 Encontros do Catecumenato de Adultos</strong>, tendo aprofundado as Sagradas Escrituras, 
-                    o Magistério da Santa Igreja Católica e a piedade franciscana, estando habilitado(a) e preparado(a) 
-                    para a solene recepção dos Sacramentos da Iniciação Cristã.
+                    <strong>40 Encontros da Catequese</strong>, tendo aprofundado as Sagradas Escrituras, 
+                    o Sagrado Magistério da Igreja Católica e a vida cristã autêntica, estando habilitado(a) e preparado(a) 
+                    para a vivência dos Santos Sacramentos.
                 </div>
                 
                 <div class="data-emissao">
@@ -186,12 +186,12 @@ def render_certificado_html(nome_catecumeno, data_conclusao=None, nome_paroquia=
                 
                 <div class="assinaturas">
                     <div class="linha-assinatura">
-                        <strong>Fr. Pároco / Guardião, OFM</strong><br>
-                        Pároco da Paróquia Bom Jesus dos Aflitos
+                        <strong>Diretoria Catequética</strong><br>
+                        Diretório de Sorocaba
                     </div>
                     <div class="linha-assinatura">
-                        <strong>Catequista Administrador</strong><br>
-                        Coordenação do Catecumenato de Adultos
+                        <strong>Coordenação de Formação</strong><br>
+                        Igreja Católica Apostólica Romana
                     </div>
                 </div>
             </div>

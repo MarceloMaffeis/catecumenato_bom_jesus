@@ -152,19 +152,19 @@ def render():
 
         render_divider("☩")
 
-        # Fonte 6: Franciscanos
+        # Fonte 6: Diretório de Sorocaba & Tradição Católica
         st.markdown("""
         <div class="pilula-franciscana">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h4 style="color: #5A3825; margin: 0; font-family: 'Cinzel', serif;">
-                    🕊️ 6. Província Franciscana & Paróquia Bom Jesus dos Aflitos
+                    🕊️ 6. Diretório de Sorocaba & Tradição Católica
                 </h4>
                 <span style="background: #5A3825; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.85rem; font-family: 'Cinzel', serif;">
                     Paz e Bem!
                 </span>
             </div>
             <p style="font-size: 1.05rem; line-height: 1.6; margin-top: 0.8rem; color: #2D1B13;">
-                A espiritualidade dos Frades Menores de São Francisco e Santa Clara de Assis no Brasil.
+                Diretório de Sorocaba — Igreja Católica Apostólica Romana • Espiritualidade dos Santos e Tradição Cristã.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -292,9 +292,8 @@ def render():
             </h4>
             <p style="font-size: 1.05rem; line-height: 1.7; color: #2D1B13; text-align: justify;">
                 Este portal foi concebido com zelo apostólico e fidelidade à Santa Sé para apoiar a evangelização 
-                e o catecumenato de adultos na <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong> 
-                (Frades Menores Franciscanos). Todos os direitos de propriedade intelectual, licenças e obras sacras 
-                seguem rigorosamente os parâmetros éticos e legais vigentes:
+                e a formação doutrinal na <strong>Igreja Católica Apostólica Romana — Diretório de Sorocaba/SP</strong>. 
+                Todos os direitos de propriedade intelectual, licenças e obras sacras seguem rigorosamente os parâmetros éticos e legais vigentes:
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -344,11 +343,11 @@ def render():
 
             st.markdown("""
             <div class="pilula-franciscana" style="margin-top: 1rem;">
-                <h5 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">🕊️ 4. Carisma Franciscano & Paróquia</h5>
+                <h5 style="color: #5A3825; font-family: 'Cinzel', serif; margin-top: 0;">🕊️ 4. Carisma, Tradição & Espiritualidade</h5>
                 <p style="font-size: 0.98rem; line-height: 1.6;">
-                    Desenvolvido para a <strong>Paróquia Bom Jesus dos Aflitos de Sorocaba/SP</strong>, confiada aos cuidados da 
-                    Ordem dos Frades Menores (OFM). Todas as referências às Fontes Franciscanas visam difundir o ideal de 
-                    paz, fraternidade, amor aos pobres e cuidado com toda a criação. <em>Paz e Bem!</em>
+                    Desenvolvido para a <strong>Igreja Católica Apostólica Romana — Diretório de Sorocaba/SP</strong>. 
+                    Todas as referências ao Magistério e às Fontes dos Santos visam difundir o ideal de 
+                    paz, santidade de vida, fraternidade e amor a Deus sobre todas as coisas. <em>Paz e Bem!</em>
                 </p>
             </div>
             """, unsafe_allow_html=True)

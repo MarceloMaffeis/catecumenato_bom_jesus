@@ -531,17 +531,17 @@ button[data-testid="baseButton-primary"]:hover {
 .hub-card-sacro {
     background: #FFFFFF;
     background-image: linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%);
-    border: 1px solid #D8C8B4;
+    border: 1.5px solid #D8C8B4;
     border-radius: 14px;
-    padding: 16px 12px 12px 12px;
+    padding: 16px 14px 12px 14px;
     text-align: center;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
     position: relative;
     overflow: hidden;
-    height: 175px !important;
-    min-height: 175px !important;
-    max-height: 175px !important;
+    height: 180px !important;
+    min-height: 180px !important;
+    max-height: 180px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
@@ -554,7 +554,7 @@ button[data-testid="baseButton-primary"]:hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 4px;
+    height: 5px;
     background: #C5A059;
 }
 
@@ -571,7 +571,7 @@ button[data-testid="baseButton-primary"]:hover {
 .hub-card-sacro.accent-verde::before { background: #2E7D32; }
 
 .hub-card-icon {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
     line-height: 1;
     margin-bottom: 6px;
 }
@@ -579,10 +579,10 @@ button[data-testid="baseButton-primary"]:hover {
 .hub-card-title {
     color: #781826 !important;
     font-family: 'Cinzel', serif !important;
-    font-size: 0.98rem !important;
+    font-size: 1.02rem !important;
     font-weight: 700 !important;
     margin: 0 0 4px 0 !important;
-    min-height: 2.3rem;
+    min-height: 2.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -592,7 +592,7 @@ button[data-testid="baseButton-primary"]:hover {
 .hub-card-desc {
     color: #5A3825 !important;
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 0.84rem !important;
+    font-size: 0.86rem !important;
     line-height: 1.35;
     margin: 0;
     flex-grow: 1;
@@ -601,28 +601,54 @@ button[data-testid="baseButton-primary"]:hover {
     justify-content: center;
 }
 
+.hub-card-badge-acesso {
+    margin-top: 6px;
+    background: #FAF5EB;
+    border: 1px solid #C5A059;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #781826;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+/* Painel Informativo Estático (Não Clicável) */
+.hub-card-static {
+    background: #FFFFFF;
+    border: 1.5px solid #E2D7C7;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    height: 100%;
+    position: relative;
+}
+
 /* Alinhamento uniforme dos botões de acesso */
 div[data-testid="stColumn"] .stButton > button {
-    height: 42px !important;
-    min-height: 42px !important;
-    max-height: 42px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
     border-radius: 8px !important;
     font-family: 'Cinzel', serif !important;
     font-weight: 700 !important;
-    font-size: 0.84rem !important;
-    letter-spacing: 0.3px !important;
-    border: 1px solid #C5A059 !important;
-    background: #FFFFFF !important;
-    color: #781826 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: 0.4px !important;
+    border: 1.5px solid #C5A059 !important;
+    background: linear-gradient(135deg, #781826 0%, #5A111C 100%) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 3px 10px rgba(120, 24, 38, 0.2) !important;
     transition: all 0.22s ease !important;
 }
 
 div[data-testid="stColumn"] .stButton > button:hover {
-    background: linear-gradient(135deg, #781826 0%, #5A111C 100%) !important;
-    color: #FFFFFF !important;
-    border-color: #781826 !important;
+    background: linear-gradient(135deg, #8E1F2F 0%, #781826 100%) !important;
+    color: #F8E7BE !important;
+    border-color: #E6CA85 !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 14px rgba(120, 24, 38, 0.22) !important;
+    box-shadow: 0 6px 16px rgba(120, 24, 38, 0.3) !important;
 }
 </style>
 """
@@ -666,9 +692,16 @@ def render_hub_card(icone, titulo, descricao, accent_class="accent-bordo"):
     import streamlit as st
     html = f"""
     <div class="hub-card-sacro {accent_class}">
-        <div class="hub-card-icon">{icone}</div>
-        <div class="hub-card-title">{titulo}</div>
-        <div class="hub-card-desc">{descricao}</div>
+        <div>
+            <div class="hub-card-icon">{icone}</div>
+            <div class="hub-card-title">{titulo}</div>
+            <div class="hub-card-desc">{descricao}</div>
+        </div>
+        <div>
+            <div class="hub-card-badge-acesso">
+                🔓 CLIQUE ABAIXO PARA ENTRAR ➔
+            </div>
+        </div>
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)

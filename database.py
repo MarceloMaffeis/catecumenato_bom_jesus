@@ -475,9 +475,9 @@ def get_encontros(bloco=None, termo_busca=None):
         params.append(bloco)
 
     if termo_busca:
-        query += " AND (titulo LIKE ? OR subtemas LIKE ? OR resumo LIKE ? OR referencias_biblicas LIKE ?)"
+        query += " AND (titulo LIKE ? OR subtemas LIKE ? OR resumo LIKE ? OR referencias_biblicas LIKE ? OR referencias_magisterio LIKE ? OR oracao_final LIKE ?)"
         like_term = f"%{termo_busca}%"
-        params.extend([like_term, like_term, like_term, like_term])
+        params.extend([like_term, like_term, like_term, like_term, like_term, like_term])
 
     query += " ORDER BY numero ASC"
     cur.execute(query, params)
