@@ -364,6 +364,42 @@ def render():
             </div>
             """, unsafe_allow_html=True)
 
+        st.markdown("---")
+        st.markdown("#### 📜 Os Grandes Dogmas Eclesiais e Petrinos:")
+
+        with st.expander("1. O Primado de Jurisdição de São Pedro e de Seus Sucessores (Concílio Vaticano I, 1870)", expanded=True):
+            st.markdown("""
+            - **Definição Solene:** Nosso Senhor Jesus Cristo conferiu direta e imediatamente ao Apóstolo São Pedro o primado de verdadeira e própria jurisdição sobre toda a Igreja universal, e não um mero primado de honra ou liderança moral.
+            - **Fundamento Bíblico Imutável:** *"Tu és Pedro, e sobre esta pedra edificarei a Minha Igreja, e as portas do inferno não prevalecerão contra ela. Eu te darei as chaves do Reino dos Céus: tudo o que ligares na terra será ligado nos Céus"* (Mt 16,18-19); *"Apascenta os meus cordeiros... apascenta as minhas ovelhas"* (Jo 21,15-17).
+            - **Sucessão Perpétua:** Por instituição de Cristo, Pedro possui sucessores perpétuos no primado sobre a Igreja: os Bispos da Sé Apostólica de Roma (os Papas) (CIC 880-882).
+            """)
+
+        with st.expander("2. O Dogma da Infalibilidade Papal (Constituição Dogmática Pastor Aeternus — Vaticano I, 1870)", expanded=False):
+            st.markdown("""
+            - **Definição Solene:** O Romano Pontífice, quando fala *ex cathedra* — isto é, quando, exercendo o múnus de pastor e doutor de todos os cristãos, define solenemente com sua suprema autoridade apostólica que uma doutrina sobre a Fé ou a Moral deve ser crida por toda a Igreja —, goza da assistência do Espírito Santo prometida a Pedro, sendo suas definições irreformáveis por si mesmas.
+            - **As Três Condições Canônicas do Magistério Infalível:**
+              1. **Sujeito:** Agir e falar solenemente como Supremo Pastor da Igreja universal (não como teólogo privado ou cidadão do Vaticano).
+              2. **Objeto:** Ensinar matéria definitiva sobre a Fé (*De Fide*) ou a Moral (*De Moribus*).
+              3. **Intenção do Ato:** Declarar de forma irrevogável e definitiva uma verdade que vincula a consciência de todos os fiéis católicos no mundo.
+            - **Magistério:** CIC 891: *"Desta infalibilidade goza o Romano Pontífice em razão de seu encargo... as definições não carecem de aprovação alheia nem admitem apelação a outro tribunal"*.
+            """)
+
+        with st.expander("3. As Quatro Notas Dogmáticas da Verdadeira Igreja (Credo Niceno-Constantinopolitano)", expanded=False):
+            st.markdown("""
+            A única e verdadeira Igreja fundada por Cristo é reconhecida historicamente por quatro notas inseparáveis (CIC 811-870):
+            - **Una:** Possui um só Senhor, professa uma só Fé herdada dos apóstolos, celebra os mesmos Sacramentos e mantém uma só comunhão sob o Sucessor de Pedro.
+            - **Santa:** Porque Cristo, seu divino Esposo, é Santo e se entregou por Ela para santificá-la. Possui os meios da graça e santificação, gerando frutos heróicos nos Santos, mesmo acolhendo pecadores em seu seio.
+            - **Católica:** Significa *universal* e integral. Enviada por Cristo a todos os povos da terra, guarda o depósito total da Fé e oferece a plenitude dos instrumentos de salvação.
+            - **Apostólica:** Construída sobre o alicerce sólido dos Doze Apóstolos (Ef 2,20), guarda fielmente a sua doutrina e é governada por seus sucessores legítimos (o Colégio dos Bispos em comunhão com o Papa) mediante a Sucessão Apostólica ininterrupta.
+            """)
+
+        with st.expander("4. A Indefectibilidade e a Salvação em Cristo pela Igreja (Lumen Gentium 8 / CIC 846-848)", expanded=False):
+            st.markdown("""
+            - **Indefectibilidade:** Por promessa solene de Jesus (*"Eis que estou convosco todos os dias, até o fim dos tempos"*, Mt 28,20), a Igreja Católica jamais perecerá, nem perderá a sã doutrina revelada, permanecendo inabalável até a Parusia.
+            - **Sacramento Universal de Salvação:** A Igreja subsiste (*subsistit in*) na Igreja Católica governada pelo Sucessor de Pedro e pelos Bispos em comunhão com ele.
+            - **O Princípio Tradicional *Extra Ecclesiam nulla salus*:** Toda salvação procede de Jesus Cristo, que é a Cabeça, através da Igreja, que é o Seu Corpo místico. Não podem salvar-se aqueles que, sabendo que a Igreja Católica foi fundada por Deus por meio de Cristo como necessária, recusam nela entrar ou perseverar (CIC 846).
+            """)
+
     # ==========================================
     # 6. ESCATOLOGIA
     # ==========================================
