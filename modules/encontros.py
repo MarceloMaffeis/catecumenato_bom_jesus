@@ -24,27 +24,30 @@ def render():
     </div>
     """, unsafe_allow_html=True)
 
-    blocos = ["Todos os Blocos"] + database.get_blocos()
+    blocos = ["Todos os 40 Encontros"] + database.get_blocos()
 
-    col_filtro1, col_filtro2 = st.columns([1.2, 1.8])
-    with col_filtro1:
-        bloco_selecionado = st.selectbox("Filtrar por Módulo Temático:", blocos)
-    with col_filtro2:
-        termo_busca = st.text_input("Buscar por tema, passagem bíblica ou palavra-chave:", placeholder="Ex: Batismo, Is 53, Tradição, Missa...")
+    col_bloco, col_enc = st.columns([1.1, 2.3])
+    with col_bloco:
+        bloco_selecionado = st.selectbox(
+            "Filtrar por Etapa Temática:",
+            blocos,
+            index=0,
+            help="Escolha uma etapa específica ou navegue livremente por todos os 40 encontros."
+        )
 
-    encontros = database.get_encontros(bloco=bloco_selecionado, termo_busca=termo_busca)
+    bloco_param = None if bloco_selecionado == "Todos os 40 Encontros" else bloco_selecionado
+    encontros = database.get_encontros(bloco=bloco_param, termo_busca=None)
 
     if not encontros:
-        st.warning("Nenhum encontro encontrado com os filtros selecionados.")
-        st.info("Dica: Tente buscar por outros termos como 'Eucaristia', 'Batismo', 'Trindade' ou selecione 'Todos os Blocos'.")
+        st.warning("Nenhum encontro disponível nesta etapa temática.")
         return
 
-    st.markdown(f"<div style='font-size: 0.88rem; color: #5A3825; margin-bottom: 6px;'>✨ Exibindo <strong>{len(encontros)}</strong> de <strong>40</strong> encontros formativos disponíveis</div>", unsafe_allow_html=True)
-
-    # Seletor do Encontro
-    opcoes_encontros = {}
-    for e in encontros:
-        opcoes_encontros[f"Encontro {e['numero']:02d}: {e['titulo']}"] = e["numero"]
+    # Mapeamento do Encontro: "Encontro XX — [Título]" -> número
+    opcoes_encontros = {
+        f"Encontro {e['numero']:02d} — {e['titulo']}": e["numero"]
+        for e in encontros
+    }
+    opcoes_keys = list(opcoes_encontros.keys())
     
     if "encontro_atual_num" not in st.session_state:
         st.session_state.encontro_atual_num = encontros[0]["numero"]
@@ -53,25 +56,45 @@ def render():
     if st.session_state.encontro_atual_num not in nums_filtrados:
         st.session_state.encontro_atual_num = nums_filtrados[0]
 
-    opcoes_keys = list(opcoes_encontros.keys())
     idx_atual = 0
     for idx, k in enumerate(opcoes_keys):
         if opcoes_encontros[k] == st.session_state.encontro_atual_num:
             idx_atual = idx
             break
 
-    col_nav1, col_nav2, col_nav3 = st.columns([1.2, 3.6, 1.2])
+    with col_enc:
+        escolha = st.selectbox(
+            "Selecione o Encontro (Número e Título):",
+            opcoes_keys,
+            index=idx_atual,
+            help="Escolha diretamente o encontro desejado pelo número e título oficial."
+        )
+        if opcoes_encontros[escolha] != st.session_state.encontro_atual_num:
+            st.session_state.encontro_atual_num = opcoes_encontros[escolha]
+            st.rerun()
+
+    # Barra de Navegação e Avanço entre Encontros
+    col_nav1, col_nav2, col_nav3 = st.columns([1.3, 2.4, 1.3])
     with col_nav1:
-        if st.button("◀ Anterior", disabled=(idx_atual == 0), use_container_width=True, key="btn_nav_prev"):
+        num_ant = opcoes_keys[idx_atual - 1].split(" — ")[0].replace("Encontro ", "Enc. ") if idx_atual > 0 else ""
+        label_prev = f"◀ Anterior ({num_ant})" if idx_atual > 0 else "◀ Anterior"
+        if st.button(label_prev, disabled=(idx_atual == 0), use_container_width=True, key="btn_nav_prev"):
             st.session_state.encontro_atual_num = opcoes_encontros[opcoes_keys[idx_atual - 1]]
             st.rerun()
+
+    with col_nav2:
+        st.markdown(f"""
+        <div style="background: #FAF5EB; border: 1px solid #D8C8B4; border-radius: 8px; text-align: center; padding: 7px 12px; font-family: 'Cinzel', serif; font-size: 0.90rem; color: #781826; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+            📖 Encontro {st.session_state.encontro_atual_num:02d} de 40 &bull; {len(encontros)} disponíveis nesta etapa
+        </div>
+        """, unsafe_allow_html=True)
+
     with col_nav3:
-        if st.button("Próximo ▶", disabled=(idx_atual >= len(opcoes_keys) - 1), use_container_width=True, key="btn_nav_next"):
+        num_prox = opcoes_keys[idx_atual + 1].split(" — ")[0].replace("Encontro ", "Enc. ") if idx_atual < len(opcoes_keys) - 1 else ""
+        label_next = f"Próximo ({num_prox}) ▶" if idx_atual < len(opcoes_keys) - 1 else "Próximo ▶"
+        if st.button(label_next, disabled=(idx_atual >= len(opcoes_keys) - 1), use_container_width=True, key="btn_nav_next"):
             st.session_state.encontro_atual_num = opcoes_encontros[opcoes_keys[idx_atual + 1]]
             st.rerun()
-    with col_nav2:
-        escolha = st.selectbox("Selecione o Encontro para Consulta e Estudo:", opcoes_keys, index=idx_atual)
-        st.session_state.encontro_atual_num = opcoes_encontros[escolha]
 
     encontro = database.get_encontro_by_numero(st.session_state.encontro_atual_num)
     if not encontro:

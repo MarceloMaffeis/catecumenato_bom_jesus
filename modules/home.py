@@ -10,10 +10,16 @@ import database
 from style import render_header, render_divider, render_hub_card, render_sector_header
 
 def render():
-    render_header(
-        titulo="CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA",
-        subtitulo="Diretório de Sorocaba • Hub de Consulta, Formação & Doutrina"
-    )
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h2 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
+            ☩ Guia Pastoral & Itinerário Formativo ☩
+        </h2>
+        <p style="font-size: 1.1rem; color: #5A3825; font-style: italic;">
+            Visão Geral dos 40 Encontros, Currículo Oficial e Metodologia de Consulta
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Painel Acolhedor de Abertura do Hub
     st.markdown("""

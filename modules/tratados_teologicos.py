@@ -24,10 +24,16 @@ def render_imagem_sacra(caminho_relativo, legenda):
     st.info(f"🎨 {legenda}")
 
 def render():
-    render_header(
-        titulo="CÁTEDRA DE TEOLOGIA SACRA",
-        subtitulo="Mariologia • Cristologia • Angelologia • Pneumatologia • Eclesiologia • Escatologia • Trindade"
-    )
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h2 style="color: #781826; font-family: 'Cinzel', serif; margin-bottom: 0.2rem;">
+            🏛️ Cátedra de Teologia Sacra 🏛️
+        </h2>
+        <p style="font-size: 1.1rem; color: #5A3825; font-style: italic;">
+            Mariologia • Cristologia • Angelologia • Pneumatologia • Eclesiologia • Escatologia • Trindade
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class="pergaminho-card-bordo">

@@ -35,37 +35,12 @@ if "pagina_ativa" not in st.session_state:
     st.session_state.pagina_ativa = "hub"
 
 # ==============================================================================
-# CABEÇALHO SUPERIOR INSTITUCIONAL (DIRETÓRIO DE SOROCABA)
+# CABEÇALHO PRINCIPAL DESTACADO (DIRETÓRIO DE SOROCABA)
 # ==============================================================================
-col_top_logo, col_top_user = st.columns([3.5, 1.5])
-
-with col_top_logo:
-    st.markdown("""
-    <div style="display: flex; align-items: center; gap: 14px; padding: 4px 0;">
-        <span style="font-size: 2.3rem; color: #781826; line-height: 1;">☩</span>
-        <div>
-            <div style="font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.15rem; color: #781826; letter-spacing: 0.5px; line-height: 1.2;">
-                CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA
-            </div>
-            <div style="font-size: 0.82rem; color: #5A3825; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-top: 2px;">
-                DIRETÓRIO DE SOROCABA &bull; HUB DE CONSULTA ABERTA &bull; <strong style="color: #781826;">PAZ E BEM!</strong>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_top_user:
-    st.markdown("""
-    <div style="background: #FFFFFF; border: 1px solid #E8E0D2; border-left: 4px solid #C5A059; padding: 6px 12px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-            <span style="background: #FFF8E1; color: #8C6A1D; font-size: 0.70rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-family: 'Cinzel', serif;">📖 CONSULTA LIVRE</span>
-            <span style="font-size: 0.74rem; color: #8C6A1D; font-weight: bold;">SOROCABA</span>
-        </div>
-        <div style="font-weight: 700; color: #2E1B10; font-size: 0.88rem; margin-top: 2px;">Diretório Catequético</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("""<div style="margin: 0.7rem 0 1.2rem 0; height: 1px; background: linear-gradient(to right, #781826, #C5A059, transparent);"></div>""", unsafe_allow_html=True)
+style.render_header(
+    titulo="CATEQUESE &bull; DIRETÓRIO DE SOROCABA",
+    subtitulo="Hub Oficial de Consulta Aberta, Formação Doutrinal, Sagrada Liturgia e Tradição Católica"
+)
 
 # Mapa de metadados dos módulos para roteamento e atalhos rápidos
 modulos_info = {
@@ -87,20 +62,7 @@ modulos_info = {
 # ==============================================================================
 if st.session_state.pagina_ativa == "hub":
 
-    # Banner de Acolhida & Apresentação
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5ECE0 100%); border: 1px solid #D8C8B4; border-left: 6px solid #C5A059; border-radius: 12px; padding: 14px 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(120,24,38,0.04);">
-        <h3 style="color: #781826; font-family: 'Cinzel', serif; margin: 0; font-size: 1.2rem;">
-            ☩ Bem-vindo ao Hub de Consulta da Fé Católica — Diretório de Sorocaba
-        </h3>
-        <p style="color: #5A3825; font-size: 0.96rem; margin: 5px 0 0 0; font-style: italic;">
-            Acervo doutrinal, bíblico, litúrgico e formativo para livre consulta de catequistas, catequisandos e fiéis. 
-            Estude os encontros, realize avaliações com download em HTML e baixe suas reflexões com total privacidade.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<p style='text-align: center; color: #5A3825; font-size: 1rem; margin: 10px 0 20px 0;'>✨ <strong>Selecione o módulo temático</strong> para iniciar sua consulta:</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #5A3825; font-size: 1.08rem; margin: 0.5rem 0 1.8rem 0;'>✨ <strong>Selecione o módulo temático</strong> abaixo para iniciar seus estudos e consultas doutrinais:</p>", unsafe_allow_html=True)
 
     # ==========================================================================
     # SETOR 1: 🎓 INICIAÇÃO CRISTÃ & FORMAÇÃO

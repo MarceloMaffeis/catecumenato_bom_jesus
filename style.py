@@ -34,45 +34,77 @@ h1, h2, h3, .sacro-title {
     font-weight: 700;
 }
 
-/* Cabeçalho Paroquial Sacro */
+/* Cabeçalho Paroquial Sacro Destacado e Nobre (Diretório de Sorocaba) */
 .parish-header {
-    background: linear-gradient(135deg, #4E0D16 0%, #781826 60%, #5A3825 100%);
+    background: linear-gradient(135deg, #430B12 0%, #781826 50%, #430B12 100%);
     color: #FAF8F5;
-    padding: 2.2rem 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    border: 2px solid #C5A059;
-    box-shadow: 0 10px 25px rgba(78, 13, 22, 0.25);
+    padding: 2.2rem 2rem 1.8rem 2rem;
+    border-radius: 14px;
+    margin-bottom: 1.8rem;
+    border: 2.5px solid #C5A059;
+    box-shadow: 0 10px 30px rgba(78, 13, 22, 0.32);
     text-align: center;
     position: relative;
 }
 
 .parish-header h1 {
-    color: #F8E7BE !important;
-    margin-bottom: 0.3rem;
-    font-size: 2.3rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #FFFFFF !important;
+    margin: 0.3rem 0 0.5rem 0 !important;
+    font-size: 2.25rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6) !important;
+    line-height: 1.25 !important;
 }
 
 .parish-header .subtitulo {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Cormorant Garamond', Georgia, serif;
     font-style: italic;
-    font-size: 1.25rem;
-    color: #E6CA85;
-    letter-spacing: 1px;
+    font-size: 1.28rem;
+    color: #F8E7BE;
+    letter-spacing: 0.6px;
+    margin-bottom: 0.8rem;
 }
 
 .parish-header .tau-badge {
     display: inline-block;
-    background: rgba(197, 160, 89, 0.25);
-    border: 1px solid #C5A059;
+    background: rgba(197, 160, 89, 0.22);
+    border: 1px solid #E6CA85;
     color: #F8E7BE;
-    padding: 0.25rem 0.9rem;
+    padding: 0.3rem 1.4rem;
     border-radius: 20px;
     font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
-    margin-top: 0.6rem;
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
     letter-spacing: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.parish-header .header-ribbon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 0.8rem;
+}
+
+.parish-header .header-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(197, 160, 89, 0.5);
+    border-radius: 14px;
+    padding: 4px 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    color: #FFFDF9;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.parish-header .header-dot {
+    color: #C5A059;
+    font-size: 0.8rem;
 }
 
 /* Divisor Sacro */
@@ -657,16 +689,25 @@ def apply_sacred_style():
     import streamlit as st
     st.markdown(SACRED_CSS, unsafe_allow_html=True)
 
-def render_header(titulo="CATEQUESE DA IGREJA CATÓLICA APOSTÓLICA ROMANA", subtitulo="Diretório de Sorocaba • Hub de Consulta e Formação Doutrinal"):
+def render_header(titulo="CATEQUESE &bull; DIRETÓRIO DE SOROCABA", subtitulo="Hub Oficial de Consulta Aberta, Formação Doutrinal, Sagrada Liturgia e Tradição Católica", mostrar_tags=True):
     import streamlit as st
+    ribbon_html = ""
+    if mostrar_tags:
+        ribbon_html = """
+        <div class="header-ribbon">
+            <span class="header-pill">📖 40 Encontros Formativos</span>
+            <span class="header-dot">✦</span>
+            <span class="header-pill">🏛️ Sagrada Tradição & Magistério</span>
+            <span class="header-dot">✦</span>
+            <span class="header-pill">🕊️ Paz e Bem!</span>
+        </div>
+        """
     html = f"""
     <div class="parish-header">
-        <div class="tau-badge">☩ DIRETÓRIO DE SOROCABA • IGREJA CATÓLICA APOSTÓLICA ROMANA ☩</div>
+        <div class="tau-badge">☩ IGREJA CATÓLICA APOSTÓLICA ROMANA ☩</div>
         <h1>{titulo}</h1>
         <div class="subtitulo">{subtitulo}</div>
-        <div style="font-size: 0.95rem; margin-top: 0.6rem; color: #E8D8B8; font-family: 'Cinzel', serif;">
-            Diretório de Sorocaba • Formação, Sagrada Escritura e Tradição Católica
-        </div>
+        {ribbon_html}
     </div>
     """
     st.markdown(html, unsafe_allow_html=True)
