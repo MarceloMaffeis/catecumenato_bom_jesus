@@ -693,24 +693,27 @@ def render_header(titulo="CATEQUESE &bull; DIRETÓRIO DE SOROCABA", subtitulo="H
     import streamlit as st
     ribbon_html = ""
     if mostrar_tags:
-        ribbon_html = """
-        <div class="header-ribbon">
-            <span class="header-pill">📖 40 Encontros Formativos</span>
-            <span class="header-dot">✦</span>
-            <span class="header-pill">🏛️ Sagrada Tradição & Magistério</span>
-            <span class="header-dot">✦</span>
-            <span class="header-pill">🕊️ Paz e Bem!</span>
-        </div>
-        """
-    html = f"""
-    <div class="parish-header">
-        <div class="tau-badge">☩ IGREJA CATÓLICA APOSTÓLICA ROMANA ☩</div>
-        <h1>{titulo}</h1>
-        <div class="subtitulo">{subtitulo}</div>
-        {ribbon_html}
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+        ribbon_html = (
+            '<div class="header-ribbon">'
+            '<span class="header-pill">📖 40 Encontros Formativos</span>'
+            '<span class="header-dot">✦</span>'
+            '<span class="header-pill">🏛️ Sagrada Tradição & Magistério</span>'
+            '<span class="header-dot">✦</span>'
+            '<span class="header-pill">🕊️ Paz e Bem!</span>'
+            '</div>'
+        )
+    html = (
+        '<div class="parish-header">'
+        '<div class="tau-badge">☩ IGREJA CATÓLICA APOSTÓLICA ROMANA ☩</div>'
+        f'<h1>{titulo}</h1>'
+        f'<div class="subtitulo">{subtitulo}</div>'
+        f'{ribbon_html}'
+        '</div>'
+    )
+    if hasattr(st, "html"):
+        st.html(html)
+    else:
+        st.markdown(html, unsafe_allow_html=True)
 
 def render_divider(texto="✦ ☩ ✦"):
     import streamlit as st
@@ -718,31 +721,37 @@ def render_divider(texto="✦ ☩ ✦"):
 
 def render_sector_header(icone, titulo, subtitulo):
     import streamlit as st
-    html = f"""
-    <div class="sector-header-sacro">
-        <span class="sector-icon">{icone}</span>
-        <div>
-            <h3>{titulo}</h3>
-            <div class="sector-desc">{subtitulo}</div>
-        </div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+    html = (
+        '<div class="sector-header-sacro">'
+        f'<span class="sector-icon">{icone}</span>'
+        '<div>'
+        f'<h3>{titulo}</h3>'
+        f'<div class="sector-desc">{subtitulo}</div>'
+        '</div>'
+        '</div>'
+    )
+    if hasattr(st, "html"):
+        st.html(html)
+    else:
+        st.markdown(html, unsafe_allow_html=True)
 
 def render_hub_card(icone, titulo, descricao, accent_class="accent-bordo"):
     import streamlit as st
-    html = f"""
-    <div class="hub-card-sacro {accent_class}">
-        <div>
-            <div class="hub-card-icon">{icone}</div>
-            <div class="hub-card-title">{titulo}</div>
-            <div class="hub-card-desc">{descricao}</div>
-        </div>
-        <div>
-            <div class="hub-card-badge-acesso">
-                🔓 CLIQUE ABAIXO PARA ENTRAR ➔
-            </div>
-        </div>
-    </div>
-    """
-    st.markdown(html, unsafe_allow_html=True)
+    html = (
+        f'<div class="hub-card-sacro {accent_class}">'
+        '<div>'
+        f'<div class="hub-card-icon">{icone}</div>'
+        f'<div class="hub-card-title">{titulo}</div>'
+        f'<div class="hub-card-desc">{descricao}</div>'
+        '</div>'
+        '<div>'
+        '<div class="hub-card-badge-acesso">'
+        '🔓 CLIQUE ABAIXO PARA ENTRAR ➔'
+        '</div>'
+        '</div>'
+        '</div>'
+    )
+    if hasattr(st, "html"):
+        st.html(html)
+    else:
+        st.markdown(html, unsafe_allow_html=True)
